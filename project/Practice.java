@@ -15,17 +15,9 @@ public class Practice {
     }
 
     public static String parseLine(String line) {
-        String[] params = line.split(" ");
-        String level = params[0];
-        String tag = params[1];
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 2; i < params.length; i++) {
-            sb.append(params[i]);
-            sb.append(" ");
-        }
-
-        return String.format("%s|%s|%s|%s", level, tag, (isValidTag(tag) ? "Y" : "N"), sb.toString());
+        String[] params = line.split(" ", 3);
+        return String.format("%s|%s|%s|%s", params[0], params[1], (isValidTag(params[1]) ? "Y" : "N"),
+                (params.length == 3 ? params[2] : ""));
     }
 
     public static void main(String[] args) throws FileNotFoundException {
