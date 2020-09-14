@@ -16,8 +16,20 @@ public class Practice {
 
     public static String parseLine(String line) {
         String[] params = line.split(" ", 3);
-        return String.format("%s|%s|%s|%s", params[0], params[1], (isValidTag(params[1]) ? "Y" : "N"),
-                (params.length == 3 ? params[2] : ""));
+        boolean validTag = isValidTag(params[1]);
+        String tag = params[1];
+        String args = params.length == 3 ? params[2] : "";
+
+        if (!validTag && params.length == 3) { // check if params[1] is an id
+            validTag = isValidTag(params[2])
+                    && (Tag.valueOf(params[2]) == Tag.FAM || Tag.valueOf(params[2]) == Tag.INDI);
+            if (validTag) {
+                tag = params[2];
+                args = params[1];
+            }
+        }
+
+        return String.format("%s|%s|%s|%s", params[0], tag, (validTag ? "Y" : "N"), args);
     }
 
     public static void main(String[] args) throws FileNotFoundException {
