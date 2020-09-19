@@ -3,7 +3,7 @@ package project;
 import java.io.*;
 import java.util.Scanner;
 
-public class Practice {
+public class GEDParser {
 
     public static boolean isValidTag(String str) {
         try {
