@@ -1,5 +1,5 @@
 package project.interfaces;
 
 public enum Gender {
-    M, F
+    M, F, NA
 }
