@@ -23,7 +23,7 @@ public class GEDParser {
     private static Map<String, Individual> individuals = new HashMap<>();
     private static Map<String, Family> families = new HashMap<>();
 
-    private static Individual parseIndividual(List<GEDLine> list, int index, String ID) {
+    public static Individual parseIndividual(List<GEDLine> list, int index, String ID) {
         Individual indi = new Individual(ID);
         Tag dateType = null;
 
@@ -75,7 +75,7 @@ public class GEDParser {
         return indi;
     }
 
-    private static Family parseFamily(List<GEDLine> list, int index, String ID) {
+    public static Family parseFamily(List<GEDLine> list, int index, String ID) {
         Family fam = new Family(ID);
         Tag dateType = null;
     
@@ -171,34 +171,36 @@ public class GEDParser {
 
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        if (args.length != 1) {
-            System.err.println("Usage: <GEDCOM>\n");
-            System.exit(1);
-        }
-
+    public static void main(String[] args) {
         File text = new File(args[0]);
-        Scanner s = new Scanner(text);
-        String line;
-        List<GEDLine> gedLines = new ArrayList<>();
+        Scanner s;
+		try {
+			s = new Scanner(text);
+			String line;
+	        List<GEDLine> gedLines = new ArrayList<>();
 
-        // Read file into GEDLine list
-        while (s.hasNextLine()) {
-            line = s.nextLine();
-            gedLines.add(new GEDLine(line));
-        }
+	        // Read file into GEDLine list
+	        while (s.hasNextLine()) {
+	            line = s.nextLine();
+	            gedLines.add(new GEDLine(line));
+	        }
 
-        // Create all the Individuals and Families
-        for (int i = 0; i < gedLines.size(); i++) {
-            GEDLine currentLine = gedLines.get(i);
-            if (currentLine.getTag() == Tag.INDI) {
-                individuals.put(currentLine.getID(), parseIndividual(gedLines, i, currentLine.getID()));
-            } else if (currentLine.getTag() == Tag.FAM) {
-                families.put(currentLine.getID(), parseFamily(gedLines, i, currentLine.getID()));
-            }
-        }
+	        // Create all the Individuals and Families
+	        for (int i = 0; i < gedLines.size(); i++) {
+	            GEDLine currentLine = gedLines.get(i);
+	            if (currentLine.getTag() == Tag.INDI) {
+	                individuals.put(currentLine.getID(), parseIndividual(gedLines, i, currentLine.getID()));
+	            } else if (currentLine.getTag() == Tag.FAM) {
+	                families.put(currentLine.getID(), parseFamily(gedLines, i, currentLine.getID()));
+	            }
+	        }
 
-        s.close();
+	        s.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.err.println("The file you entered could not be found.");
+            System.exit(1);
+		}
 
         System.out.println("\n");
         System.out.print("Individuals");
