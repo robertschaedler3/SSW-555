@@ -32,6 +32,6 @@ public class Commander {
 	    }
 	    
 	    scan.close();
-	    System.out.println("Enter GEDCOM File Path: ");
+	    System.out.println("Finished");
 	}
 }
