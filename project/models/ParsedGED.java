@@ -14,8 +14,6 @@ public class ParsedGED {
 	private List<Family> families;
 
 	public ParsedGED(String path) {
-		super();
-
 		ArrayList<Individual> newIndividuals = new ArrayList<Individual>();
 		ArrayList<Family> newFamilies = new ArrayList<Family>();
 		
