@@ -9,7 +9,7 @@ public class NoBigamy extends Validator {
 		super(validator);
 	}
 
-	public boolean check(GEDCOM gedcom) {
+	protected boolean check(GEDCOM gedcom) {
 		boolean valid = true;
 		// TODO
 		return valid;
