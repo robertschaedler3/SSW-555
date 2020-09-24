@@ -175,8 +175,8 @@ public class GEDParser {
         File text = new File(args[0]);
         Scanner s;
 		try {
-			s = new Scanner(text);
-			String line;
+		    s = new Scanner(text);
+		    String line;
 	        List<GEDLine> gedLines = new ArrayList<>();
 
 	        // Read file into GEDLine list
