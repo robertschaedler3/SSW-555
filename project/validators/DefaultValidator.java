@@ -9,11 +9,11 @@ public class DefaultValidator extends Validator {
         super(null);
     }
 
-    protected boolean check(GEDFile gedcom) {
+    protected boolean check(GEDFile gedFile) {
         return true;
     }
 
-    public boolean isValid(GEDFile gedcom) {
-        return this.check(gedcom);
+    public boolean isValid(GEDFile gedFile) {
+        return this.check(gedFile);
     }
 }

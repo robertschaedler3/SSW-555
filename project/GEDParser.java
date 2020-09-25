@@ -10,7 +10,7 @@ public class GEDParser {
     public static void main(String[] args) {
         File file = new File(args[0]);
 
-        GEDFile gedcom = new GEDFile(file);
+        GEDFile gedFile = new GEDFile(file);
 
         Validator validator = new DefaultValidator();
 
@@ -21,17 +21,17 @@ public class GEDParser {
                     break;
                 case "--tablulate":
                     System.out.print("Individuals");
-                    gedcom.printIndividuals();
+                    gedFile.printIndividuals();
 
                     System.out.print("Families");
-                    gedcom.printFamilies();
+                    gedFile.printFamilies();
                     break;
                 default:
                     break;
             }
         }
 
-        boolean valid = validator.isValid(gedcom);
+        boolean valid = validator.isValid(gedFile);
         System.out.println(String.format("GEDCOM is %s", valid ? "VALID" : "INVALID"));
     }
 

@@ -10,10 +10,10 @@ public abstract class Validator {
         this.validator = validator;
     }
 
-    protected abstract boolean check(GEDFile gedcom);
+    protected abstract boolean check(GEDFile gedFile);
 
-    public boolean isValid(GEDFile gedcom) {
-        return this.check(gedcom) & this.validator.isValid(gedcom);
+    public boolean isValid(GEDFile gedFile) {
+        return this.check(gedFile) & this.validator.isValid(gedFile);
     }
 
 }
