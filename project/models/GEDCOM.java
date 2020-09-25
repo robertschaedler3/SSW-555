@@ -18,8 +18,8 @@ import project.interfaces.Tag;
 
 public class GEDCOM {
 
-    protected Map<String, Individual> individuals = new HashMap<>();
-    protected Map<String, Family> families = new HashMap<>();
+    private Map<String, Individual> individuals = new HashMap<>();
+    private Map<String, Family> families = new HashMap<>();
 
     public GEDCOM(File file) {
         Scanner s = null;
