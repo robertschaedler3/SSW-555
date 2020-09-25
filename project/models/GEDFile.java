@@ -155,7 +155,7 @@ public class GEDFile {
         return fam;
     }
 
-    public void printIndividuals() {
+    public Table getIndividualsTable() {
         List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Child",
                 "Spouse");
         List<List<String>> rows = new ArrayList<>();
@@ -171,10 +171,10 @@ public class GEDFile {
                     indi.getSpouse().toString()));
         }
 
-        System.out.println(new Table(headers, rows));
+        return new Table(headers, rows);
     }
 
-    public void printFamilies() {
+    public Table getFamiliesTable() {
         List<String> headers = Arrays.asList("ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID",
                 "Wife Name", "Children");
         List<List<String>> rows = new ArrayList<>();
@@ -190,7 +190,7 @@ public class GEDFile {
                     fam.getChildren().toString()));
         }
 
-        System.out.println(new Table(headers, rows));
+        return new Table(headers, rows);
     }
 
     public Map<String, Individual> getIndividuals() {
@@ -199,6 +199,16 @@ public class GEDFile {
 
     public Map<String, Family> getFamilies() {
         return families;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nIndividuals");
+        sb.append(getIndividualsTable());
+        sb.append("Families");
+        sb.append(getFamiliesTable());
+        return sb.toString();
     }
 
 }

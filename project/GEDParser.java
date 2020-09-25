@@ -20,11 +20,7 @@ public class GEDParser {
                     validator = new NoBigamy(validator);
                     break;
                 case "--tablulate":
-                    System.out.print("Individuals");
-                    gedFile.printIndividuals();
-
-                    System.out.print("Families");
-                    gedFile.printFamilies();
+                    System.out.println(gedFile);
                     break;
                 default:
                     break;

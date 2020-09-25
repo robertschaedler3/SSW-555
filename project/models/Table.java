@@ -21,43 +21,6 @@ public class Table {
         this.rowsList = rows;
     }
 
-    public String generateTable() {
-        StringBuilder sb = new StringBuilder();
-
-        Map<Integer, Integer> columnMaxWidthMapping = getMaximumWidhtofTable();
-
-        sb.append(NEW_LINE);
-        sb.append(NEW_LINE);
-        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
-        sb.append(NEW_LINE);
-
-        for (int headerIndex = 0; headerIndex < headersList.size(); headerIndex++) {
-            fillCell(sb, headersList.get(headerIndex), headerIndex, columnMaxWidthMapping);
-        }
-
-        sb.append(NEW_LINE);
-
-        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
-
-        for (List<String> row : rowsList) {
-            sb.append(NEW_LINE);
-            for (int cellIndex = 0; cellIndex < row.size(); cellIndex++) {
-                fillCell(sb, row.get(cellIndex), cellIndex, columnMaxWidthMapping);
-            }
-        }
-
-        sb.append(NEW_LINE);
-        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
-        sb.append(NEW_LINE);
-        sb.append(NEW_LINE);
-
-        return sb.toString();
-    }
-
-    public String toString() {
-        return generateTable();
-    }
-
     private void fillSpace(StringBuilder sb, int length) {
         for (int i = 0; i < length; i++) {
             sb.append(" ");
@@ -141,7 +104,42 @@ public class Table {
     }
 
     public Table orderBy(String col) {
+        // TODO
         return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        Map<Integer, Integer> columnMaxWidthMapping = getMaximumWidhtofTable();
+
+        sb.append(NEW_LINE);
+        sb.append(NEW_LINE);
+        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
+        sb.append(NEW_LINE);
+
+        for (int headerIndex = 0; headerIndex < headersList.size(); headerIndex++) {
+            fillCell(sb, headersList.get(headerIndex), headerIndex, columnMaxWidthMapping);
+        }
+
+        sb.append(NEW_LINE);
+
+        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
+
+        for (List<String> row : rowsList) {
+            sb.append(NEW_LINE);
+            for (int cellIndex = 0; cellIndex < row.size(); cellIndex++) {
+                fillCell(sb, row.get(cellIndex), cellIndex, columnMaxWidthMapping);
+            }
+        }
+
+        sb.append(NEW_LINE);
+        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
+        sb.append(NEW_LINE);
+        sb.append(NEW_LINE);
+
+        return sb.toString();
     }
 
 }
