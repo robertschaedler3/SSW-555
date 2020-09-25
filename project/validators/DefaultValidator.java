@@ -1,7 +1,7 @@
 package project.validators;
 
 import project.Validator;
-import project.models.GEDCOM;
+import project.models.GEDFile;
 
 public class DefaultValidator extends Validator {
 
@@ -9,11 +9,11 @@ public class DefaultValidator extends Validator {
         super(null);
     }
 
-    protected boolean check(GEDCOM gedcom) {
+    protected boolean check(GEDFile gedcom) {
         return true;
     }
 
-    public boolean isValid(GEDCOM gedcom) {
+    public boolean isValid(GEDFile gedcom) {
         return this.check(gedcom);
     }
 }

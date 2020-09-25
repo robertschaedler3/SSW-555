@@ -16,12 +16,12 @@ import java.util.Scanner;
 import project.interfaces.Gender;
 import project.interfaces.Tag;
 
-public class GEDCOM {
+public class GEDFile {
 
     private Map<String, Individual> individuals = new HashMap<>();
     private Map<String, Family> families = new HashMap<>();
 
-    public GEDCOM(File file) {
+    public GEDFile(File file) {
         Scanner s = null;
 
         try {

@@ -1,6 +1,6 @@
 package project;
 
-import project.models.GEDCOM;
+import project.models.GEDFile;
 
 public abstract class Validator {
 
@@ -10,9 +10,9 @@ public abstract class Validator {
         this.validator = validator;
     }
 
-    protected abstract boolean check(GEDCOM gedcom);
+    protected abstract boolean check(GEDFile gedcom);
 
-    public boolean isValid(GEDCOM gedcom) {
+    public boolean isValid(GEDFile gedcom) {
         return this.check(gedcom) & this.validator.isValid(gedcom);
     }
 

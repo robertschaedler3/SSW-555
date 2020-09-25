@@ -1,7 +1,7 @@
 package project.validators;
 
 import project.Validator;
-import project.models.GEDCOM;
+import project.models.GEDFile;
 
 public class NoBigamy extends Validator {
 
@@ -9,7 +9,7 @@ public class NoBigamy extends Validator {
 		super(validator);
 	}
 
-	protected boolean check(GEDCOM gedcom) {
+	protected boolean check(GEDFile gedcom) {
 		boolean valid = true;
 		// TODO
 		return valid;

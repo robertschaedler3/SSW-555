@@ -3,14 +3,14 @@ package project;
 import java.io.File;
 
 import project.validators.*;
-import project.models.GEDCOM;
+import project.models.GEDFile;
 
 public class GEDParser {
 
     public static void main(String[] args) {
         File file = new File(args[0]);
 
-        GEDCOM gedcom = new GEDCOM(file);
+        GEDFile gedcom = new GEDFile(file);
 
         Validator validator = new DefaultValidator();
 
