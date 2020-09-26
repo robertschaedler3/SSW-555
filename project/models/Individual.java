@@ -16,15 +16,15 @@ public class Individual {
     private Date birthday;
     private Date death;
 
-    private List<String> children;
-    private List<String> spouse;
+    private List<String> famc;
+    private List<String> fams;
 
     public Individual(String ID) {
         this.ID = ID;
         this.name = "NA";
         this.gender = Gender.NA;
-        this.children = new ArrayList<>();
-        this.spouse = new ArrayList<>();
+        this.famc = new ArrayList<>();
+        this.fams = new ArrayList<>();
     }
 
     public String getID() {
@@ -63,20 +63,20 @@ public class Individual {
         this.death = death;
     }
 
-    public List<String> getChildren() {
-        return children;
+    public List<String> getChildrenFamily() {
+        return famc;
     }
 
-    public boolean addChild(String ID) {
-        return this.children.add(ID);
+    public boolean addChildFamily(String ID) {
+        return this.famc.add(ID);
     }
 
-    public List<String> getSpouse() {
-        return spouse;
+    public List<String> getSpouseFamily() {
+        return fams;
     }
 
-    public boolean addSpouse(String ID) {
-        return this.spouse.add(ID);
+    public boolean addSpouseFamily(String ID) {
+        return this.fams.add(ID);
     }
 
     public long age() {
@@ -98,6 +98,19 @@ public class Individual {
             throw new IllegalStateException();
         }
         return (death == null) ? true : false;
+    }
+    
+    public ArrayList<Individual> getChildren(Individual[] individuals) {
+    	ArrayList<Individual> myChildren = new ArrayList<Individual>();
+    	
+    	for (Individual indi : individuals) {
+    		// for each family where indi is a child, check if this is a spouse
+    		for(String famcStr : indi.famc) {
+    			if(this.fams.contains(famcStr)) myChildren.add(indi);
+    		}
+    	}
+    	
+    	return myChildren;
     }
 
 }
