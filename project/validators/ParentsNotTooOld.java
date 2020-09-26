@@ -18,7 +18,6 @@ public class ParentsNotTooOld extends Validator {
 	protected boolean check(GEDFile gedFile) {
 		boolean valid = true;
 		
-		Map<String, Family> families = gedFile.getFamilies();
 		Map<String, Individual> individuals = gedFile.getIndividuals();
 		
 		for (Individual parent : individuals.values()) {

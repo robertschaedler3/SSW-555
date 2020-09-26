@@ -20,6 +20,15 @@ public class GEDFile {
 
     private Map<String, Individual> individuals = new HashMap<>();
     private Map<String, Family> families = new HashMap<>();
+    
+    public GEDFile(Individual[] indivs, Family[] fams) {
+    	for (Individual indi : indivs) {
+    		individuals.put(indi.getID(), indi);
+    	}
+    	for (Family fam : fams) {
+    		families.put(fam.getID(), fam);
+    	}
+    }
 
     public GEDFile(File file) {
         Scanner s = null;
