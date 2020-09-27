@@ -19,6 +19,9 @@ public class GEDParser {
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);
                     break;
+                case "--marriage-before-death":
+                    validator = new MarriageBeforeDeath(validator);
+                    break;
                 case "--tablulate":
                     System.out.println(gedFile);
                     break;
