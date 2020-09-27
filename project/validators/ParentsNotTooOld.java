@@ -1,11 +1,10 @@
 package project.validators;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import project.Validator;
 import project.interfaces.Gender;
-import project.models.Family;
 import project.models.GEDFile;
 import project.models.Individual;
 
@@ -21,7 +20,7 @@ public class ParentsNotTooOld extends Validator {
 		Map<String, Individual> individuals = gedFile.getIndividuals();
 		
 		for (Individual parent : individuals.values()) {
-			List<Individual> children = parent.getChildren(individuals.values().toArray(new Individual[individuals.values().size()]));
+			Collection<Individual> children = parent.getChildren(individuals.values());
 			if(children != null && children.size() > 0) {
 				int threshold = parent.getGender() == Gender.M ? 80 : 60;
 				

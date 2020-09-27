@@ -1,6 +1,7 @@
 package project.models;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class Individual {
         return (death == null) ? true : false;
     }
     
-    public ArrayList<Individual> getChildren(Individual[] individuals) {
+    public Collection<Individual> getChildren(Collection<Individual> individuals) {
     	ArrayList<Individual> myChildren = new ArrayList<Individual>();
     	
     	for (Individual indi : individuals) {

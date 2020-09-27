@@ -18,10 +18,13 @@ import project.interfaces.Tag;
 
 public class GEDFile {
 
-    private Map<String, Individual> individuals = new HashMap<>();
-    private Map<String, Family> families = new HashMap<>();
+    private Map<String, Individual> individuals;
+    private Map<String, Family> families;;
     
     public GEDFile(Individual[] indivs, Family[] fams) {
+    	individuals = new HashMap<String, Individual>();
+    	families = new HashMap<String, Family>();
+    	
     	for (Individual indi : indivs) {
     		individuals.put(indi.getID(), indi);
     	}
@@ -31,6 +34,9 @@ public class GEDFile {
     }
 
     public GEDFile(File file) {
+    	individuals = new HashMap<String, Individual>();
+    	families = new HashMap<String, Family>();
+    	
         Scanner s = null;
 
         try {

@@ -1,7 +1,7 @@
 package project.validators;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import project.Validator;
@@ -18,11 +18,15 @@ public class NoBigamy extends Validator {
 
 		Map<String, Family> families = gedFile.getFamilies();
 		Map<String, Individual> individuals = gedFile.getIndividuals();
+		
+		Collection<Family> familyCollection = families.values();
+		Family[] familyArr = familyCollection.toArray(new Family[familyCollection.size()]);
 
-		for (Family baseFam : families.values()) {
-			for (Family testFam : families.values()) {
-				// Don't check marriage against itself
-				if (baseFam != testFam) {
+		for (int i = 0; i < families.values().size(); i++) {
+		    Family baseFam = familyArr[i];
+		    // + 1 prevents from baseFam being checked against itself
+		    for (int j = i + 1; j < families.values().size(); j++) {
+		    	Family testFam = familyArr[j];
 					// Only check marriages which share a husband or wife
 					if (baseFam.getHusband().equals(testFam.getHusband())
 							|| baseFam.getWife().equals(testFam.getWife())) {
@@ -66,7 +70,6 @@ public class NoBigamy extends Validator {
 					}
 				}
 			}
-		}
 
 		return valid;
 	}
