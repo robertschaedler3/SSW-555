@@ -16,6 +16,9 @@ public class GEDParser {
 
         for (int i = 1; i < args.length; i++) {
             switch (args[i]) {
+                case "--multiple-births":
+                    validator = new MultipleBirths(validator);
+                    break;
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);
                     break;
