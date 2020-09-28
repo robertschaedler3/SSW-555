@@ -18,10 +18,25 @@ import project.interfaces.Tag;
 
 public class GEDFile {
 
-    private Map<String, Individual> individuals = new HashMap<>();
-    private Map<String, Family> families = new HashMap<>();
+    private Map<String, Individual> individuals;
+    private Map<String, Family> families;;
+    
+    public GEDFile(Individual[] indivs, Family[] fams) {
+    	individuals = new HashMap<String, Individual>();
+    	families = new HashMap<String, Family>();
+    	
+    	for (Individual indi : indivs) {
+    		individuals.put(indi.getID(), indi);
+    	}
+    	for (Family fam : fams) {
+    		families.put(fam.getID(), fam);
+    	}
+    }
 
     public GEDFile(File file) {
+    	individuals = new HashMap<String, Individual>();
+    	families = new HashMap<String, Family>();
+    	
         Scanner s = null;
 
         try {
@@ -55,7 +70,7 @@ public class GEDFile {
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {
-        Individual indi = new Individual(ID);
+		Individual indi = new Individual(ID);
         Tag dateType = null;
 
         for (int i = index + 1; i < list.size(); i++) {
@@ -78,10 +93,10 @@ public class GEDFile {
                     dateType = Tag.DEAT;
                     break;
                 case FAMC:
-                    indi.addChild(gedLine.getArgs());
+                    indi.addChildFamily(gedLine.getArgs());
                     break;
                 case FAMS:
-                    indi.addSpouse(gedLine.getArgs());
+                    indi.addSpouseFamily(gedLine.getArgs());
                     break;
                 default:
                     break;
@@ -167,8 +182,8 @@ public class GEDFile {
                     (indi.getBirthday() != null) ? dateFmt.format(indi.getBirthday()) : "NA",
                     (indi.getBirthday() != null) ? Long.toString(indi.age()) : "NA",
                     (indi.getBirthday() != null) ? Boolean.toString(indi.alive()) : "NA",
-                    (indi.getDeath() != null) ? dateFmt.format(indi.getDeath()) : "NA", indi.getChildren().toString(),
-                    indi.getSpouse().toString()));
+                    (indi.getDeath() != null) ? dateFmt.format(indi.getDeath()) : "NA", indi.getChildrenFamily().toString(),
+                    indi.getSpouseFamily().toString()));
         }
 
         return new Table(headers, rows);
