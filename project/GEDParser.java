@@ -16,6 +16,9 @@ public class GEDParser {
 
         for (int i = 1; i < args.length; i++) {
             switch (args[i]) {
+                case "--less-than-150-years-old":
+                    validator = new LessThan150YearsOld(validator);
+                    break;
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);
                     break;
@@ -23,6 +26,13 @@ public class GEDParser {
                     validator = new MarriageBeforeDivorce(validator);
                     break;
                 case "--tablulate":
+                case "--birth-before-marriage":
+                    validator = new BirthAfterMarriage(validator);
+                    break;
+                case "--parents-not-too-old":
+                    validator = new ParentsNotTooOld(validator);
+                    break;
+                case "--tabulate":
                     System.out.println(gedFile);
                     break;
                 default:

@@ -18,7 +18,7 @@ public class MarriageBeforeDivorce extends Validator {
         for (Map.Entry<String, Family> entry : gedFile.getFamilies().entrySet()) {
             Family family = entry.getValue();
             if(family.getMarriage().after(family.getDivorce())){
-                System.out.printf("Divorce of family occurs before of marriage in family %s", family.getID());
+                System.out.printf("Divorce of family occurs before marriage in family: %s\n", family.getID());
                 valid = false;
             }
         }
