@@ -19,6 +19,9 @@ public class GEDParser {
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);
                     break;
+                case "--dates-before-current-date":
+                    validator = new DatesBeforeCurrentDate(validator);
+                    break;
                 case "--tablulate":
                     System.out.println(gedFile);
                     break;
