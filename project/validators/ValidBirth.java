@@ -25,7 +25,7 @@ public class ValidBirth extends Validator {
                 Individual mother = individuals.get(family.getWife());
                 Individual father = individuals.get(family.getHusband());
                 if (child.getBirthday() != null) {
-                    if (family.getMarriage() != null && child.getBirthday().after(family.getMarriage())) {
+                    if (family.getMarriage() != null && child.getBirthday().before(family.getMarriage())) {
                         System.out.printf("Birth of child %s occurs before of marriage in family %s\n", child.getID(), family.getID());
                         valid = false;
                     }
