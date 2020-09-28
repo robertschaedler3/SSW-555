@@ -22,7 +22,10 @@ public class GEDParser {
                 case "--birth-before-marriage":
                     validator = new BirthAfterMarriage(validator);
                     break;
-                case "--tablulate":
+                case "--parents-not-too-old":
+                    validator = new ParentsNotTooOld(validator);
+                    break;
+                case "--tabulate":
                     System.out.println(gedFile);
                     break;
                 default:
