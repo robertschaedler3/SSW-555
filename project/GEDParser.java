@@ -19,8 +19,8 @@ public class GEDParser {
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);
                     break;
-                case "--birth-before-marriage":
-                    validator = new BirthAfterMarriage(validator);
+                case "--valid-birth":
+                    validator = new ValidBirth(validator);
                     break;
                 case "--parents-not-too-old":
                     validator = new ParentsNotTooOld(validator);
