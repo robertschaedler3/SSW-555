@@ -54,7 +54,7 @@ public class TestValidBirth {
             
             this.gedfile = new GEDFile(new Individual[] { mother, father, child }, new Family[] { family });
 
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error building GEDFile.");
             fail();
         }
