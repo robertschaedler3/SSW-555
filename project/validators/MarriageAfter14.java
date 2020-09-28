@@ -21,25 +21,25 @@ public class MarriageAfter14 extends Validator {
         for(Map.Entry<String, Family> entry : gedFile.getFamilies().entrySet()){
             Family family = entry.getValue();
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(family.getMarriage());
-
-            int marriage = calendar.get(Calendar.YEAR);
+            Calendar marriage = Calendar.getInstance();
+            marriage.setTime(family.getMarriage());
 
             Individual husband = individuals.get(family.getHusband());
-            calendar.setTime(husband.getBirthday());
-            int husbandBirth = calendar.get(Calendar.YEAR);
+            Calendar husbandBirth = Calendar.getInstance();
+            husbandBirth.setTime(husband.getBirthday());
+            husbandBirth.add(Calendar.YEAR, 14);
 
             Individual wife = individuals.get(family.getWife());
-            calendar.setTime(wife.getBirthday());
-            int wifeBirth = calendar.get(Calendar.YEAR);
+            Calendar wifeBirth = Calendar.getInstance();
+            wifeBirth.setTime(wife.getBirthday());
+            wifeBirth.add(Calendar.YEAR, 14);
 
-            if(marriage - husbandBirth < 14){
+            if(marriage.compareTo(husbandBirth) < 0){
                 System.out.printf("Individual %s was married below the age of 14", husband.getID());
                 valid = false;
             }
 
-            if(marriage - wifeBirth < 14){
+            if(marriage.compareTo(wifeBirth) < 0){
                 System.out.printf("Individual %s was married below the age of 14", wife.getID());
                 valid = false;
             }
