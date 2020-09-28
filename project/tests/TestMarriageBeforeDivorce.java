@@ -112,8 +112,8 @@ class TestMarriageBeforeDivorce {
             mother1.setGender(Gender.F);
             
             Family family1 = new Family("Family4");
-            family1.setDivorce(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1995"));
-            family1.setMarriage(new SimpleDateFormat("dd/MM/yyyy").parse("06/30/2016"));
+            family1.setDivorce(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2000"));
+            family1.setMarriage(new SimpleDateFormat("dd/MM/yyyy").parse("01/02/2000"));
 
 			Individual[] individuals = {father1, mother1};
             Family[] families = {family1};
@@ -125,7 +125,7 @@ class TestMarriageBeforeDivorce {
 	}
 
 	@Test
-	void testDivorceBeforeMarriageValidator3() {
+	void testNoDivorceDateValidator() {
 		try {
             // test at max age difference
 			Individual father1 = new Individual("Father5");
@@ -136,14 +136,13 @@ class TestMarriageBeforeDivorce {
 			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1960"));
             mother1.setGender(Gender.F);
             
-            Family family1 = new Family("Family5");
-            family1.setDivorce(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2000"));
+			Family family1 = new Family("Family5");
             family1.setMarriage(new SimpleDateFormat("dd/MM/yyyy").parse("01/02/2000"));
 
 			Individual[] individuals = {father1, mother1};
             Family[] families = {family1};
             
-			assertFalse(MarriageBeforeDivorce.isValid(new GEDFile(individuals, families)));
+			assertTrue(MarriageBeforeDivorce.isValid(new GEDFile(individuals, families)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
