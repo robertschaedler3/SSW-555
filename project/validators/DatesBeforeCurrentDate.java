@@ -24,11 +24,11 @@ public class DatesBeforeCurrentDate extends Validator{
         for(Map.Entry<String, Individual> entry : individuals.entrySet()){
             Individual individual = entry.getValue();
             if(individual.getBirthday().after(now)){
-                System.out.printf("Birthday of individual %s occurs after the current date", individual.getID());
+                System.out.printf("Birthday of individual %s occurs after the current date\n", individual.getID());
                 valid = false;
             }
             if(individual.getDeath().after(now)){
-                System.out.printf("Death of individual %s occurs after the current date", individual.getID());
+                System.out.printf("Death of individual %s occurs after the current date\n", individual.getID());
                 valid = false;
             }
         }
@@ -36,11 +36,11 @@ public class DatesBeforeCurrentDate extends Validator{
         for(Map.Entry<String, Family> entry : gedFile.getFamilies().entrySet()){
             Family family = entry.getValue();
             if(family.getMarriage().after(now)){
-                System.out.printf("Marriage of family %s occurs after the current date", family.getID());
+                System.out.printf("Marriage of family %s occurs after the current date\n", family.getID());
                 valid = false;
             }
             if(family.getDivorce().after(now)){
-                System.out.printf("Divorce of family %s occurs after the current date", family.getID());
+                System.out.printf("Divorce of family %s occurs after the current date\n", family.getID());
                 valid = false;
             }
         }
