@@ -28,8 +28,9 @@ public class GEDParser {
                 case "--marriage-before-divorce":
                     validator = new MarriageBeforeDivorce(validator);
                     break;
-                case "--tablulate":
-
+                case "--valid-birth":
+                    validator = new ValidBirth(validator);
+                    break;
                 case "--marriage-before-death":
                     validator = new MarriageBeforeDeath(validator);
                     break;
