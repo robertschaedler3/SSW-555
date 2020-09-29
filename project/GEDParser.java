@@ -31,9 +31,6 @@ public class GEDParser {
                 case "--marriage-before-death":
                     validator = new MarriageBeforeDeath(validator);
                     break;
-                case "--birth-before-marriage":
-                    validator = new BirthAfterMarriage(validator);
-                    break;
                 case "--parents-not-too-old":
                     validator = new ParentsNotTooOld(validator);
                     break;
