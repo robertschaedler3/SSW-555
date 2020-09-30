@@ -1,5 +1,7 @@
 # Agile Methods for Software Development (SSW-555)
 
+[![Build Status](https://dev.azure.com/robertschaedler/SSW-555/_apis/build/status/robertschaedler3.SSW-555?branchName=master)](https://dev.azure.com/robertschaedler/SSW-555/_build/latest?definitionId=3&branchName=master)
+
 Taught by `Dr. Richard Ens` at Stevens Institute of Technology
 
 ## GEDCOM
@@ -44,3 +46,7 @@ GEDCOM is a line-oriented text file format where each line has three parts separ
 > `0 <tag> <arguments that may be ignored>`
 > 
 > where `<tag>` is `HEAD`, `TRLR`, or `NOTE`.
+
+## Resources
+- [Azure Pipelines](https://dev.azure.com/robertschaedler/SSW-555/_build)
+- [Maven](https://maven.apache.org/)
