@@ -46,3 +46,7 @@ GEDCOM is a line-oriented text file format where each line has three parts separ
 > `0 <tag> <arguments that may be ignored>`
 > 
 > where `<tag>` is `HEAD`, `TRLR`, or `NOTE`.
+
+## Resources
+- [Azure Pipelines](https://dev.azure.com/robertschaedler/SSW-555/_build)
+- [Maven](https://maven.apache.org/)
