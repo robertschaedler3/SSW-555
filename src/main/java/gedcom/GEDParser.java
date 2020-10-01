@@ -1,9 +1,9 @@
 package gedcom;
 
-import java.io.File;
-
-import gedcom.validators.*;
 import gedcom.models.GEDFile;
+import gedcom.validators.*;
+
+import java.io.File;
 
 public class GEDParser {
 
@@ -21,6 +21,9 @@ public class GEDParser {
                     break;
                 case "--less-than-150-years-old":
                     validator = new LessThan150YearsOld(validator);
+                    break;
+                case "--divorce-before-death":
+                    validator = new DivorceBeforeDeath(validator);
                     break;
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);
