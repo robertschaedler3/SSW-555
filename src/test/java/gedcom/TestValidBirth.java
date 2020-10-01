@@ -11,12 +11,16 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class TestValidBirth {
 
     private GEDFile gedfile;
+    private Family family;
+
     private Validator validator = new DefaultValidator();
     private DateFormat dateFmt;
 
@@ -52,6 +56,8 @@ public class TestValidBirth {
             family.setHusband(FATHER_ID);
             family.setMarriage(dateFmt.parse(marriage));
             family.addChild(CHILD_ID);
+
+            this.family = family;
 
             this.gedfile = new GEDFile(new Individual[] { mother, father, child }, new Family[] { family });
 
@@ -97,6 +103,56 @@ public class TestValidBirth {
     public void testBirthBeforeMarriage() {
         buildGedfile("01 JAN 1980", MARRIAGE);
         assertFalse(this.validator.isValid(this.gedfile));
+    }
+
+    @Test
+    public void testSiblingValidSpacing() {
+        try {
+            buildGedfile("01 JAN 2000", MARRIAGE);
+
+            Map<String, Individual> individuals = this.gedfile.getIndividuals();
+
+            Individual mother = individuals.get(MOTHER_ID);
+            Individual father = individuals.get(FATHER_ID);
+            Individual child = individuals.get(CHILD_ID);
+
+            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 DEC 2000"), null, Gender.M);
+            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("02 JAN 2000"), null, Gender.M);
+            this.family.addChild("SIBLING_1");
+            this.family.addChild("SIBLING_2");
+
+            this.gedfile = new GEDFile(new Individual[] { mother, father, child, sibling1, sibling2 },
+                    new Family[] { this.family });
+
+            assertTrue(this.validator.isValid(this.gedfile));
+        } catch (ParseException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testSiblingInvalidSpacing() {
+        try {
+            buildGedfile("01 JAN 2000", MARRIAGE);
+
+            Map<String, Individual> individuals = this.gedfile.getIndividuals();
+
+            Individual mother = individuals.get(MOTHER_ID);
+            Individual father = individuals.get(FATHER_ID);
+            Individual child = individuals.get(CHILD_ID);
+
+            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 MAR 2000"), null, Gender.M);
+            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("01 JUN 2000"), null, Gender.M);
+            this.family.addChild("SIBLING_1");
+            this.family.addChild("SIBLING_2");
+
+            this.gedfile = new GEDFile(new Individual[] { mother, father, child, sibling1, sibling2 },
+                    new Family[] { this.family });
+
+            assertFalse(this.validator.isValid(this.gedfile));
+        } catch (ParseException e) {
+            fail();
+        }
     }
 
 }
