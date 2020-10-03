@@ -26,8 +26,8 @@ public class ParentsNotTooOld extends Validator {
 
 				for (Individual child : children) {
 					if (parent.age() - child.age() > threshold) {
-						System.out.println("Parent too old: Parent " + parent.getID() + " is more than " + threshold
-								+ " years older than child " + child.getID());
+						System.out.println("Anomaly US12: Parent too old: Parent " + parent.getName() + "(" + parent.getID() + ") is more than " + threshold
+								+ " years older than child " + child.getName() + "(" + child.getID() + ")");
 						valid = false;
 					}
 				}

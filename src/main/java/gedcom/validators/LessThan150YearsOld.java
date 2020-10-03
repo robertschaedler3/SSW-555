@@ -19,7 +19,7 @@ public class LessThan150YearsOld extends Validator {
         for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
             Individual individual = entry.getValue();
             if (individual.age() >= 150) {
-                System.out.printf("%s's age is >= 150", individual.getName());
+                System.out.printf("Anomaly US07: %s's (%s) age is >= 150", individual.getName(), individual.getID());
                 valid = false;
             }
         }

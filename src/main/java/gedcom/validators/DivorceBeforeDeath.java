@@ -26,12 +26,12 @@ public class DivorceBeforeDeath extends Validator {
             Date wifeDeath = individuals.get(family.getWife()).getDeath();
 
             if ((divorce != null) && divorce.after(husbandDeath)) {
-                System.out.printf("Divorce of Family %s occurs after the death of Individual %s\n", family.getID(), family.getHusband());
+                System.out.printf("Error US06: Divorce of Family %s occurs after the death of %s (Individual %s)\n", family.getID(), gedFile.getIndividualById(family.getHusband()).getName(), family.getHusband());
                 valid = false;
             }
 
             if ((divorce != null) && divorce.after(wifeDeath)) {
-                System.out.printf("Divorce of Family %s occurs after the death of Individual %s\n", family.getID(), family.getWife());
+                System.out.printf("Error US06: Divorce of Family %s occurs after the death of %s (Individual %s)\n", family.getID(), gedFile.getIndividualById(family.getHusband()).getName(), family.getWife());
                 valid = false;
             }
         }

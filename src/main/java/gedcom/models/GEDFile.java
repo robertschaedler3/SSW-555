@@ -225,5 +225,12 @@ public class GEDFile {
         sb.append(getFamiliesTable());
         return sb.toString();
     }
+    
+    public Individual getIndividualById(String id) {
+    	for(Individual indi : individuals.values()) {
+    		if(indi.getID().equals(id)) return indi;
+    	}
+    	return null;
+    }
 
 }

@@ -28,11 +28,11 @@ public class ValidBirth extends Validator {
                 Individual father = individuals.get(family.getHusband());
                 if (child.getBirthday() != null) {
                     if (family.getMarriage() != null && child.getBirthday().before(family.getMarriage())) {
-                        System.out.printf("Birth of child %s occurs before of marriage in family %s\n", child.getID(), family.getID());
+                        System.out.printf("Anomaly US08: Birth of child %s (%s) occurs before of marriage in family %s\n", child.getName(), child.getID(), family.getID());
                         valid = false;
                     }
                     if (mother.getDeath() != null && child.getBirthday().after(mother.getDeath())) {
-                        System.out.printf("Birth of child %s occurs after death of mother %s\n", child.getID(), mother.getID());
+                        System.out.printf("Error US09: Birth of child %s (%s) occurs after death of mother %s\n", child.getName(), child.getID(), mother.getID());
                         valid = false;
                     }
                     if (father.getDeath() != null) {
@@ -40,7 +40,7 @@ public class ValidBirth extends Validator {
                         calendar.setTime(father.getDeath());
                         calendar.add(Calendar.MONTH, 9);
                         if (child.getBirthday().after(calendar.getTime())) {
-                            System.out.printf("Birth of child %s occurs 9+ months after death of father %s\n", child.getID(), father.getID());
+                            System.out.printf("Error US09: Birth of child %s (%s) occurs 9+ months after death of father %s\n", child.getName(), child.getID(), father.getID());
                             valid = false;
                         }
                     }
@@ -50,7 +50,7 @@ public class ValidBirth extends Validator {
                             long diff = Math.abs(child.getBirthday().getTime() - sibling.getBirthday().getTime());
                             long diffInDays = (diff / (1000 * 60 * 60 * 24)) % 365;
                             if (diffInDays > 2 && diffInDays < (30 * 8)) {
-                                System.out.printf("Individual %s was born more the 2 days and less than 8 months from individual %s.\n", child.getID(), sibling.getID());
+                                System.out.printf("Anomaly US13: Individual %s (%s) was born more than 2 days and less than 8 months from individual %s (%s).\n", child.getName(), child.getID(), sibling.getName(), sibling.getID());
                                 valid = false;
                             }
                         }

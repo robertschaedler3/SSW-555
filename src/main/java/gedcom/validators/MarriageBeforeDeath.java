@@ -22,7 +22,7 @@ public class MarriageBeforeDeath extends Validator {
             Individual father = individuals.get(family.getHusband());
             Individual wife = individuals.get(family.getWife());
             if ((family.getMarriage().after(father.getDeath())) || (family.getMarriage().after(wife.getDeath()))) {
-                System.out.printf("Death of parent occurs before of marriage in family %s", family.getID());
+                System.out.printf("Error US05: Death of parent occurs before of marriage in family %s", family.getID());
                 valid = false;
             }
         }

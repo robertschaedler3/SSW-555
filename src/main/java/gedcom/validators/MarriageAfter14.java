@@ -35,12 +35,12 @@ public class MarriageAfter14 extends Validator {
             wifeBirth.add(Calendar.YEAR, 14);
 
             if (marriage.compareTo(husbandBirth) < 0) {
-                System.out.printf("Individual %s was married below the age of 14\n", husband.getID());
+                System.out.printf("Anomaly US10: %s (%s) was married below the age of 14\n", husband.getName(), husband.getID());
                 valid = false;
             }
 
             if (marriage.compareTo(wifeBirth) < 0) {
-                System.out.printf("Individual %s was married below the age of 14\n", wife.getID());
+                System.out.printf("Anomaly US10: %s (%s) was married below the age of 14\n",  wife.getName(), wife.getID());
                 valid = false;
             }
         }
