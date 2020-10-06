@@ -25,10 +25,16 @@ public class GEDParser {
                 case "--divorce-before-death":
                     validator = new DivorceBeforeDeath(validator);
                     break;
+                case "--dates-before-current":
+                    validator = new DatesBeforeCurrentDate(validator);
+                    break;
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);
                     break;
                 case "--marriage-before-divorce":
+                    validator = new MarriageBeforeDivorce(validator);
+                    break;
+                case "--marriage-after-14":
                     validator = new MarriageBeforeDivorce(validator);
                     break;
                 case "--valid-birth":

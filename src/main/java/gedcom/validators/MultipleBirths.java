@@ -36,7 +36,7 @@ public class MultipleBirths extends Validator {
         for (Map.Entry<String, Integer> entry : siblingsWithBirthday.entrySet()) {
             Integer siblings = entry.getValue();
             if (siblings > 5) {
-                System.out.printf("More than 5 siblings born on %s", entry.getKey());
+                System.out.printf("Anomaly US14: More than 5 siblings born on %s", entry.getKey());
                 valid = false;
             }
         }
