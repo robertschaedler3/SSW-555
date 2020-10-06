@@ -53,7 +53,18 @@ public class Individual {
     }
 
     public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+        if (birthday != null) {
+            if (this.getDeath() == null) { //death not set
+                this.birthday = birthday;
+            }
+            else if (this.getDeath().after(birthday)) {
+                this.birthday = birthday;
+            } 
+            else {
+                System.out.println("Birthday cannot be set because death occurred before birthday");
+            }
+        }
+  
     }
 
     public Date getDeath() {
@@ -61,7 +72,16 @@ public class Individual {
     }
 
     public void setDeath(Date death) {
-        this.death = death;
+        if (death != null) {
+            if (this.getBirthday() == null) {
+                this.death = death;
+            } else if (this.getBirthday().before(death)) {
+                this.death = death;
+            } else {
+                System.out.println("Death cannot be set because birthday occurred after death");
+            }
+        }
+        
     }
 
     public List<String> getChildrenFamily() {
