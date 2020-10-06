@@ -18,8 +18,9 @@ public class LessThan150YearsOld extends Validator {
         Map<String, Individual> individuals = gedFile.getIndividuals();
         for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
             Individual individual = entry.getValue();
+
             if (individual.age() >= 150) {
-                System.out.printf("Anomaly US07: %s's (%s) age is >= 150", individual.getName(), individual.getID());
+                System.out.printf("Anomaly US07: %s's (%s) age is >= 150\n", individual.getName(), individual.getID());
                 valid = false;
             }
         }
