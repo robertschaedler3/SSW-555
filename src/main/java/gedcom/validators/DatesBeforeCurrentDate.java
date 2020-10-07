@@ -6,7 +6,6 @@ import gedcom.models.GEDFile;
 import gedcom.models.Individual;
 
 import java.util.Date;
-import java.util.Map;
 
 public class DatesBeforeCurrentDate extends Validator {
 
@@ -16,13 +15,9 @@ public class DatesBeforeCurrentDate extends Validator {
 
     protected boolean check(GEDFile gedFile) {
         boolean valid = true;
-
-        Map<String, Individual> individuals = gedFile.getIndividuals();
-
         Date now = new Date(System.currentTimeMillis());
 
-        for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
-            Individual individual = entry.getValue();
+        for (Individual individual : gedFile.getIndividuals()) {
             if (individual.getBirthday().after(now)) {
                 System.out.printf("Error US01: Birthday of %s (individual %s) occurs after the current date\n", individual.getName(), individual.getID());
                 valid = false;
@@ -35,8 +30,7 @@ public class DatesBeforeCurrentDate extends Validator {
             }
         }
 
-        for (Map.Entry<String, Family> entry : gedFile.getFamilies().entrySet()) {
-            Family family = entry.getValue();
+        for (Family family : gedFile.getFamilies()) {
             if (family.getMarriage().after(now)) {
                 System.out.printf("Error US01: Marriage of family %s occurs after the current date\n", family.getID());
                 valid = false;

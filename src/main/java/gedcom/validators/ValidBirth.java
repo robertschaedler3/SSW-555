@@ -17,15 +17,17 @@ public class ValidBirth extends Validator {
 
     protected boolean check(GEDFile gedFile) {
         boolean valid = true;
-        Map<String, Individual> individuals = gedFile.getIndividuals();
 
-        for (Map.Entry<String, Family> entry : gedFile.getFamilies().entrySet()) {
-            Family family = entry.getValue();
-            List<String> children = family.getChildren(); 
+        for (Family family : gedFile.getFamilies()) {
+
+            List<Individual> children = family.getChildren();
+            
             for (int i = 0; i < children.size(); i++) {
-                Individual child = individuals.get(children.get(i));
-                Individual mother = individuals.get(family.getWife());
-                Individual father = individuals.get(family.getHusband());
+
+                Individual child = children.get(i);
+                Individual mother = family.getWife();
+                Individual father = family.getHusband();
+
                 if (child.getBirthday() != null) {
                     if (family.getMarriage() != null && child.getBirthday().before(family.getMarriage())) {
                         System.out.printf("Anomaly US08: Birth of child %s (%s) occurs before of marriage in family %s\n", child.getName(), child.getID(), family.getID());
@@ -45,7 +47,7 @@ public class ValidBirth extends Validator {
                         }
                     }
                     for (int j = i + 1; j < children.size(); j++) {
-                        Individual sibling = individuals.get(children.get(j));
+                        Individual sibling = children.get(j);
                         if (sibling.getBirthday() != null) {
                             long diff = Math.abs(child.getBirthday().getTime() - sibling.getBirthday().getTime());
                             long diffInDays = (diff / (1000 * 60 * 60 * 24)) % 365;
