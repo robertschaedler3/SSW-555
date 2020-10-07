@@ -17,15 +17,15 @@ public class Individual {
     private Date birthday;
     private Date death;
 
-    private List<String> famc;
-    private List<String> fams;
+    private List<Family> childrenFamilies;
+    private List<Family> spouseFamilies;
 
     public Individual(String ID) {
         this.ID = ID;
-        this.name = "NA";
-        this.gender = Gender.NA;
-        this.famc = new ArrayList<>();
-        this.fams = new ArrayList<>();
+        this.name = "";
+        this.gender = Gender.NOT_SPECIFIED;
+        this.childrenFamilies = new ArrayList<>();
+        this.spouseFamilies = new ArrayList<>();
     }
 
     public String getID() {
@@ -54,17 +54,15 @@ public class Individual {
 
     public void setBirthday(Date birthday) {
         if (birthday != null) {
-            if (this.getDeath() == null) { //death not set
+            if (this.getDeath() == null) { // death not set
                 this.birthday = birthday;
-            }
-            else if (this.getDeath().after(birthday)) {
+            } else if (this.getDeath().after(birthday)) {
                 this.birthday = birthday;
-            } 
-            else {
+            } else {
                 System.out.println("Birthday cannot be set because death occurred before birthday");
             }
         }
-  
+
     }
 
     public Date getDeath() {
@@ -81,23 +79,23 @@ public class Individual {
                 System.out.println("Death cannot be set because birthday occurred after death");
             }
         }
-        
+
     }
 
-    public List<String> getChildrenFamily() {
-        return famc;
+    public List<Family> getChildrenFamily() {
+        return childrenFamilies;
     }
 
-    public boolean addChildFamily(String ID) {
-        return this.famc.add(ID);
+    public boolean addChildFamily(Family family) {
+        return this.childrenFamilies.add(family);
     }
 
-    public List<String> getSpouseFamily() {
-        return fams;
+    public List<Family> getSpouseFamily() {
+        return spouseFamilies;
     }
 
-    public boolean addSpouseFamily(String ID) {
-        return this.fams.add(ID);
+    public boolean addSpouseFamily(Family family) {
+        return this.spouseFamilies.add(family);
     }
 
     public long age() {
@@ -121,18 +119,12 @@ public class Individual {
         return (death == null) ? true : false;
     }
 
-    public Collection<Individual> getChildren(Collection<Individual> individuals) {
-        ArrayList<Individual> myChildren = new ArrayList<Individual>();
-
-        for (Individual indi : individuals) {
-            // for each family where indi is a child, check if this is a spouse
-            for (String famcStr : indi.famc) {
-                if (this.fams.contains(famcStr))
-                    myChildren.add(indi);
-            }
+    public List<Individual> getChildren() {
+        ArrayList<Individual> children = new ArrayList<Individual>();
+        for (Family family : this.childrenFamilies) {
+            children.addAll(family.getChildren());
         }
-
-        return myChildren;
+        return children;
     }
 
 }

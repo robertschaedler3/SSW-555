@@ -70,7 +70,7 @@ public class GEDFile {
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {
-        Individual indi = new Individual(ID);
+        Individual individual = new Individual(ID);
         Tag dateType = null;
 
         for (int i = index + 1; i < list.size(); i++) {
@@ -81,10 +81,10 @@ public class GEDFile {
 
             switch (gedLine.getTag()) {
                 case NAME:
-                    indi.setName(gedLine.getArgs());
+                    individual.setName(gedLine.getArgs());
                     break;
                 case SEX:
-                    indi.setGender(Gender.valueOf(gedLine.getArgs()));
+                    individual.setGender(Gender.valueOf(gedLine.getArgs()));
                     break;
                 case BIRT:
                     dateType = Tag.BIRT;
@@ -93,10 +93,10 @@ public class GEDFile {
                     dateType = Tag.DEAT;
                     break;
                 case FAMC:
-                    indi.addChildFamily(gedLine.getArgs());
+                    individual.addChildFamily(this.families.get(gedLine.getArgs()));
                     break;
                 case FAMS:
-                    indi.addSpouseFamily(gedLine.getArgs());
+                    individual.addSpouseFamily(this.families.get(gedLine.getArgs()));
                     break;
                 default:
                     break;
@@ -107,9 +107,9 @@ public class GEDFile {
                 try {
                     Date date = formatter.parse(gedLine.getArgs());
                     if (dateType == Tag.BIRT) {
-                        indi.setBirthday(date);
+                        individual.setBirthday(date);
                     } else if (dateType == Tag.DEAT) {
-                        indi.setDeath(date);
+                        individual.setDeath(date);
                     }
                     dateType = null;
                 } catch (ParseException e) {
@@ -118,11 +118,11 @@ public class GEDFile {
             }
 
         }
-        return indi;
+        return individual;
     }
 
     private Family parseFamily(List<GEDLine> list, int index, String ID) {
-        Family fam = new Family(ID);
+        Family family = new Family(ID);
         Tag dateType = null;
 
         for (int i = index + 1; i < list.size(); i++) {
@@ -139,13 +139,13 @@ public class GEDFile {
                     dateType = Tag.DIV;
                     break;
                 case HUSB:
-                    fam.setHusband(gedLine.getArgs());
+                    family.setHusband(this.individuals.get(gedLine.getArgs()));
                     break;
                 case WIFE:
-                    fam.setWife(gedLine.getArgs());
+                    family.setWife(this.individuals.get(gedLine.getArgs()));
                     break;
                 case CHIL:
-                    fam.addChild(gedLine.getArgs());
+                    family.addChild(this.individuals.get(gedLine.getArgs()));
                     break;
                 default:
                     break;
@@ -156,9 +156,9 @@ public class GEDFile {
                 try {
                     Date date = formatter.parse(gedLine.getArgs());
                     if (dateType == Tag.MARR) {
-                        fam.setMarriage(date);
+                        family.setMarriage(date);
                     } else if (dateType == Tag.DIV) {
-                        fam.setDivorce(date);
+                        family.setDivorce(date);
                     }
                     dateType = null;
                 } catch (ParseException e) {
@@ -167,53 +167,66 @@ public class GEDFile {
             }
         }
 
-        return fam;
+        return family;
     }
 
     public Table getIndividualsTable() {
-        List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Child",
-                "Spouse");
+        List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Child", "Spouse");
         List<List<String>> rows = new ArrayList<>();
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-mm-dd");
 
         for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
-            Individual indi = entry.getValue();
-            rows.add(Arrays.<String>asList(indi.getID(), indi.getGender().toString(), indi.getName(),
-                    (indi.getBirthday() != null) ? dateFmt.format(indi.getBirthday()) : "NA",
-                    (indi.getBirthday() != null) ? Long.toString(indi.age()) : "NA",
-                    (indi.getBirthday() != null) ? Boolean.toString(indi.alive()) : "NA",
-                    (indi.getDeath() != null) ? dateFmt.format(indi.getDeath()) : "NA",
-                    indi.getChildrenFamily().toString(), indi.getSpouseFamily().toString()));
+            Individual individual = entry.getValue();
+            rows.add(Arrays.<String>asList(
+                    individual.getID(),
+                    individual.getGender().toString(),
+                    individual.getName(),
+                    (individual.getBirthday() != null) ? dateFmt.format(individual.getBirthday()) : "NA",
+                    (individual.getBirthday() != null) ? Long.toString(individual.age()) : "NA",
+                    (individual.getBirthday() != null) ? Boolean.toString(individual.alive()) : "NA",
+                    (individual.getDeath() != null) ? dateFmt.format(individual.getDeath()) : "NA",
+                    individual.getChildrenFamily().toString(), 
+                    individual.getSpouseFamily().toString()));
         }
 
         return new Table(headers, rows);
     }
 
     public Table getFamiliesTable() {
-        List<String> headers = Arrays.asList("ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID",
-                "Wife Name", "Children");
+        List<String> headers = Arrays.asList("ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name", "Children");
         List<List<String>> rows = new ArrayList<>();
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-mm-dd");
 
         for (Map.Entry<String, Family> entry : families.entrySet()) {
             Family fam = entry.getValue();
-            rows.add(Arrays.<String>asList(fam.getID(),
+            rows.add(Arrays.<String>asList(
+                    fam.getID(),
                     (fam.getMarriage() != null) ? dateFmt.format(fam.getMarriage()) : "NA",
-                    (fam.getDivorce() != null) ? dateFmt.format(fam.getDivorce()) : "NA", fam.getHusband(),
-                    (fam.getHusband() != "NA") ? individuals.get(fam.getHusband()).getName() : "NA", fam.getWife(),
-                    (fam.getWife() != "NA") ? individuals.get(fam.getWife()).getName() : "NA",
+                    (fam.getDivorce() != null) ? dateFmt.format(fam.getDivorce()) : "NA",
+                    fam.getHusband().getName(),
+                    (fam.getHusband() != null) ? fam.getHusband().getID() : "NA",
+                    fam.getWife().getName(),
+                    (fam.getWife() != null) ? fam.getWife().getID() : "NA", 
                     fam.getChildren().toString()));
         }
 
         return new Table(headers, rows);
     }
 
-    public Map<String, Individual> getIndividuals() {
-        return individuals;
+    public List<Individual> getIndividuals() {
+        return new ArrayList<Individual>(this.individuals.values());
     }
 
-    public Map<String, Family> getFamilies() {
-        return families;
+    public Individual getIndividual(String ID) {
+        return this.individuals.get(ID);
+    }
+
+    public List<Family> getFamilies() {
+        return new ArrayList<Family>(this.families.values());
+    }
+
+    public Family getFamily(String ID) {
+        return this.families.get(ID);
     }
 
     @Override
@@ -224,13 +237,6 @@ public class GEDFile {
         sb.append("Families");
         sb.append(getFamiliesTable());
         return sb.toString();
-    }
-    
-    public Individual getIndividualById(String id) {
-    	for(Individual indi : individuals.values()) {
-    		if(indi.getID().equals(id)) return indi;
-    	}
-    	return null;
     }
 
 }

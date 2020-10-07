@@ -7,18 +7,16 @@ import java.util.List;
 public class Family {
 
     private String ID;
-    private String husband;
-    private String wife;
+    private Individual husband;
+    private Individual wife;
 
     private Date marriage;
     private Date divorce;
 
-    private List<String> children;
+    private List<Individual> children;
 
     public Family(String ID) {
         this.ID = ID;
-        this.husband = "NA";
-        this.wife = "NA";
         this.children = new ArrayList<>();
     }
 
@@ -26,19 +24,19 @@ public class Family {
         return ID;
     }
 
-    public String getHusband() {
+    public Individual getHusband() {
         return husband;
     }
 
-    public void setHusband(String husband) {
+    public void setHusband(Individual husband) {
         this.husband = husband;
     }
 
-    public String getWife() {
+    public Individual getWife() {
         return wife;
     }
 
-    public void setWife(String wife) {
+    public void setWife(Individual wife) {
         this.wife = wife;
     }
 
@@ -58,12 +56,12 @@ public class Family {
         this.divorce = divorce;
     }
 
-    public List<String> getChildren() {
+    public List<Individual> getChildren() {
         return children;
     }
 
-    public boolean addChild(String ID) {
-        return this.children.add(ID);
+    public boolean addChild(Individual child) {
+        return this.children.add(child);
     }
 
 }
