@@ -35,11 +35,11 @@ public class TestMarriageAfter14 {
         husband2.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2005"));
         wife2.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2006"));
 
-        family1.setHusband(husband1.getID());
-        family1.setWife(wife1.getID());
+        family1.setHusband(husband1);
+        family1.setWife(wife1);
 
-        family2.setHusband(husband2.getID());
-        family2.setWife(wife2.getID());
+        family2.setHusband(husband2);
+        family2.setWife(wife2);
 
         family1.setMarriage(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2015"));
         family2.setMarriage(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2020"));
