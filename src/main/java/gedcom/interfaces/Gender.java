@@ -1,5 +1,5 @@
 package gedcom.interfaces;
 
 public enum Gender {
-    M, F, NA
+    M, F, NOT_SPECIFIED
 }
