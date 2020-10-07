@@ -1,7 +1,6 @@
 package gedcom.models;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -120,7 +119,7 @@ public class Individual {
     }
 
     public List<Individual> getChildren() {
-        ArrayList<Individual> children = new ArrayList<Individual>();
+        List<Individual> children = new ArrayList<Individual>();
         for (Family family : this.childrenFamilies) {
             children.addAll(family.getChildren());
         }
