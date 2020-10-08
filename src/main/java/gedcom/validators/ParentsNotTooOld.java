@@ -27,7 +27,6 @@ public class ParentsNotTooOld extends Validator {
 		if (parentBirthday != null && childBirthday != null && parentBirthday.before(childBirthday)) {
 			diffInYears = (childBirthday.getTime() - parentBirthday.getTime()) / (1000l * 60 * 60 * 24 * 365);
 		}
-		System.out.println(diffInYears);
 		return (int) diffInYears;
 	}
 
