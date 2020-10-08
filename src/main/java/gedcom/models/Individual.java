@@ -1,7 +1,6 @@
 package gedcom.models;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -17,15 +16,15 @@ public class Individual {
     private Date birthday;
     private Date death;
 
-    private List<String> famc;
-    private List<String> fams;
+    private List<Family> childrenFamilies;
+    private List<Family> spouseFamilies;
 
     public Individual(String ID) {
         this.ID = ID;
-        this.name = "NA";
-        this.gender = Gender.NA;
-        this.famc = new ArrayList<>();
-        this.fams = new ArrayList<>();
+        this.name = "";
+        this.gender = Gender.NOT_SPECIFIED;
+        this.childrenFamilies = new ArrayList<>();
+        this.spouseFamilies = new ArrayList<>();
     }
 
     public String getID() {
@@ -53,18 +52,18 @@ public class Individual {
     }
 
     public void setBirthday(Date birthday) {
-        if (birthday != null) {
-            if (this.getDeath() == null) { //death not set
-                this.birthday = birthday;
-            }
-            else if (this.getDeath().after(birthday)) {
-                this.birthday = birthday;
-            } 
-            else {
-                System.out.println("Birthday cannot be set because death occurred before birthday");
-            }
+        if (birthday == null) {
+            throw new IllegalArgumentException();
         }
-  
+
+        if (this.death == null) {
+            this.birthday = birthday;
+        } else if (this.death.equals(birthday) || this.death.after(birthday)) {
+            this.birthday = birthday;
+        } else {
+            throw new IllegalStateException("Birthday cannot occur after death.");
+        }
+
     }
 
     public Date getDeath() {
@@ -72,37 +71,39 @@ public class Individual {
     }
 
     public void setDeath(Date death) {
-        if (death != null) {
-            if (this.getBirthday() == null) {
-                this.death = death;
-            } else if (this.getBirthday().before(death)) {
-                this.death = death;
-            } else {
-                System.out.println("Death cannot be set because birthday occurred after death");
-            }
+        if (death == null) {
+            throw new IllegalArgumentException();
         }
-        
+
+        if (this.birthday == null) {
+            this.death = death;
+        } else if (this.birthday.equals(death) || this.birthday.before(death)) {
+            this.death = death;
+        } else {
+            throw new IllegalStateException("Death cannot occur before birth.");
+        }
+
     }
 
-    public List<String> getChildrenFamily() {
-        return famc;
+    public List<Family> getChildrenFamily() {
+        return childrenFamilies;
     }
 
-    public boolean addChildFamily(String ID) {
-        return this.famc.add(ID);
+    public boolean addChildFamily(Family family) {
+        return (family != null) ? this.childrenFamilies.add(family) : false;
     }
 
-    public List<String> getSpouseFamily() {
-        return fams;
+    public List<Family> getSpouseFamily() {
+        return spouseFamilies;
     }
 
-    public boolean addSpouseFamily(String ID) {
-        return this.fams.add(ID);
+    public boolean addSpouseFamily(Family family) {
+        return (family != null) ? this.spouseFamilies.add(family) : false;
     }
 
     public long age() {
         if (birthday == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Cannot determine age without a birth date.");
         }
 
         long diff;
@@ -116,23 +117,21 @@ public class Individual {
 
     public boolean alive() {
         if (birthday == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Cannot determine if an individual is alive without a birth date.");
         }
         return (death == null) ? true : false;
     }
 
-    public Collection<Individual> getChildren(Collection<Individual> individuals) {
-        ArrayList<Individual> myChildren = new ArrayList<Individual>();
-
-        for (Individual indi : individuals) {
-            // for each family where indi is a child, check if this is a spouse
-            for (String famcStr : indi.famc) {
-                if (this.fams.contains(famcStr))
-                    myChildren.add(indi);
-            }
+    public List<Individual> getChildren() {
+        List<Individual> children = new ArrayList<Individual>();
+        for (Family family : this.childrenFamilies) {
+            children.addAll(family.getChildren());
         }
-
-        return myChildren;
+        return children;
     }
 
+    @Override
+    public String toString() {
+        return this.ID;
+    }
 }

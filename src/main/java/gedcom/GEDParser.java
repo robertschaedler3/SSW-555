@@ -8,6 +8,11 @@ import java.io.File;
 public class GEDParser {
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.err.println("Usage: ./GEDParser <.ged file> [ARGS]");
+            return;
+        }
+
         File file = new File(args[0]);
 
         GEDFile gedFile = new GEDFile(file);

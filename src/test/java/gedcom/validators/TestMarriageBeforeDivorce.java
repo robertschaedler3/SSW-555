@@ -1,4 +1,4 @@
-package gedcom;
+package gedcom.validators;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,8 +7,6 @@ import gedcom.interfaces.Gender;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
-import gedcom.validators.DefaultValidator;
-import gedcom.validators.MarriageBeforeDivorce;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

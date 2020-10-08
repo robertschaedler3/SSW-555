@@ -1,8 +1,5 @@
 package gedcom.validators;
 
-import java.util.Map;
-
-import gedcom.Validator;
 import gedcom.models.GEDFile;
 import gedcom.models.Family;
 
@@ -15,13 +12,14 @@ public class MarriageBeforeDivorce extends Validator {
     protected boolean check(GEDFile gedFile) {
         boolean valid = true;
 
-        for (Map.Entry<String, Family> entry : gedFile.getFamilies().entrySet()) {
-            Family family = entry.getValue();
+        for (Family family : gedFile.getFamilies()) {
             if (family.getDivorce() != null && family.getMarriage().after(family.getDivorce())) {
-                System.out.printf("Error US04: Divorce of family occurs before marriage in family: %s\n", family.getID());
+                System.out.printf("Error US04: Divorce of family occurs before marriage in family: %s\n",
+                        family.getID());
                 valid = false;
             }
         }
+
         return valid;
     }
 

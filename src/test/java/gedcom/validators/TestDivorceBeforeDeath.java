@@ -1,10 +1,8 @@
-package gedcom;
+package gedcom.validators;
 
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
-import gedcom.validators.DefaultValidator;
-import gedcom.validators.DivorceBeforeDeath;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -36,11 +34,11 @@ public class TestDivorceBeforeDeath {
         husband2.setDeath(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2005"));
         wife2.setDeath(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2006"));
 
-        family1.setHusband(husband1.getID());
-        family1.setWife(wife1.getID());
+        family1.setHusband(husband1);
+        family1.setWife(wife1);
 
-        family2.setHusband(husband2.getID());
-        family2.setWife(wife2.getID());
+        family2.setHusband(husband2);
+        family2.setWife(wife2);
 
     }
 
