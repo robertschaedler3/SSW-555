@@ -64,4 +64,9 @@ public class Family {
         return this.children.add(child);
     }
 
+    @Override
+    public String toString() {
+        return this.ID;
+    }
+
 }

@@ -126,4 +126,8 @@ public class Individual {
         return children;
     }
 
+    @Override
+    public String toString() {
+        return this.ID;
+    }
 }
