@@ -1,6 +1,5 @@
 package gedcom.validators;
 
-import gedcom.Validator;
 import gedcom.models.GEDFile;
 
 public class Sample extends Validator {

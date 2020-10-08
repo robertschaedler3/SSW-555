@@ -2,7 +2,6 @@ package gedcom.validators;
 
 import java.util.Date;
 
-import gedcom.Validator;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;

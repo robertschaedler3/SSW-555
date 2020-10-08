@@ -3,7 +3,6 @@ package gedcom.validators;
 import java.util.Calendar;
 import java.util.List;
 
-import gedcom.Validator;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;

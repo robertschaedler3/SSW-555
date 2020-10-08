@@ -3,7 +3,6 @@ package gedcom.validators;
 import java.util.Map;
 import java.util.HashMap;
 
-import gedcom.Validator;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;

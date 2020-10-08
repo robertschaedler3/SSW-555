@@ -1,7 +1,6 @@
 //package gedcom.validators;
 package gedcom.validators;
 
-import gedcom.Validator;
 import gedcom.models.GEDFile;
 import gedcom.models.Family;
 import gedcom.models.Individual;

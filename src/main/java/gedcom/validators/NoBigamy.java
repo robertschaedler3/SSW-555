@@ -3,7 +3,6 @@ package gedcom.validators;
 import java.util.Date;
 import java.util.List;
 
-import gedcom.Validator;
 import gedcom.models.*;
 
 public class NoBigamy extends Validator {
