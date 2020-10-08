@@ -52,14 +52,16 @@ public class Individual {
     }
 
     public void setBirthday(Date birthday) {
-        if (birthday != null) {
-            if (this.getDeath() == null) { // death not set
-                this.birthday = birthday;
-            } else if (this.getDeath().after(birthday)) {
-                this.birthday = birthday;
-            } else {
-                System.out.println("Birthday cannot be set because death occurred before birthday");
-            }
+        if (birthday == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.death == null) {
+            this.birthday = birthday;
+        } else if (this.death.equals(birthday) || this.death.after(birthday)) {
+            this.birthday = birthday;
+        } else {
+            throw new IllegalStateException("Birthday cannot occur after death.");
         }
 
     }
@@ -69,14 +71,16 @@ public class Individual {
     }
 
     public void setDeath(Date death) {
-        if (death != null) {
-            if (this.getBirthday() == null) {
-                this.death = death;
-            } else if (this.getBirthday().before(death)) {
-                this.death = death;
-            } else {
-                System.out.println("Death cannot be set because birthday occurred after death");
-            }
+        if (death == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.birthday == null) {
+            this.death = death;
+        } else if (this.birthday.equals(death) || this.birthday.before(death)) {
+            this.death = death;
+        } else {
+            throw new IllegalStateException("Death cannot occur before birth.");
         }
 
     }
@@ -86,7 +90,7 @@ public class Individual {
     }
 
     public boolean addChildFamily(Family family) {
-        return this.childrenFamilies.add(family);
+        return (family != null) ? this.childrenFamilies.add(family) : false;
     }
 
     public List<Family> getSpouseFamily() {
@@ -94,12 +98,12 @@ public class Individual {
     }
 
     public boolean addSpouseFamily(Family family) {
-        return this.spouseFamilies.add(family);
+        return (family != null) ? this.spouseFamilies.add(family) : false;
     }
 
     public long age() {
         if (birthday == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Cannot determine age without a birth date.");
         }
 
         long diff;
@@ -113,7 +117,7 @@ public class Individual {
 
     public boolean alive() {
         if (birthday == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Cannot determine if an individual is alive without a birth date.");
         }
         return (death == null) ? true : false;
     }
