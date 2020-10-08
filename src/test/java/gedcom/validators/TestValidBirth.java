@@ -34,6 +34,7 @@ public class TestValidBirth {
     private final String MARRIAGE = "01 JAN 1990";
 
     private final String CHILD_ID = "CHILD";
+    private final String CHILD_DEATH = "01 JAN 3000";
 
     public TestValidBirth() {
         this.dateFmt = new SimpleDateFormat(DATE_FORMAT);
@@ -44,7 +45,7 @@ public class TestValidBirth {
         try {
             Individual mother = makeIndividual(MOTHER_ID, dateFmt.parse(MOTHER_BIRTH), dateFmt.parse(MOTHER_DEATH), Gender.F);
             Individual father = makeIndividual(FATHER_ID, dateFmt.parse(FATHER_BIRTH), dateFmt.parse(FATHER_DEATH), Gender.M);
-            Individual child = makeIndividual(CHILD_ID, dateFmt.parse(childBirthday), null, Gender.M);
+            Individual child = makeIndividual(CHILD_ID, dateFmt.parse(childBirthday), dateFmt.parse(CHILD_DEATH), Gender.M);
 
             Family family = new Family("Family");
             family.setWife(mother);
@@ -109,8 +110,8 @@ public class TestValidBirth {
             Individual father = this.gedfile.getIndividual(FATHER_ID);
             Individual child = this.gedfile.getIndividual(CHILD_ID);
 
-            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 DEC 2000"), null, Gender.M);
-            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("02 JAN 2000"), null, Gender.M);
+            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 DEC 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
+            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("02 JAN 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
             this.family.addChild(sibling1);
             this.family.addChild(sibling2);
 
@@ -132,8 +133,8 @@ public class TestValidBirth {
             Individual father = this.gedfile.getIndividual(FATHER_ID);
             Individual child = this.gedfile.getIndividual(CHILD_ID);
 
-            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 MAR 2000"), null, Gender.M);
-            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("01 JUN 2000"), null, Gender.M);
+            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 MAR 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
+            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("01 JUN 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
             this.family.addChild(sibling1);
             this.family.addChild(sibling2);
 
