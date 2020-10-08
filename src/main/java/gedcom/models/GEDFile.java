@@ -43,16 +43,25 @@ public class GEDFile {
             s = new Scanner(file);
             String line;
             List<GEDLine> gedLines = new ArrayList<>();
+            GEDLine currentLine;
 
             // Read file into GEDLine list
             while (s.hasNextLine()) {
                 line = s.nextLine();
-                gedLines.add(new GEDLine(line));
+                currentLine = new GEDLine(line);
+                gedLines.add(currentLine);
+
+                // Create 'blank' Individuals and Families
+                if (currentLine.getTag() == Tag.INDI) {
+                    individuals.put(currentLine.getID(), new Individual(currentLine.getID()));
+                } else if (currentLine.getTag() == Tag.FAM) {
+                    families.put(currentLine.getID(), new Family(currentLine.getID()));
+                }
             }
 
-            // Create all the Individuals and Families
+            // Populate Individual and Family fields
             for (int i = 0; i < gedLines.size(); i++) {
-                GEDLine currentLine = gedLines.get(i);
+                currentLine = gedLines.get(i);
                 if (currentLine.getTag() == Tag.INDI) {
                     individuals.put(currentLine.getID(), parseIndividual(gedLines, i, currentLine.getID()));
                 } else if (currentLine.getTag() == Tag.FAM) {
@@ -70,7 +79,7 @@ public class GEDFile {
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {
-        Individual individual = new Individual(ID);
+        Individual individual = this.individuals.get(ID);
         Tag dateType = null;
 
         for (int i = index + 1; i < list.size(); i++) {
@@ -122,7 +131,7 @@ public class GEDFile {
     }
 
     private Family parseFamily(List<GEDLine> list, int index, String ID) {
-        Family family = new Family(ID);
+        Family family = this.families.get(ID);
         Tag dateType = null;
 
         for (int i = index + 1; i < list.size(); i++) {
@@ -171,43 +180,37 @@ public class GEDFile {
     }
 
     public Table getIndividualsTable() {
-        List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Child", "Spouse");
+        List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Child",
+                "Spouse");
         List<List<String>> rows = new ArrayList<>();
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-mm-dd");
 
         for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
             Individual individual = entry.getValue();
-            rows.add(Arrays.<String>asList(
-                    individual.getID(),
-                    individual.getGender().toString(),
-                    individual.getName(),
+            rows.add(Arrays.<String>asList(individual.getID(), individual.getGender().toString(), individual.getName(),
                     (individual.getBirthday() != null) ? dateFmt.format(individual.getBirthday()) : "NA",
                     (individual.getBirthday() != null) ? Long.toString(individual.age()) : "NA",
                     (individual.getBirthday() != null) ? Boolean.toString(individual.alive()) : "NA",
                     (individual.getDeath() != null) ? dateFmt.format(individual.getDeath()) : "NA",
-                    individual.getChildrenFamily().toString(), 
-                    individual.getSpouseFamily().toString()));
+                    individual.getChildrenFamily().toString(), individual.getSpouseFamily().toString()));
         }
 
         return new Table(headers, rows);
     }
 
     public Table getFamiliesTable() {
-        List<String> headers = Arrays.asList("ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name", "Children");
+        List<String> headers = Arrays.asList("ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID",
+                "Wife Name", "Children");
         List<List<String>> rows = new ArrayList<>();
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-mm-dd");
 
         for (Map.Entry<String, Family> entry : families.entrySet()) {
             Family fam = entry.getValue();
-            rows.add(Arrays.<String>asList(
-                    fam.getID(),
+            rows.add(Arrays.<String>asList(fam.getID(),
                     (fam.getMarriage() != null) ? dateFmt.format(fam.getMarriage()) : "NA",
-                    (fam.getDivorce() != null) ? dateFmt.format(fam.getDivorce()) : "NA",
-                    fam.getHusband().getName(),
-                    (fam.getHusband() != null) ? fam.getHusband().getID() : "NA",
-                    fam.getWife().getName(),
-                    (fam.getWife() != null) ? fam.getWife().getID() : "NA", 
-                    fam.getChildren().toString()));
+                    (fam.getDivorce() != null) ? dateFmt.format(fam.getDivorce()) : "NA", fam.getHusband().getName(),
+                    (fam.getHusband() != null) ? fam.getHusband().getID() : "NA", fam.getWife().getName(),
+                    (fam.getWife() != null) ? fam.getWife().getID() : "NA", fam.getChildren().toString()));
         }
 
         return new Table(headers, rows);
