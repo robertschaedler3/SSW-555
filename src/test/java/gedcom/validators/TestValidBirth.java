@@ -1,11 +1,9 @@
-package gedcom;
+package gedcom.validators;
 
 import gedcom.interfaces.Gender;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
-import gedcom.validators.DefaultValidator;
-import gedcom.validators.ValidBirth;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -1,10 +1,8 @@
-package gedcom;
+package gedcom.validators;
 
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
-import gedcom.validators.DefaultValidator;
-import gedcom.validators.MarriageAfter14;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

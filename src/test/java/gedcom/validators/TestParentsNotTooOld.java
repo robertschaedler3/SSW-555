@@ -1,12 +1,10 @@
-package gedcom;
+package gedcom.validators;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import gedcom.interfaces.Gender;
 import gedcom.models.*;
-import gedcom.validators.DefaultValidator;
-import gedcom.validators.ParentsNotTooOld;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

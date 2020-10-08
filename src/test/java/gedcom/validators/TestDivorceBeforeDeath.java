@@ -1,10 +1,8 @@
-package gedcom;
+package gedcom.validators;
 
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
-import gedcom.validators.DefaultValidator;
-import gedcom.validators.DivorceBeforeDeath;
 import org.junit.Test;
 
 import java.text.ParseException;
