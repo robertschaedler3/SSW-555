@@ -6,6 +6,8 @@ import java.util.List;
 
 public class Family {
 
+    private final int MAX_SIBLINGS = 15;
+
     private String ID;
     private Individual husband;
     private Individual wife;
@@ -29,6 +31,9 @@ public class Family {
     }
 
     public void setHusband(Individual husband) {
+        if (husband == null) {
+            throw new IllegalArgumentException();
+        }
         this.husband = husband;
     }
 
@@ -37,6 +42,9 @@ public class Family {
     }
 
     public void setWife(Individual wife) {
+        if (wife == null) {
+            throw new IllegalArgumentException();
+        }
         this.wife = wife;
     }
 
@@ -61,6 +69,16 @@ public class Family {
     }
 
     public boolean addChild(Individual child) {
+        if (child == null) {
+            throw new IllegalArgumentException("Child cannot be null.");
+        }
+        if (children.contains(child)) {
+            throw new IllegalArgumentException("Child already exists in family.");
+        }
+
+        if (children.size() >= MAX_SIBLINGS) {
+            throw new IllegalStateException(String.format("Error US22: A family can only have a max of %d children.", MAX_SIBLINGS));
+        }
         return this.children.add(child);
     }
 
