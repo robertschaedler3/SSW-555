@@ -67,7 +67,6 @@ public class TestParentsNotTooOld {
 			grandchild.addChildFamily(family2);
 
 			Individual[] individuals2 = { child1, father1, mother1, child2, grandchild };
-			family1.addChild(child1);
 			family1.setHusband(father1);
 			family1.setWife(mother1);
 			family1.addChild(child2);
