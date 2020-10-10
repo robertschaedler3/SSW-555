@@ -1,12 +1,13 @@
 package gedcom.validators;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import gedcom.interfaces.Gender;
 import gedcom.models.*;
 
-import static org.junit.Assert.*;
 import org.junit.jupiter.api.Test;
 
 public class TestParentsNotTooOld {

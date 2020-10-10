@@ -1,5 +1,7 @@
 package gedcom.validators;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -7,7 +9,6 @@ import gedcom.models.Individual;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import static org.junit.Assert.*;
 import org.junit.jupiter.api.Test;
 
 public class TestMarriageAfter14 {
