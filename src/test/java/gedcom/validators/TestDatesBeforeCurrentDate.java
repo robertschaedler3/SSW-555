@@ -7,8 +7,8 @@ import gedcom.models.Individual;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 public class TestDatesBeforeCurrentDate {
     Validator validator = new DefaultValidator();
