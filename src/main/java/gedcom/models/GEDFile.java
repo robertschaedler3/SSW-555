@@ -33,49 +33,43 @@ public class GEDFile {
         }
     }
 
-    public GEDFile(File file) {
+    public GEDFile(Scanner s) {
         individuals = new HashMap<String, Individual>();
         families = new HashMap<String, Family>();
 
-        Scanner s = null;
+        String line;
+        List<GEDLine> gedLines = new ArrayList<>();
+        GEDLine currentLine;
 
-        try {
-            s = new Scanner(file);
-            String line;
-            List<GEDLine> gedLines = new ArrayList<>();
-            GEDLine currentLine;
+        // Read file into GEDLine list
+        while (s.hasNextLine()) {
+            line = s.nextLine();
+            currentLine = new GEDLine(line);
+            gedLines.add(currentLine);
 
-            // Read file into GEDLine list
-            while (s.hasNextLine()) {
-                line = s.nextLine();
-                currentLine = new GEDLine(line);
-                gedLines.add(currentLine);
-
-                // Create 'blank' Individuals and Families
-                if (currentLine.getTag() == Tag.INDI) {
-                    individuals.put(currentLine.getID(), new Individual(currentLine.getID()));
-                } else if (currentLine.getTag() == Tag.FAM) {
-                    families.put(currentLine.getID(), new Family(currentLine.getID()));
+            // Create 'blank' Individuals and Families
+            if (currentLine.getTag() == Tag.INDI) {
+                if (individuals.put(currentLine.getID(), new Individual(currentLine.getID())) != null) {
+                    s.close();
+                    throw new IllegalStateException(String.format("Error US15: cannot create individual with duplicate ID %s.", currentLine.getID()));
+                }
+            } else if (currentLine.getTag() == Tag.FAM) {
+                if (families.put(currentLine.getID(), new Family(currentLine.getID())) != null) {
+                    s.close();
+                    throw new IllegalStateException(String.format("Error US15: cannot create family with duplicate ID %s.", currentLine.getID()));
                 }
             }
-
-            // Populate Individual and Family fields
-            for (int i = 0; i < gedLines.size(); i++) {
-                currentLine = gedLines.get(i);
-                if (currentLine.getTag() == Tag.INDI) {
-                    individuals.put(currentLine.getID(), parseIndividual(gedLines, i, currentLine.getID()));
-                } else if (currentLine.getTag() == Tag.FAM) {
-                    families.put(currentLine.getID(), parseFamily(gedLines, i, currentLine.getID()));
-                }
-            }
-
-            s.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.err.println("The file you entered could not be found.");
-            System.exit(1);
         }
 
+        // Populate Individual and Family fields
+        for (int i = 0; i < gedLines.size(); i++) {
+            currentLine = gedLines.get(i);
+            if (currentLine.getTag() == Tag.INDI) {
+                parseIndividual(gedLines, i, currentLine.getID());
+            } else if (currentLine.getTag() == Tag.FAM) {
+                parseFamily(gedLines, i, currentLine.getID());
+            }
+        }
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {

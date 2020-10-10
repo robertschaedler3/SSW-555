@@ -36,6 +36,9 @@ public class Individual {
     }
 
     public void setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
         this.name = name;
     }
 
@@ -56,14 +59,15 @@ public class Individual {
             throw new IllegalArgumentException();
         }
 
-        if (this.death == null) {
-            this.birthday = birthday;
-        } else if (this.death.equals(birthday) || this.death.after(birthday)) {
-            this.birthday = birthday;
+        if (this.death != null) {
+            if (this.death.equals(birthday) || this.death.after(birthday)) {
+                this.birthday = birthday;
+            } else {
+                throw new IllegalStateException("Birthday cannot occur after death.");
+            }
         } else {
-            throw new IllegalStateException("Birthday cannot occur after death.");
+            this.birthday = birthday;
         }
-
     }
 
     public Date getDeath() {
@@ -75,14 +79,15 @@ public class Individual {
             throw new IllegalArgumentException();
         }
 
-        if (this.birthday == null) {
-            this.death = death;
-        } else if (this.birthday.equals(death) || this.birthday.before(death)) {
-            this.death = death;
+        if (this.birthday != null) {
+            if (this.birthday.equals(death) || this.birthday.before(death)) {
+                this.death = death;
+            } else {
+                throw new IllegalStateException("Death cannot occur before birth.");
+            }
         } else {
-            throw new IllegalStateException("Death cannot occur before birth.");
+            this.death = death;
         }
-
     }
 
     public List<Family> getChildrenFamily() {
@@ -117,7 +122,7 @@ public class Individual {
 
     public boolean alive() {
         if (birthday == null) {
-            throw new IllegalStateException("Cannot determine if an individual is alive without a birth date.");
+            throw new IllegalStateException("Cannot determine living status without a birth date.");
         }
         return (death == null) ? true : false;
     }
