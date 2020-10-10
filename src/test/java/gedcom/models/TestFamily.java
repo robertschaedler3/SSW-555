@@ -1,10 +1,9 @@
 package gedcom.models;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 import gedcom.interfaces.Gender;
+
+import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 public class TestFamily {
 
