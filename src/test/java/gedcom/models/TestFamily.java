@@ -33,9 +33,11 @@ public class TestFamily {
         assertEquals(husband, family.getHusband());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetHusbandException() {
-        family.setHusband(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            family.setHusband(null);
+        });
     }
 
     @Test
@@ -46,9 +48,11 @@ public class TestFamily {
         assertEquals(wife, family.getWife());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetWifeException() {
-        family.setWife(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            family.setWife(null);
+        });
     }
 
     @Test
@@ -60,26 +64,48 @@ public class TestFamily {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAddChildrenExcpetion1() {
         resetFamily();
-        family.addChild(null);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            family.addChild(null);
+        });
+
+        String expectedMessage = "Child cannot be null.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAddChildrenExcpetion2() {
         resetFamily();
-        Individual child = new Individual("CHILD");
-        family.addChild(child);
-        family.addChild(child);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            Individual child = new Individual("CHILD");
+            family.addChild(child);
+            family.addChild(child);
+        });
+
+        String expectedMessage = "Child already exists in family.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testAddChildrenExcpetion3() {
         resetFamily();
-        for (int i = 0; i < MAX_CHILDREN + 1; i++) {
-            Individual child = new Individual(String.format("CHILD%d", i));
-            assertTrue(family.addChild(child));
-        }
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            for (int i = 0; i < MAX_CHILDREN + 1; i++) {
+                Individual child = new Individual(String.format("CHILD%d", i));
+                assertTrue(family.addChild(child));
+            }
+        });
+
+        String expectedMessage = "Error US22:";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
     }
 }
