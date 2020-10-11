@@ -15,7 +15,7 @@ public class Family {
     private Date marriage;
     private Date divorce;
 
-    private List<Individual> children;
+    private final List<Individual> children;
 
     public Family(String ID) {
         this.ID = ID;
@@ -80,6 +80,49 @@ public class Family {
             throw new IllegalStateException(String.format("Error US22: A family can only have a max of %d children.", MAX_SIBLINGS));
         }
         return this.children.add(child);
+    }
+
+    public List<Family> getChildFamilies() {
+        List<Family> childFamilies = new ArrayList<Family>();
+
+        for (Individual individual : children) {
+            childFamilies.addAll(individual.getChildFamilies());
+        }
+        return childFamilies;
+    }
+
+    public boolean isChild(Individual individual) {
+        return children.contains(individual);
+    }
+
+    private void getDescendants(List<Individual> descendants) {
+        List<Family> families = this.getChildFamilies();
+        for (Family family : families) {
+            descendants.addAll(family.getChildren());
+            family.getDescendants(descendants);
+        }
+    }
+
+    public List<Individual> getDescendants() {
+        List<Individual> descendants = new ArrayList<Individual>();
+        getDescendants(descendants);
+        return descendants;
+    }
+
+    private boolean isDescendant(Individual individual, List<Family> families) {
+        if (families.isEmpty()) {
+            return false;
+        }
+        for (Family family : families) {
+            if (family.isDescendant(individual)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isDescendant(Individual individual) {
+        return isDescendant(individual, this.getChildFamilies());
     }
 
     @Override
