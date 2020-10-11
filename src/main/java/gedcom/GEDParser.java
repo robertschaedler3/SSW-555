@@ -15,6 +15,9 @@ public class GEDParser {
     private static void parseArgs(String[] args) {
         for (int i = 1; i < args.length; i++) {
             switch (args[i]) {
+                case "--correct-gender":
+                    validator = new CorrectGender(validator);
+                    break;
                 case "--multiple-births":
                     validator = new MultipleBirths(validator);
                     break;
