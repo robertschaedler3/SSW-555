@@ -143,6 +143,10 @@ public class Individual {
         return children;
     }
 
+    /**
+     * Creates and returns a list of all the individual's spouses from all
+     * marriages.
+     */
     public List<Individual> getSpouses() {
         List<Individual> spouses = new ArrayList<Individual>();
         for (Family family : this.spouseFamilies) {
@@ -155,6 +159,10 @@ public class Individual {
         return spouses;
     }
 
+    /**
+     * Creates and returns a list of all descendants. Returns an emtpy list if there
+     * are no descendants.
+     */
     public List<Individual> getDescendants() {
         List<Individual> descendants = new ArrayList<>();
         List<Individual> children = this.getChildren();
@@ -168,6 +176,12 @@ public class Individual {
         return descendants;
     }
 
+    /**
+     * Checks is the given individual is a descendant of the current individual.
+     * 
+     * @param individual
+     * @return true if the individual is a descendant, false otherwise
+     */
     public boolean isDescendant(Individual individual) {
         List<Individual> children = this.getChildren();
         if (children.isEmpty()) {
@@ -184,6 +198,9 @@ public class Individual {
         }
     }
 
+    /**
+     * Creates and returns a list of all known parents of an individual.
+     */
     public List<Individual> getParents() {
         List<Individual> parents = new ArrayList<Individual>();
         Individual father;
@@ -199,6 +216,10 @@ public class Individual {
         return parents;
     }
 
+    /**
+     * Creates and returns a list of all ancestors. Returns an emtpy list if there
+     * are no ancestors.
+     */
     public List<Individual> getAncestors() {
         List<Individual> ancestors = new ArrayList<>();
         List<Individual> parents = this.getParents();
@@ -212,6 +233,12 @@ public class Individual {
         return ancestors;
     }
 
+    /**
+     * Checks is the given individual is an ancestor of the current individual.
+     * 
+     * @param individual
+     * @return true if the individual is an ancestor, false otherwise
+     */
     public boolean isAncestor(Individual individual) {
         List<Individual> parents = this.getParents();
         if (parents.isEmpty()) {
@@ -226,10 +253,6 @@ public class Individual {
             }
             return false;
         }
-    }
-
-    public boolean isAncestor() {
-        return false;
     }
 
     @Override
