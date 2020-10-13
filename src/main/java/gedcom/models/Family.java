@@ -15,7 +15,7 @@ public class Family {
     private Date marriage;
     private Date divorce;
 
-    private final List<Individual> children;
+    private List<Individual> children;
 
     public Family(String ID) {
         this.ID = ID;
