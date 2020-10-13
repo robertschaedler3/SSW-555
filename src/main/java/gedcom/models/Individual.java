@@ -106,7 +106,7 @@ public class Individual {
         return (family != null) ? this.childFamilies.add(family) : false;
     }
 
-    public List<Family> getSpouseFamily() {
+    public List<Family> getSpouseFamilies() {
         return spouseFamilies;
     }
 
