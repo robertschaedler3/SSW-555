@@ -199,6 +199,39 @@ public class Individual {
         return parents;
     }
 
+    public List<Individual> getAncestors() {
+        List<Individual> ancestors = new ArrayList<>();
+        List<Individual> parents = this.getParents();
+
+        ancestors.addAll(parents);
+
+        for (Individual parent : parents) {
+            ancestors.addAll(parent.getAncestors());
+        }
+
+        return ancestors;
+    }
+
+    public boolean isAncestor(Individual individual) {
+        List<Individual> parents = this.getParents();
+        if (parents.isEmpty()) {
+            return false;
+        } else if (parents.contains(individual)) {
+            return true;
+        } else {
+            for (Individual parent : parents) {
+                if (parent.isAncestor(individual)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public boolean isAncestor() {
+        return false;
+    }
+
     @Override
     public String toString() {
         return this.ID;
