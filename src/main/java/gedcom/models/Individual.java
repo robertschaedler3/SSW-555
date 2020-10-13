@@ -1,6 +1,7 @@
 package gedcom.models;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -177,6 +178,29 @@ public class Individual {
     }
 
     /**
+     * Creates a list of all the descendants at distance i from the current
+     * individual.
+     * 
+     * @param i
+     * @return list of descendants
+     */
+    public List<Individual> getDescendantsAt(int i) {
+        if (i < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        if (i == 0) {
+            return new ArrayList<>(Arrays.asList(this));
+        } else {
+            List<Individual> descendants = new ArrayList<>();
+            for (Individual child : this.getChildren()) {
+                descendants.addAll(child.getDescendantsAt(i--));
+            }
+            return descendants;
+        }
+    }
+
+    /**
      * Checks is the given individual is a descendant of the current individual.
      * 
      * @param individual
@@ -231,6 +255,29 @@ public class Individual {
         }
 
         return ancestors;
+    }
+
+    /**
+     * Creates a list of all the ancestors at distance i from the current
+     * individual.
+     * 
+     * @param i
+     * @return list of ancestors
+     */
+    public List<Individual> getAncestorsAt(int i) {
+        if (i < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        if (i == 0) {
+            return new ArrayList<>(Arrays.asList(this));
+        } else {
+            List<Individual> ancestors = new ArrayList<>();
+            for (Individual parent : this.getParents()) {
+                ancestors.addAll(parent.getAncestorsAt(i--));
+            }
+            return ancestors;
+        }
     }
 
     /**
