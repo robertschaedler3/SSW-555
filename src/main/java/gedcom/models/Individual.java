@@ -155,6 +155,21 @@ public class Individual {
         return spouses;
     }
 
+    public List<Individual> getParents() {
+        List<Individual> parents = new ArrayList<Individual>();
+        Individual father;
+        Individual mother;
+        for (Family family : this.childFamilies) {
+            if ((father = family.getHusband()) != null) {
+                parents.add(father);
+            }
+            if ((mother = family.getWife()) != null) {
+                parents.add(mother);
+            }
+        }
+        return parents;
+    }
+
     @Override
     public String toString() {
         return this.ID;
