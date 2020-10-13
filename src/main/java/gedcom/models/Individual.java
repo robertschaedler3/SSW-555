@@ -35,6 +35,14 @@ public class Individual {
         return name;
     }
 
+    public String getFirstName() {
+        return this.name.split("/")[0];
+    }
+
+    public String getLastName() {
+        return this.name.split("/")[1];
+    }
+
     public void setName(String name) {
         if (name == null) {
             throw new IllegalArgumentException();
