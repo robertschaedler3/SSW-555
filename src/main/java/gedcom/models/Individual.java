@@ -106,7 +106,7 @@ public class Individual {
         return (family != null) ? this.spouseFamilies.add(family) : false;
     }
 
-    public long age() {
+    public int age() {
         if (birthday == null) {
             throw new IllegalStateException("Cannot determine age without a birth date.");
         }
@@ -117,7 +117,7 @@ public class Individual {
         } else {
             diff = (new Date()).getTime() - birthday.getTime();
         }
-        return diff / (1000l * 60 * 60 * 24 * 365);
+        return (int) (diff / (1000l * 60 * 60 * 24 * 365));
     }
 
     public boolean alive() {

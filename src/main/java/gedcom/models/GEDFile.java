@@ -183,7 +183,7 @@ public class GEDFile {
                     individual.getGender().toString(),
                     individual.getName(),
                     (individual.getBirthday() != null) ? dateFmt.format(individual.getBirthday()) : "NA",
-                    (individual.getBirthday() != null) ? Long.toString(individual.age()) : "NA",
+                    (individual.getBirthday() != null) ? Integer.toString(individual.age()) : "NA",
                     (individual.getBirthday() != null) ? Boolean.toString(individual.alive()) : "NA",
                     (individual.getDeath() != null) ? dateFmt.format(individual.getDeath()) : "NA",
                     individual.getChildren().toString(), 
