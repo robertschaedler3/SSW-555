@@ -1,15 +1,15 @@
 package gedcom.validators;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
-import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class TestDivorceBeforeDeath {
     Validator validator = new DefaultValidator();
@@ -21,11 +21,11 @@ public class TestDivorceBeforeDeath {
     Individual husband2 = new Individual("Husband2");
     Individual wife2 = new Individual("Wife2");
 
-    Individual[] individuals = {husband1, wife1, husband2, wife2};
+    Individual[] individuals = { husband1, wife1, husband2, wife2 };
 
     Family family1 = new Family("Family1");
     Family family2 = new Family("Family2");
-    Family[] families = {family1, family2};
+    Family[] families = { family1, family2 };
 
     public void setUpBaseDates() throws ParseException {
         husband1.setDeath(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1995"));
