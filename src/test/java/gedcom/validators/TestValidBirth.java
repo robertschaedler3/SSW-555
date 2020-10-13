@@ -1,12 +1,13 @@
 package gedcom.validators;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import gedcom.interfaces.Gender;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -43,9 +44,12 @@ public class TestValidBirth {
 
     private void buildGedfile(String childBirthday, String marriage) {
         try {
-            Individual mother = makeIndividual(MOTHER_ID, dateFmt.parse(MOTHER_BIRTH), dateFmt.parse(MOTHER_DEATH), Gender.F);
-            Individual father = makeIndividual(FATHER_ID, dateFmt.parse(FATHER_BIRTH), dateFmt.parse(FATHER_DEATH), Gender.M);
-            Individual child = makeIndividual(CHILD_ID, dateFmt.parse(childBirthday), dateFmt.parse(CHILD_DEATH), Gender.M);
+            Individual mother = makeIndividual(MOTHER_ID, dateFmt.parse(MOTHER_BIRTH), dateFmt.parse(MOTHER_DEATH),
+                    Gender.F);
+            Individual father = makeIndividual(FATHER_ID, dateFmt.parse(FATHER_BIRTH), dateFmt.parse(FATHER_DEATH),
+                    Gender.M);
+            Individual child = makeIndividual(CHILD_ID, dateFmt.parse(childBirthday), dateFmt.parse(CHILD_DEATH),
+                    Gender.M);
 
             Family family = new Family("Family");
             family.setWife(mother);
@@ -110,8 +114,10 @@ public class TestValidBirth {
             Individual father = this.gedfile.getIndividual(FATHER_ID);
             Individual child = this.gedfile.getIndividual(CHILD_ID);
 
-            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 DEC 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
-            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("02 JAN 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
+            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 DEC 2000"), dateFmt.parse(CHILD_DEATH),
+                    Gender.M);
+            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("02 JAN 2000"), dateFmt.parse(CHILD_DEATH),
+                    Gender.M);
             this.family.addChild(sibling1);
             this.family.addChild(sibling2);
 
@@ -133,8 +139,10 @@ public class TestValidBirth {
             Individual father = this.gedfile.getIndividual(FATHER_ID);
             Individual child = this.gedfile.getIndividual(CHILD_ID);
 
-            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 MAR 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
-            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("01 JUN 2000"), dateFmt.parse(CHILD_DEATH), Gender.M);
+            Individual sibling1 = makeIndividual("SIBLING_1", dateFmt.parse("01 MAR 2000"), dateFmt.parse(CHILD_DEATH),
+                    Gender.M);
+            Individual sibling2 = makeIndividual("SIBLING_2", dateFmt.parse("01 JUN 2000"), dateFmt.parse(CHILD_DEATH),
+                    Gender.M);
             this.family.addChild(sibling1);
             this.family.addChild(sibling2);
 
