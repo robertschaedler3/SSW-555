@@ -1,7 +1,5 @@
 package gedcom.models;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -186,7 +184,7 @@ public class GEDFile {
                     (individual.getBirthday() != null) ? Long.toString(individual.age()) : "NA",
                     (individual.getBirthday() != null) ? Boolean.toString(individual.alive()) : "NA",
                     (individual.getDeath() != null) ? dateFmt.format(individual.getDeath()) : "NA",
-                    individual.getChildrenFamily().toString(), individual.getSpouseFamily().toString()));
+                    individual.getChildFamilies().toString(), individual.getSpouseFamily().toString()));
         }
 
         return new Table(headers, rows);

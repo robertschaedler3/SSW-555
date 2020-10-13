@@ -16,14 +16,14 @@ public class Individual {
     private Date birthday;
     private Date death;
 
-    private List<Family> childrenFamilies;
-    private List<Family> spouseFamilies;
+    private List<Family> childFamilies; // Individual is a child in these families
+    private List<Family> spouseFamilies; // Individual is a spouse in these families
 
     public Individual(String ID) {
         this.ID = ID;
         this.name = "";
         this.gender = Gender.NOT_SPECIFIED;
-        this.childrenFamilies = new ArrayList<>();
+        this.childFamilies = new ArrayList<>();
         this.spouseFamilies = new ArrayList<>();
     }
 
@@ -90,12 +90,12 @@ public class Individual {
         }
     }
 
-    public List<Family> getChildrenFamily() {
-        return childrenFamilies;
+    public List<Family> getChildFamilies() {
+        return childFamilies;
     }
 
     public boolean addChildFamily(Family family) {
-        return (family != null) ? this.childrenFamilies.add(family) : false;
+        return (family != null) ? this.childFamilies.add(family) : false;
     }
 
     public List<Family> getSpouseFamily() {
@@ -129,7 +129,7 @@ public class Individual {
 
     public List<Individual> getChildren() {
         List<Individual> children = new ArrayList<Individual>();
-        for (Family family : this.childrenFamilies) {
+        for (Family family : this.spouseFamilies) {
             children.addAll(family.getChildren());
         }
         return children;
