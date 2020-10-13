@@ -135,6 +135,18 @@ public class Individual {
         return children;
     }
 
+    public List<Individual> getSpouses() {
+        List<Individual> spouses = new ArrayList<Individual>();
+        for (Family family : this.spouseFamilies) {
+            if (family.getHusband().equals(this)) {
+                spouses.add(family.getWife());
+            } else {
+                spouses.add(family.getHusband());
+            }
+        }
+        return spouses;
+    }
+
     @Override
     public String toString() {
         return this.ID;
