@@ -155,6 +155,35 @@ public class Individual {
         return spouses;
     }
 
+    public List<Individual> getDescendants() {
+        List<Individual> descendants = new ArrayList<>();
+        List<Individual> children = this.getChildren();
+
+        descendants.addAll(children);
+
+        for (Individual child : children) {
+            descendants.addAll(child.getDescendants());
+        }
+
+        return descendants;
+    }
+
+    public boolean isDescendant(Individual individual) {
+        List<Individual> children = this.getChildren();
+        if (children.isEmpty()) {
+            return false;
+        } else if (children.contains(individual)) {
+            return true;
+        } else {
+            for (Individual child : children) {
+                if (child.isDescendant(individual)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public List<Individual> getParents() {
         List<Individual> parents = new ArrayList<Individual>();
         Individual father;

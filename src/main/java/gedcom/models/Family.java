@@ -88,41 +88,12 @@ public class Family {
         for (Individual individual : children) {
             childFamilies.addAll(individual.getChildFamilies());
         }
+
         return childFamilies;
     }
 
     public boolean isChild(Individual individual) {
         return children.contains(individual);
-    }
-
-    private void getDescendants(List<Individual> descendants) {
-        List<Family> families = this.getChildFamilies();
-        for (Family family : families) {
-            descendants.addAll(family.getChildren());
-            family.getDescendants(descendants);
-        }
-    }
-
-    public List<Individual> getDescendants() {
-        List<Individual> descendants = new ArrayList<Individual>();
-        getDescendants(descendants);
-        return descendants;
-    }
-
-    private boolean isDescendant(Individual individual, List<Family> families) {
-        if (families.isEmpty()) {
-            return false;
-        }
-        for (Family family : families) {
-            if (family.isDescendant(individual)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isDescendant(Individual individual) {
-        return isDescendant(individual, this.getChildFamilies());
     }
 
     @Override
