@@ -30,6 +30,16 @@ public class IndividualBuilder {
         return this;
     }
 
+    public IndividualBuilder male() {
+        this.gender = Gender.M;
+        return this;
+    }
+
+    public IndividualBuilder female() {
+        this.gender = Gender.F;
+        return this;
+    }
+
     public IndividualBuilder withBirth(Date birth) {
         this.birth = birth;
         return this;
@@ -50,9 +60,10 @@ public class IndividualBuilder {
         return this;
     }
 
-    public Individual build() {
-        Individual individual = new Individual(String.format("I_%d", id++));
-
+    /**
+     * Build or update an Individual from an existing Individual.
+     */
+    public Individual buildFrom(Individual individual) {
         individual.setGender(gender);
 
         if (birth != null) {
@@ -70,8 +81,11 @@ public class IndividualBuilder {
         for (Family family : spouseFamilies) {
             individual.addSpouseFamily(family);
         }
-
         return individual;
+    }
+
+    public Individual build() {
+        return buildFrom(new Individual(String.format("I_%d", id++)));
     }
 
 }

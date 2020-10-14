@@ -63,9 +63,10 @@ public class FamilyBuilder {
         return this;
     }
 
-    public Family build() {
-        Family family = new Family(String.format("F_%d", id++));
-
+    /**
+     * Build a Family by editing or adding to an existing Family.
+     */
+    public Family buildFrom(Family family) {
         family.setHusband(husband);
         family.setWife(wife);
 
@@ -82,6 +83,10 @@ public class FamilyBuilder {
         }
 
         return family;
+    }
+
+    public Family build() {
+        return buildFrom(new Family(String.format("F_%d", id++)));
     }
 
 }
