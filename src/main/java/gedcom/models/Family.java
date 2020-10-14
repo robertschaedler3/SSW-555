@@ -82,6 +82,20 @@ public class Family {
         return this.children.add(child);
     }
 
+    public List<Family> getChildFamilies() {
+        List<Family> childFamilies = new ArrayList<Family>();
+
+        for (Individual individual : children) {
+            childFamilies.addAll(individual.getChildFamilies());
+        }
+
+        return childFamilies;
+    }
+
+    public boolean isChild(Individual individual) {
+        return children.contains(individual);
+    }
+
     @Override
     public String toString() {
         return this.ID;
