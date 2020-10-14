@@ -1,7 +1,5 @@
 package gedcom.builders;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,8 +9,6 @@ import gedcom.models.Family;
 import gedcom.models.Individual;
 
 public class IndividualBuilder {
-
-    private final String DATE_FORMAT = "dd MMM yyyy";
 
     private static int id = 0;
 
@@ -24,12 +20,9 @@ public class IndividualBuilder {
     private List<Family> childrenFamilies;
     private List<Family> spouseFamilies;
 
-    private SimpleDateFormat dateFmt;
-
     public IndividualBuilder() {
         this.childrenFamilies = new ArrayList<>();
         this.spouseFamilies = new ArrayList<>();
-        this.dateFmt = new SimpleDateFormat(DATE_FORMAT);
     }
 
     public IndividualBuilder withGender(Gender gender) {
@@ -42,8 +35,8 @@ public class IndividualBuilder {
         return this;
     }
 
-    public IndividualBuilder withBirth(String birth) throws ParseException {
-        this.birth = this.dateFmt.parse(birth);
+    public IndividualBuilder withBirth(int date, int month, int year) {
+        this.birth = DateBuilder.build(date, month, year);
         return this;
     }
 
@@ -52,8 +45,8 @@ public class IndividualBuilder {
         return this;
     }
 
-    public IndividualBuilder withDeath(String death) throws ParseException {
-        this.death = this.dateFmt.parse(death);
+    public IndividualBuilder withDeath(int date, int month, int year) {
+        this.death = DateBuilder.build(date, month, year);
         return this;
     }
 
