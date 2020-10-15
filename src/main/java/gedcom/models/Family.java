@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gedcom.interfaces.Gender;
+
 public class Family {
 
     private final int MAX_SIBLINGS = 15;
@@ -34,6 +36,11 @@ public class Family {
         if (husband == null) {
             throw new IllegalArgumentException();
         }
+
+        if (husband.getGender() == Gender.F) {
+            throw new IllegalStateException(String.format("Error US21: Individual %s gender is not MALE.", husband.getID()));
+        }
+
         this.husband = husband;
     }
 
@@ -45,6 +52,11 @@ public class Family {
         if (wife == null) {
             throw new IllegalArgumentException();
         }
+
+        if (wife.getGender() == Gender.M) {
+            throw new IllegalStateException(String.format("Error US21: Individual %s gender is not FEMALE.", wife.getID()));
+        }
+
         this.wife = wife;
     }
 
