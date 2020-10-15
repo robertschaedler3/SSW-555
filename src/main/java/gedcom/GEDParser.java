@@ -39,11 +39,8 @@ public class GEDParser {
                 case "--no-incest":
                     validator = new NoIncest(validator);
                     break;
-                case "--marriage-before-divorce":
-                    validator = new MarriageBeforeDivorce(validator);
-                    break;
                 case "--marriage-after-14":
-                    validator = new MarriageBeforeDivorce(validator);
+                    validator = new MarriageAfter14(validator);
                     break;
                 case "--valid-birth":
                     validator = new ValidBirth(validator);

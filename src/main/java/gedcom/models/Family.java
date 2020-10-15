@@ -53,7 +53,19 @@ public class Family {
     }
 
     public void setMarriage(Date marriage) {
-        this.marriage = marriage;
+        if (marriage == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.divorce != null) {
+            if (this.divorce.equals(marriage) || this.divorce.after(marriage)) {
+                this.marriage = marriage;
+            } else {
+                throw new IllegalStateException("Error US04: Marriage cannot occur after divorce.");
+            }
+        } else {
+            this.marriage = marriage;
+        }
     }
 
     public Date getDivorce() {
@@ -61,7 +73,19 @@ public class Family {
     }
 
     public void setDivorce(Date divorce) {
-        this.divorce = divorce;
+        if (divorce == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.marriage != null) {
+            if (this.marriage.equals(divorce) || this.marriage.before(divorce)) {
+                this.divorce = divorce;
+            } else {
+                throw new IllegalStateException("Error US04: Divorce cannot occur before marriage.");
+            }
+        } else {
+            this.divorce = divorce;
+        }
     }
 
     public List<Individual> getChildren() {
