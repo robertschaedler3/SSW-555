@@ -12,7 +12,7 @@ public abstract class DateBuilder {
     private static SimpleDateFormat dateFmt = new SimpleDateFormat(DATE_FORMAT);
 
     public static Date build(int date, int month, int year) {
-        if (date < 0 || year < 0 || month < 1 || month > 12) {
+        if (date < 0 || year < 0 || month < 0 || month > 11) {
             throw new IllegalArgumentException();
         }
 
