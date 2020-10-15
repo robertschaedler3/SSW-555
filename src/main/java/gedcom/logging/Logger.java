@@ -1,19 +1,23 @@
 package gedcom.logging;
 
-public class Logger {
+public abstract class Logger {
 
     private static boolean raiseErrors = false;
 
-    public static void logError() {
-        // TODO
+    public static void raiseAll() {
+        raiseErrors = true;
     }
 
-    public static void logAnomaly() {
-        // TODO
+    public static void printAll() {
+        raiseErrors = false;
     }
 
-    private static void log() {
-        // TODO
+    public static void log(Error error) {
+        if (raiseErrors) {
+            throw new RuntimeException(error.toString());
+        } else {
+            System.err.println(error);
+        }
     }
 
 }
