@@ -34,7 +34,7 @@ public class TestIndividual {
     }
 
     @Test
-    public void testBirthday() {
+    public void testBirth() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2001);
         assertEquals(birth, new IndividualBuilder().withBirth(birth).build().getBirthday());
@@ -43,7 +43,7 @@ public class TestIndividual {
     }
 
     @Test
-    public void testBirthdayException1() {
+    public void testBirthException1() {
         assertThrows(IllegalArgumentException.class, () -> {
             Individual individual = new IndividualBuilder().build();
             individual.setBirthday(null);
@@ -51,7 +51,7 @@ public class TestIndividual {
     }
 
     @Test
-    public void testBirthdayException2() {
+    public void testBirthException2() {
         Exception exception = assertThrows(IllegalStateException.class, () -> {
             Date birth = DateBuilder.build(1, Calendar.JANUARY, 2001);
             Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
@@ -59,7 +59,7 @@ public class TestIndividual {
             individual.setBirthday(birth);
         });
 
-        String expectedMessage = "Birthday cannot occur after death.";
+        String expectedMessage = "US03: Birth cannot occur after death.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -91,7 +91,7 @@ public class TestIndividual {
             individual.setDeath(death);
         });
 
-        String expectedMessage = "Death cannot occur before birth.";
+        String expectedMessage = "US03: Death cannot occur before birth.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
