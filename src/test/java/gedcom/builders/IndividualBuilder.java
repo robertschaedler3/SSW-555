@@ -1,28 +1,28 @@
 package gedcom.builders;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import gedcom.interfaces.Gender;
-import gedcom.models.Family;
 import gedcom.models.Individual;
 
 public class IndividualBuilder {
 
     private static int id = 0;
 
+    private String name;
+
     private Gender gender;
 
     private Date birth;
     private Date death;
 
-    private List<Family> childrenFamilies;
-    private List<Family> spouseFamilies;
-
     public IndividualBuilder() {
-        this.childrenFamilies = new ArrayList<>();
-        this.spouseFamilies = new ArrayList<>();
+        this.gender = Gender.NOT_SPECIFIED;
+    }
+
+    public IndividualBuilder withName(String name) {
+        this.name = name;
+        return this;
     }
 
     public IndividualBuilder withGender(Gender gender) {
@@ -64,7 +64,12 @@ public class IndividualBuilder {
      * Build or update an Individual from an existing Individual.
      */
     public Individual buildFrom(Individual individual) {
+
         individual.setGender(gender);
+
+        if (name != null) {
+            individual.setName(name);
+        }
 
         if (birth != null) {
             individual.setBirthday(birth);
@@ -74,13 +79,6 @@ public class IndividualBuilder {
             individual.setDeath(death);
         }
 
-        for (Family family : childrenFamilies) {
-            individual.addChildFamily(family);
-        }
-
-        for (Family family : spouseFamilies) {
-            individual.addSpouseFamily(family);
-        }
         return individual;
     }
 

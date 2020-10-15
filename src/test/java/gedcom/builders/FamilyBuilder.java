@@ -64,13 +64,23 @@ public class FamilyBuilder {
     }
 
     /**
-     * Build a Family by editing or adding to an existing Family.
+     * Build a Family by editing or adding to an existing Family. This also adds the
+     * Family as a spouse/child family to all individuals.
      */
     public Family buildFrom(Family family) {
-        family.setHusband(husband);
-        family.setWife(wife);
+
+        if (husband != null) {
+            family.setHusband(husband);
+            husband.addSpouseFamily(family);
+        }
+
+        if (wife != null) {
+            family.setWife(wife);
+            wife.addSpouseFamily(family);
+        }
 
         for (Individual child : children) {
+            child.addChildFamily(family);
             family.addChild(child);
         }
 
