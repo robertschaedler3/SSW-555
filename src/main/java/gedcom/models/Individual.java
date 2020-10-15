@@ -37,11 +37,13 @@ public class Individual {
     }
 
     public String getFirstName() {
-        return this.name.split("/")[0];
+        String[] parts = this.name.split("/");
+        return (parts.length > 0) ? parts[0].trim() : "";
     }
 
     public String getLastName() {
-        return this.name.split("/")[1];
+        String[] parts = this.name.split("/");
+        return (parts.length > 1) ? parts[1].trim() : "";
     }
 
     public void setName(String name) {
