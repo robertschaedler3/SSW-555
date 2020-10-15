@@ -191,14 +191,37 @@ public class Individual {
             throw new IllegalArgumentException();
         }
 
+        List<Individual> descendants = new ArrayList<>();
         if (i == 0) {
-            return new ArrayList<>(Arrays.asList(this));
+            descendants.add(this);
+            return descendants;
         } else {
-            List<Individual> descendants = new ArrayList<>();
             for (Individual child : this.getChildren()) {
-                descendants.addAll(child.getDescendantsAt(i--));
+                descendants.addAll(child.getDescendantsAt(i - 1));
             }
             return descendants;
+        }
+    }
+
+    /**
+     * Checks is the individual is a descendant of the given individual.
+     * 
+     * @param individual
+     * @return true if the individual is a descendant, false otherwise
+     */
+    public boolean isDescendant(Individual individual) {
+        List<Individual> children = individual.getChildren();
+        if (children.isEmpty()) {
+            return false;
+        } else if (children.contains(this)) {
+            return true;
+        } else {
+            for (Individual child : children) {
+                if (this.isDescendant(child)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -208,7 +231,7 @@ public class Individual {
      * @param individual
      * @return true if the individual is a descendant, false otherwise
      */
-    public boolean isDescendant(Individual individual) {
+    public boolean hasDescendant(Individual individual) {
         List<Individual> children = this.getChildren();
         if (children.isEmpty()) {
             return false;
@@ -216,7 +239,7 @@ public class Individual {
             return true;
         } else {
             for (Individual child : children) {
-                if (child.isDescendant(individual)) {
+                if (child.hasDescendant(individual)) {
                     return true;
                 }
             }
@@ -271,14 +294,37 @@ public class Individual {
             throw new IllegalArgumentException();
         }
 
+        List<Individual> ancestors = new ArrayList<>();
         if (i == 0) {
-            return new ArrayList<>(Arrays.asList(this));
-        } else {
-            List<Individual> ancestors = new ArrayList<>();
-            for (Individual parent : this.getParents()) {
-                ancestors.addAll(parent.getAncestorsAt(i--));
-            }
+            ancestors.add(this);
             return ancestors;
+        } else {
+            for (Individual parent : this.getParents()) {
+                ancestors.addAll(parent.getAncestorsAt(i - 1));
+            }
+        }
+        return ancestors;
+    }
+
+    /**
+     * Checks is the current individual is an ancestor of the given individual.
+     * 
+     * @param individual
+     * @return true if the given individual is an ancestor, false otherwise
+     */
+    public boolean isAncestor(Individual individual) {
+        List<Individual> parents = individual.getParents();
+        if (parents.isEmpty()) {
+            return false;
+        } else if (parents.contains(this)) {
+            return true;
+        } else {
+            for (Individual parent : parents) {
+                if (this.isAncestor(parent)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -288,7 +334,7 @@ public class Individual {
      * @param individual
      * @return true if the individual is an ancestor, false otherwise
      */
-    public boolean isAncestor(Individual individual) {
+    public boolean hasAncestor(Individual individual) {
         List<Individual> parents = this.getParents();
         if (parents.isEmpty()) {
             return false;
@@ -296,7 +342,7 @@ public class Individual {
             return true;
         } else {
             for (Individual parent : parents) {
-                if (parent.isAncestor(individual)) {
+                if (parent.hasAncestor(individual)) {
                     return true;
                 }
             }
