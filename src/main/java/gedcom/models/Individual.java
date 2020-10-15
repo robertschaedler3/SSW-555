@@ -1,7 +1,6 @@
 package gedcom.models;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -74,7 +73,7 @@ public class Individual {
             if (this.death.equals(birthday) || this.death.after(birthday)) {
                 this.birthday = birthday;
             } else {
-                throw new IllegalStateException("Birthday cannot occur after death.");
+                throw new IllegalStateException("US03: Birth cannot occur after death.");
             }
         } else {
             this.birthday = birthday;
@@ -94,7 +93,7 @@ public class Individual {
             if (this.birthday.equals(death) || this.birthday.before(death)) {
                 this.death = death;
             } else {
-                throw new IllegalStateException("Death cannot occur before birth.");
+                throw new IllegalStateException("US03: Death cannot occur before birth.");
             }
         } else {
             this.death = death;
