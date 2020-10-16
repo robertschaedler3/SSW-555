@@ -349,6 +349,36 @@ public class Individual {
         }
     }
 
+    /**
+     * Makes a list of an individuals 1st cousins. Same as getCousins(1).
+     */
+    public List<Individual> getCousins() {
+        return getCousins(1);
+    }
+
+    /**
+     * Makes a list of an individuals nth cousins.
+     */
+    public List<Individual> getCousins(int n) {
+        if (n < 1) {
+            throw new IllegalArgumentException();
+        }
+
+        List<Individual> cousins = new ArrayList<>();
+        List<Individual> descendants = new ArrayList<>();
+
+        for (Individual individual : this.getAncestorsAt(n)) {
+            descendants.addAll(individual.getDescendantsAt(n));
+        }
+
+        for (Individual individual : this.getAncestorsAt(n + 1)) {
+            cousins.addAll(individual.getDescendantsAt(n + 1));
+        }
+
+        cousins.removeAll(descendants);
+        return cousins;
+    }
+
     @Override
     public String toString() {
         return this.ID;

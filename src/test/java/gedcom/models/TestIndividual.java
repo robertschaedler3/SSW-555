@@ -14,6 +14,8 @@ import gedcom.builders.*;
 
 public class TestIndividual {
 
+    private final int N = 10;
+
     @Test
     public void testID() {
         String ID = "ID";
@@ -189,7 +191,7 @@ public class TestIndividual {
 
         assertTrue(orderAgnosticEquality(spouses, indivSpouses));
     }
-    
+
     @Test
     public void testGetParents() {
         Individual father = new IndividualBuilder().male().build();
@@ -198,26 +200,22 @@ public class TestIndividual {
 
         Family family = new FamilyBuilder().withHusband(father).withWife(mother).withChild(child).build();
 
-        assertTrue(orderAgnosticEquality(Arrays.asList(father, mother), child.getAncestorsAt(1)));
-        // assertTrue(orderAgnosticEquality(Arrays.asList(father, mother), child.getParents()));
+        assertTrue(orderAgnosticEquality(Arrays.asList(father, mother),child.getParents()));
     }
-    
+
     private List<Individual> createFamilyDescendants(Individual individual, int numDescendants) {
         List<Individual> descendants = new ArrayList<>();
-
         for (int i = 0; i < numDescendants; i++) {
             Individual child = new IndividualBuilder().build();
             Family family = new FamilyBuilder().withHusband(individual).withChild(child).build();
             descendants.add(child);
             individual = child;
         }
-
         return descendants;
     }
 
     @Test
     public void testGetDescendants() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
 
         List<Individual> descendants = createFamilyDescendants(individual, N);
@@ -225,21 +223,21 @@ public class TestIndividual {
 
         assertTrue(orderAgnosticEquality(descendants, indivDescendants));
     }
-    
+
     @Test
     public void testGetDescendantsAt() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
         List<Individual> descendants = createFamilyDescendants(individual, N);
 
         for (int i = 0; i < N - 1; i++) {
+            List<Individual> descendantsAt = individual.getDescendantsAt(i + 1);
+            assertEquals(1, descendantsAt.size());
             assertEquals(descendants.get(i), individual.getDescendantsAt(i + 1).get(0));
         }
     }
-    
+
     @Test
     public void testIsDescendant() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
         List<Individual> descendants = createFamilyDescendants(individual, N);
 
@@ -250,7 +248,6 @@ public class TestIndividual {
 
     @Test
     public void testHasDescendant() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
         List<Individual> descendants = createFamilyDescendants(individual, N);
 
@@ -261,20 +258,17 @@ public class TestIndividual {
 
     private List<Individual> createFamilyAncestors(Individual individual, int numAncestors) {
         List<Individual> ancestors = new ArrayList<>();
-
         for (int i = 0; i < numAncestors; i++) {
             Individual parent = new IndividualBuilder().build();
             Family family = new FamilyBuilder().withHusband(parent).withChild(individual).build();
             ancestors.add(parent);
             individual = parent;
         }
-
         return ancestors;
     }
 
     @Test
     public void testGetAncestors() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
 
         List<Individual> ancestors = createFamilyAncestors(individual, N);
@@ -282,23 +276,21 @@ public class TestIndividual {
 
         assertTrue(orderAgnosticEquality(ancestors, indivAncestors));
     }
-    
+
     @Test
     public void testGetAncestorsAt() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
         List<Individual> ancestors = createFamilyAncestors(individual, N);
 
-        
         for (int i = 0; i < N - 1; i++) {
-            individual.getAncestors();
-            assertEquals(ancestors.get(i), individual.getAncestorsAt(i + 1).get(0));
+            List<Individual> ancestorsAt = individual.getAncestorsAt(i + 1);
+            assertEquals(1, ancestorsAt.size());
+            assertEquals(ancestors.get(i), ancestorsAt.get(0));
         }
     }
 
     @Test
     public void testIsAncestor() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
         List<Individual> ancestors = createFamilyAncestors(individual, N);
 
@@ -309,12 +301,34 @@ public class TestIndividual {
 
     @Test
     public void testHasAncestor() {
-        int N = 10;
         Individual individual = new IndividualBuilder().build();
         List<Individual> ancestors = createFamilyAncestors(individual, N);
 
         for (Individual ancestor : ancestors) {
             assertTrue(individual.hasAncestor(ancestor));
+        }
+    }
+
+    private List<Individual> createFamilyCousins(Individual individual, int numCousins) {
+        List<Individual> cousins = new ArrayList<>();
+        List<Individual> ancestors = createFamilyAncestors(individual, numCousins + 1);
+        for (int i = 1; i <= numCousins; i++) {
+            Individual commonAncestor = ancestors.get(i);
+            List<Individual> descendants = createFamilyDescendants(commonAncestor, i + 1);
+            cousins.add(descendants.get(i));
+        }
+        return cousins;
+    }
+
+    @Test
+    void testGetCousins() {
+        Individual individual = new IndividualBuilder().build();
+        List<Individual> cousins = createFamilyCousins(individual, N);
+
+        for (int i = 1; i <= N; i++) {
+            List<Individual> indivCousins = individual.getCousins(i);
+            assertEquals(1, indivCousins.size());
+            assertEquals(cousins.get(i - 1), indivCousins.get(0));
         }
     }
 
