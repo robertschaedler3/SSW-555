@@ -3,6 +3,7 @@ package gedcom.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
 
@@ -135,6 +136,14 @@ public class Individual {
             throw new IllegalStateException("Cannot determine living status without a birth date.");
         }
         return (death == null) ? true : false;
+    }
+
+    public boolean isSibling(Individual individual) {
+        if (individual == null) {
+            throw new IllegalArgumentException();
+        }
+        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList())
+                .size() != 0;
     }
 
     public List<Individual> getChildren() {
