@@ -43,6 +43,20 @@ public class FamilyBuilder {
         return this;
     }
 
+    public FamilyBuilder withChildren(Individual... children) {
+        for (Individual child : children) {
+            this.children.add(child);
+        }
+        return this;
+    }
+
+    public FamilyBuilder withChildren(int n) {
+        for (int i = 0; i < n; i++) {
+            this.children.add(new IndividualBuilder().build());
+        }
+        return this;
+    }
+
     public FamilyBuilder withMarriage(Date marriage) {
         this.marriage = marriage;
         return this;
