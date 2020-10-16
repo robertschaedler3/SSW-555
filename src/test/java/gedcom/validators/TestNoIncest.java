@@ -2,93 +2,90 @@ package gedcom.validators;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import gedcom.builders.FamilyBuilder;
+import gedcom.builders.GEDFileBuilder;
+import gedcom.builders.IndividualBuilder;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestNoIncest {
 
-	Validator validator = new DefaultValidator();
-	Validator noIncest = new NoIncest(validator);
-	GEDFile ged;
-	Family[] fams;
-	Individual[] indivs;
-
-	@BeforeEach
-	public void setup() {
-		Individual gpa = new Individual("gpa");
-		Individual gma = new Individual("gma");
-		Individual k1 = new Individual("sibling-1");
-		Individual k2 = new Individual("sibling-2");
-		Family fam = new Family("old_fam");
-		fam.setHusband(gpa);
-		fam.setWife(gma);
-		fam.addChild(k1);
-		fam.addChild(k2);
-		gma.addSpouseFamily(fam);
-		gpa.addSpouseFamily(fam);
-		k1.addChildFamily(fam);
-		k2.addChildFamily(fam);
-		fams = new Family[] { fam };
-		indivs = new Individual[] { gma, gpa, k1, k2 };
-		this.ged = new GEDFile(indivs, fams);
-	}
+	Validator validator = new NoIncest(new DefaultValidator());
 
 	@Test
 	public void testNoIncest() {
-		assertTrue(noIncest.isValid(ged));
+		Individual uncle = new IndividualBuilder().build();
+		Individual husband = new IndividualBuilder().build();
+		Individual wife = new IndividualBuilder().build();
+
+		Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChildren(2).build();
+		Family family2 = new FamilyBuilder().withChildren(husband, uncle).build();
+
+		List<Individual> individuals = new ArrayList<>(Arrays.asList(uncle, husband, wife));
+		List<Family> families = new ArrayList<>(Arrays.asList(family1, family2));
+		individuals.addAll(family1.getChildren());
+
+		GEDFile gedFile = new GEDFile(individuals, families);
+		assertTrue(validator.isValid(gedFile));
 	}
 
 	@Test
 	public void testSiblingIncest() {
-		Family fam2 = new Family("fam2");
-		fam2.setHusband(indivs[2]);
-		fam2.setWife(indivs[3]);
-		indivs[2].addSpouseFamily(fam2);
-		indivs[2].addSpouseFamily(fam2);
+		Individual husband = new IndividualBuilder().build();
+		Individual wife = new IndividualBuilder().build();
 
-		ged = new GEDFile(ged.getIndividuals().toArray(new Individual[ged.getIndividuals().size()]),
-				new Family[] { ged.getFamilies().get(0), fam2 });
-		assertFalse(noIncest.isValid(ged));
+		Family family1 = new FamilyBuilder().withChildren(husband, wife).build();
+		Family family2 = new FamilyBuilder().withHusband(husband).withWife(wife).build();
+
+		GEDFile gedFile = new GEDFileBuilder().withIndividuals(husband, wife).withFamilies(family1, family2).build();
+		assertFalse(validator.isValid(gedFile));
 	}
 
 	@Test
 	public void testFirstCousinIncest() {
+		Individual grandparent = new IndividualBuilder().build();
+		Individual parent = new IndividualBuilder().build();
+		Individual child = new IndividualBuilder().build();
 
-		Family subFamily1 = new Family("sub1"), subFamily2 = new Family("sub2");
+		Individual uncle = new IndividualBuilder().build();
+		Individual cousin = new IndividualBuilder().build();
 
-		subFamily1.setHusband(indivs[2]);
-		subFamily1.setWife(new Individual("k1-spouse"));
-		Individual j1 = new Individual("cousin-1");
-		subFamily1.addChild(j1);
-		j1.addChildFamily(subFamily1);
+		Family family1 = new FamilyBuilder().withHusband(grandparent).withChildren(parent, uncle).build();
+		Family family2 = new FamilyBuilder().withHusband(parent).withChild(child).build();
+		Family family3 = new FamilyBuilder().withHusband(uncle).withChild(cousin).build();
 
-		subFamily2.setWife(indivs[3]);
-		subFamily2.setHusband(new Individual("cousin-2"));
-		Individual j2 = new Individual("j2");
-		subFamily2.addChild(j2);
-		j2.addChildFamily(subFamily2);
+		Family family4 = new FamilyBuilder().withHusband(cousin).withWife(cousin).build();
 
-		Family testFam = new Family("test");
-		testFam.setHusband(j1);
-		testFam.setWife(j2);
-		j1.addSpouseFamily(testFam);
-		j2.addSpouseFamily(testFam);
+		List<Individual> individuals = Arrays.asList(grandparent, parent, child, uncle, cousin);
+		List<Family> families = Arrays.asList(family1, family2, family3, family4);
 
-		ArrayList<Individual> newIndivs = new ArrayList<Individual>();
-		for (Individual i : indivs)
-			newIndivs.add(i);
-		newIndivs.add(j1);
-		newIndivs.add(j2);
+		GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+		assertFalse(validator.isValid(gedFile));
+	}
 
-		ged = new GEDFile(newIndivs.toArray(new Individual[newIndivs.size()]),
-				new Family[] { ged.getFamilies().get(0), subFamily1, subFamily2, testFam });
-		assertFalse(noIncest.isValid(ged));
+	@Test
+	public void testAuntUncleIncest() {
+		Individual parent = new IndividualBuilder().build();
+		Individual uncle = new IndividualBuilder().build();
+		Individual child = new IndividualBuilder().build();
+
+		Family family1 = new FamilyBuilder().withChildren(parent, uncle).build();
+		Family family2 = new FamilyBuilder().withHusband(parent).withChild(child).build();
+
+		Family family3 = new FamilyBuilder().withHusband(uncle).withWife(child).build();
+
+		List<Individual> individuals = Arrays.asList(parent, child, uncle);
+		List<Family> families = Arrays.asList(family1, family2, family3);
+
+		GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+		assertFalse(validator.isValid(gedFile));
 	}
 
 }
