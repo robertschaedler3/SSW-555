@@ -150,6 +150,28 @@ public class TestIndividual {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    @Test
+    public void testIsSibling() {
+        Individual child1 = new IndividualBuilder().build();
+        Individual child2 = new IndividualBuilder().build();
+        Individual child3 = new IndividualBuilder().build();
+
+        Family family1 = new FamilyBuilder().withChild(child1).withChild(child2).build();
+        Family family2 = new FamilyBuilder().withChild(child2).withChild(child3).build();
+        
+        // Family 1
+        assertTrue(child1.isSibling(child2));
+        assertTrue(child2.isSibling(child1));
+        
+        // Family 2
+        assertTrue(child2.isSibling(child3));
+        assertTrue(child3.isSibling(child2));
+
+        // Not siblings
+        assertFalse(child1.isSibling(child3));
+        assertFalse(child3.isSibling(child1));
+    }
+
     private <T> boolean orderAgnosticEquality(List<T> l1, List<T> l2) {
         boolean sameSize = l1.size() == l2.size();
         boolean sameContents = l1.containsAll(l2) && l2.containsAll(l1);
