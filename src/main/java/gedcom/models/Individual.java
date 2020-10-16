@@ -142,8 +142,16 @@ public class Individual {
         if (individual == null) {
             throw new IllegalArgumentException();
         }
-        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList())
-                .size() != 0;
+        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList()).size() != 0;
+    }
+    
+    public List<Individual> getSiblings() {
+        List<Individual> siblings = new ArrayList<>();
+        for (Family family : this.childFamilies) {
+            siblings.addAll(family.getChildren());
+            siblings.remove(this);
+        }
+        return siblings;
     }
 
     public List<Individual> getChildren() {

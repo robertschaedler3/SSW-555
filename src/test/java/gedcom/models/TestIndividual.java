@@ -158,11 +158,11 @@ public class TestIndividual {
 
         Family family1 = new FamilyBuilder().withChild(child1).withChild(child2).build();
         Family family2 = new FamilyBuilder().withChild(child2).withChild(child3).build();
-        
+
         // Family 1
         assertTrue(child1.isSibling(child2));
         assertTrue(child2.isSibling(child1));
-        
+
         // Family 2
         assertTrue(child2.isSibling(child3));
         assertTrue(child3.isSibling(child2));
@@ -170,6 +170,17 @@ public class TestIndividual {
         // Not siblings
         assertFalse(child1.isSibling(child3));
         assertFalse(child3.isSibling(child1));
+    }
+    
+    @Test
+    public void testGetSiblings() {
+        Individual child1 = new IndividualBuilder().build();
+        Individual child2 = new IndividualBuilder().build();
+
+        Family family = new FamilyBuilder().withChild(child1).withChild(child2).build();
+
+        assertTrue(orderAgnosticEquality(Arrays.asList(child1), child2.getSiblings()));
+        assertTrue(orderAgnosticEquality(Arrays.asList(child2), child1.getSiblings()));
     }
 
     private <T> boolean orderAgnosticEquality(List<T> l1, List<T> l2) {
