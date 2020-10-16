@@ -1,7 +1,5 @@
 package gedcom.validators;
 
-import java.util.List;
-
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -10,20 +8,6 @@ public class NoIncest extends Validator {
 
 	public NoIncest(Validator validator) {
 		super(validator);
-	}
-
-	private boolean isSiblings(Individual indi1, Individual indi2) {
-		// Check if both people have the same FAMC, meaning that they have the same
-		// parents and are siblings
-		if (indi1.getChildFamilies().size() > 0 && indi2.getChildFamilies().size() > 0) {
-			Family indi1Famc = indi1.getChildFamilies().get(0);
-			Family indi2Famc = indi2.getChildFamilies().get(0);
-
-			if (indi1Famc.equals(indi2Famc)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	protected boolean check(GEDFile gedFile) {
