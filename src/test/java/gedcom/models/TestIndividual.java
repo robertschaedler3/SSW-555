@@ -154,6 +154,20 @@ public class TestIndividual {
     }
 
     @Test
+    public void testMaxAgeException() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            Date birth = DateBuilder.build(1, Calendar.JANUARY, 1800);
+            Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
+            Individual individual = new IndividualBuilder().withBirth(birth).withDeath(death).build();
+        });
+
+        String expectedMessage = "Anomaly US07: max age";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
     public void testAlive() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2001);
