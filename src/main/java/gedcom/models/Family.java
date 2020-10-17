@@ -69,6 +69,10 @@ public class Family {
             throw new IllegalArgumentException();
         }
 
+        if (marriage.after(new Date())) {
+            throw new IllegalStateException("Error US01: Marriage must occur before the current time.");
+        }
+
         if (this.divorce != null) {
             if (this.divorce.equals(marriage) || this.divorce.after(marriage)) {
                 this.marriage = marriage;
@@ -87,6 +91,10 @@ public class Family {
     public void setDivorce(Date divorce) {
         if (divorce == null) {
             throw new IllegalArgumentException();
+        }
+
+        if (divorce.after(new Date())) {
+            throw new IllegalStateException("Error US01: Divorce must occur before the current time.");
         }
 
         if (this.marriage != null) {

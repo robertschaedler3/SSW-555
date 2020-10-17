@@ -70,6 +70,10 @@ public class Individual {
             throw new IllegalArgumentException();
         }
 
+        if (birthday.after(new Date())) {
+            throw new IllegalStateException("Error US01: Birth must occur before current time.");
+        }
+
         if (this.death != null) {
             if (this.death.equals(birthday) || this.death.after(birthday)) {
                 this.birthday = birthday;
@@ -88,6 +92,10 @@ public class Individual {
     public void setDeath(Date death) {
         if (death == null) {
             throw new IllegalArgumentException();
+        }
+
+        if (death.after(new Date())) {
+            throw new IllegalStateException("Error US01: Death must occur before current time.");
         }
 
         if (this.birthday != null) {
