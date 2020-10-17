@@ -18,9 +18,6 @@ public class GEDParser {
                 case "--siblings-ordered-by-age":
                     validator = new SiblingsOrderedByAge(validator);
                     break;
-                case "--correct-gender":
-                    validator = new CorrectGender(validator);
-                    break;
                 case "--multiple-births":
                     validator = new MultipleBirths(validator);
                     break;
@@ -39,11 +36,8 @@ public class GEDParser {
                 case "--no-incest":
                     validator = new NoIncest(validator);
                     break;
-                case "--marriage-before-divorce":
-                    validator = new MarriageBeforeDivorce(validator);
-                    break;
                 case "--marriage-after-14":
-                    validator = new MarriageBeforeDivorce(validator);
+                    validator = new MarriageAfter14(validator);
                     break;
                 case "--valid-birth":
                     validator = new ValidBirth(validator);

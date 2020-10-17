@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gedcom.interfaces.Gender;
+
 public class Family {
 
     private final int MAX_SIBLINGS = 15;
@@ -34,6 +36,11 @@ public class Family {
         if (husband == null) {
             throw new IllegalArgumentException();
         }
+
+        if (husband.getGender() == Gender.F) {
+            throw new IllegalStateException(String.format("Error US21: Individual %s gender is not MALE.", husband.getID()));
+        }
+
         this.husband = husband;
     }
 
@@ -45,6 +52,11 @@ public class Family {
         if (wife == null) {
             throw new IllegalArgumentException();
         }
+
+        if (wife.getGender() == Gender.M) {
+            throw new IllegalStateException(String.format("Error US21: Individual %s gender is not FEMALE.", wife.getID()));
+        }
+
         this.wife = wife;
     }
 
@@ -53,7 +65,19 @@ public class Family {
     }
 
     public void setMarriage(Date marriage) {
-        this.marriage = marriage;
+        if (marriage == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.divorce != null) {
+            if (this.divorce.equals(marriage) || this.divorce.after(marriage)) {
+                this.marriage = marriage;
+            } else {
+                throw new IllegalStateException("Error US04: Marriage cannot occur after divorce.");
+            }
+        } else {
+            this.marriage = marriage;
+        }
     }
 
     public Date getDivorce() {
@@ -61,7 +85,19 @@ public class Family {
     }
 
     public void setDivorce(Date divorce) {
-        this.divorce = divorce;
+        if (divorce == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.marriage != null) {
+            if (this.marriage.equals(divorce) || this.marriage.before(divorce)) {
+                this.divorce = divorce;
+            } else {
+                throw new IllegalStateException("Error US04: Divorce cannot occur before marriage.");
+            }
+        } else {
+            this.divorce = divorce;
+        }
     }
 
     public List<Individual> getChildren() {

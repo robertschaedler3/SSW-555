@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
 import gedcom.interfaces.Tag;
@@ -29,6 +30,11 @@ public class GEDFile {
         for (Family fam : fams) {
             families.put(fam.getID(), fam);
         }
+    }
+
+    public GEDFile(List<Individual> indivs, List<Family> fams) {
+        individuals = new HashMap<String, Individual>(indivs.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
+        families = new HashMap<String, Family>(fams.stream().collect(Collectors.toMap(Family::getID, family -> family)));
     }
 
     public GEDFile(Scanner s) {
