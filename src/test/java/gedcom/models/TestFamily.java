@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 
@@ -219,5 +220,25 @@ public class TestFamily {
 
         assertTrue(actualMessage.contains(expectedMessage));
 
+    }
+
+    @Test
+    public void testGetChildren() {
+        Individual child1 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2000).build();
+        Individual child2 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2001).build();
+        Individual child3 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2002).build();
+        Individual child4 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1999).build();
+        Individual child5 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1998).build();
+
+        Family family = new FamilyBuilder().withChildren(child1, child2, child3, child4, child5).build();
+        List<Individual> children = family.getChildren();
+
+        Individual previousChild = children.get(0);
+        Individual currentChild;
+        for (int i = 1; i < children.size(); i++) {
+            currentChild = children.get(i);
+            assertTrue(previousChild.getBirthday().after(currentChild.getBirthday()));
+            previousChild = currentChild;
+        }
     }
 }
