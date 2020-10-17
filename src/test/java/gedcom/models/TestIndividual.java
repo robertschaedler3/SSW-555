@@ -68,6 +68,20 @@ public class TestIndividual {
     }
 
     @Test
+    public void testBirthException3() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            Date now = new Date();
+            Date birth = DateBuilder.newDateDaysAfter(now, 1);
+            Individual individual = new IndividualBuilder().withBirth(birth).build();
+        });
+
+        String expectedMessage = "Error US01: Birth must occur before current time.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
     public void testDeath() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2001);
@@ -94,6 +108,20 @@ public class TestIndividual {
         });
 
         String expectedMessage = "US03: Death cannot occur before birth.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+    
+    @Test
+    public void testDeathException3() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            Date now = new Date();
+            Date death = DateBuilder.newDateDaysAfter(now, 1);
+            Individual individual = new IndividualBuilder().withDeath(death).build();
+        });
+
+        String expectedMessage = "Error US01: Death must occur before current time.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

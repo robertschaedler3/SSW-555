@@ -112,6 +112,20 @@ public class TestFamily {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
+    
+    @Test
+    public void testMarriageException3() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            Date now = new Date();
+            Date marriage = DateBuilder.newDateDaysAfter(now, 1);
+            Family family = new FamilyBuilder().withMarriage(marriage).build();
+        });
+
+        String expectedMessage = "Error US01: Marriage must occur before the current time.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
 
     @Test
     public void testDivorce() {
@@ -140,6 +154,19 @@ public class TestFamily {
         });
 
         String expectedMessage = "Error US04: Divorce cannot occur before marriage.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+    @Test
+    public void testDivorceExcpetion3() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            Date now = new Date();
+            Date marriage = DateBuilder.newDateDaysAfter(now, 1);
+            Family family = new FamilyBuilder().withDivorce(marriage).build();
+        });
+
+        String expectedMessage = "Error US01: Divorce must occur before the current time.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
