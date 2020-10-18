@@ -1,4 +1,3 @@
-//package gedcom.validators;
 package gedcom.validators;
 
 import gedcom.models.GEDFile;
