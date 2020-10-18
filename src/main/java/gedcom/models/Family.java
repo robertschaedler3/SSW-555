@@ -112,7 +112,7 @@ public class Family {
     }
 
     public List<Individual> getChildren() {
-        children.sort(Comparator.comparing(Individual::getBirthday).reversed());
+        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
         return children;
     }
 
