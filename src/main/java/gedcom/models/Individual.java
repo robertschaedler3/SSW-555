@@ -25,7 +25,6 @@ public class Individual {
     private Set<Family> spouseFamilies; // Individual is a spouse in these families
 
     public Individual(String ID) {
-        super();
         this.ID = ID;
         this.name = "";
         this.gender = Gender.NOT_SPECIFIED;

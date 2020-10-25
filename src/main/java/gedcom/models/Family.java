@@ -26,7 +26,6 @@ public class Family {
     private Set<Individual> children;
 
     public Family(String ID) {
-        super();
         this.ID = ID;
         this.children = new HashSet<>();
     }
