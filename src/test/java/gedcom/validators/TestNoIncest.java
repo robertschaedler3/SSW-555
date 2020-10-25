@@ -50,20 +50,21 @@ public class TestNoIncest {
 
 	@Test
 	public void testFirstCousinIncest() {
+		Individual individual = new IndividualBuilder().build();
+		
 		Individual grandparent = new IndividualBuilder().build();
 		Individual parent = new IndividualBuilder().build();
-		Individual child = new IndividualBuilder().build();
 
 		Individual uncle = new IndividualBuilder().build();
 		Individual cousin = new IndividualBuilder().build();
 
 		Family family1 = new FamilyBuilder().withHusband(grandparent).withChildren(parent, uncle).build();
-		Family family2 = new FamilyBuilder().withHusband(parent).withChild(child).build();
+		Family family2 = new FamilyBuilder().withHusband(parent).withChild(individual).build();
 		Family family3 = new FamilyBuilder().withHusband(uncle).withChild(cousin).build();
 
-		Family family4 = new FamilyBuilder().withHusband(cousin).withWife(cousin).build();
+		Family family4 = new FamilyBuilder().withHusband(cousin).withWife(individual).build();
 
-		List<Individual> individuals = Arrays.asList(grandparent, parent, child, uncle, cousin);
+		List<Individual> individuals = Arrays.asList(grandparent, parent, individual, uncle, cousin);
 		List<Family> families = Arrays.asList(family1, family2, family3, family4);
 
 		GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
@@ -72,16 +73,17 @@ public class TestNoIncest {
 
 	@Test
 	public void testAuntUncleIncest() {
+		Individual individual = new IndividualBuilder().build();
+		
 		Individual parent = new IndividualBuilder().build();
 		Individual uncle = new IndividualBuilder().build();
-		Individual child = new IndividualBuilder().build();
 
 		Family family1 = new FamilyBuilder().withChildren(parent, uncle).build();
-		Family family2 = new FamilyBuilder().withHusband(parent).withChild(child).build();
+		Family family2 = new FamilyBuilder().withHusband(parent).withChild(individual).build();
 
-		Family family3 = new FamilyBuilder().withHusband(uncle).withWife(child).build();
+		Family family3 = new FamilyBuilder().withHusband(uncle).withWife(individual).build();
 
-		List<Individual> individuals = Arrays.asList(parent, child, uncle);
+		List<Individual> individuals = Arrays.asList(parent, individual, uncle);
 		List<Family> families = Arrays.asList(family1, family2, family3);
 
 		GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
