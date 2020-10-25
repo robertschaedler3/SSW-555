@@ -12,7 +12,9 @@ import gedcom.interfaces.Gender;
 
 public class Family {
 
-    private final int MAX_SIBLINGS = 15;
+    public static final int MAX_SIBLINGS = 15;
+    public static final int FATHER_AGE_THRESHOLD = 80;
+    public static final int MOTHER_AGE_THRESHOLD = 60;
 
     private String ID;
     private Individual husband;
@@ -37,6 +39,10 @@ public class Family {
         return husband;
     }
 
+    public Individual getWife() {
+        return wife;
+    }
+
     public void setHusband(Individual husband) {
         if (husband == null) {
             throw new IllegalArgumentException();
@@ -45,23 +51,19 @@ public class Family {
         if (husband.getGender() == Gender.F) {
             throw new IllegalStateException(String.format("Error US21: Individual %s gender is not MALE.", husband.getID()));
         }
-
+        
         this.husband = husband;
     }
-
-    public Individual getWife() {
-        return wife;
-    }
-
+    
     public void setWife(Individual wife) {
         if (wife == null) {
             throw new IllegalArgumentException();
         }
-
+        
         if (wife.getGender() == Gender.M) {
             throw new IllegalStateException(String.format("Error US21: Individual %s gender is not FEMALE.", wife.getID()));
         }
-
+        
         this.wife = wife;
     }
 
@@ -72,6 +74,10 @@ public class Family {
     public void setMarriage(Date marriage) {
         if (marriage == null) {
             throw new IllegalArgumentException();
+        }
+
+        if (marriage.after(new Date())) {
+            throw new IllegalStateException("Error US01: Marriage must occur before the current time.");
         }
 
         if (this.divorce != null) {
@@ -94,6 +100,10 @@ public class Family {
             throw new IllegalArgumentException();
         }
 
+        if (divorce.after(new Date())) {
+            throw new IllegalStateException("Error US01: Divorce must occur before the current time.");
+        }
+
         if (this.marriage != null) {
             if (this.marriage.equals(divorce) || this.marriage.before(divorce)) {
                 this.divorce = divorce;
@@ -106,7 +116,9 @@ public class Family {
     }
 
     public List<Individual> getChildren() {
-        return new ArrayList<>(children);
+        List<Individual> children = new ArrayList<>(this.children);
+        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
+        return children;
     }
 
     public boolean addChild(Individual child) {

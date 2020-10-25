@@ -15,20 +15,11 @@ public class GEDParser {
     private static void parseArgs(String[] args) {
         for (int i = 1; i < args.length; i++) {
             switch (args[i]) {
-                case "--siblings-ordered-by-age":
-                    validator = new SiblingsOrderedByAge(validator);
-                    break;
                 case "--multiple-births":
                     validator = new MultipleBirths(validator);
                     break;
-                case "--less-than-150-years-old":
-                    validator = new LessThan150YearsOld(validator);
-                    break;
                 case "--divorce-before-death":
                     validator = new DivorceBeforeDeath(validator);
-                    break;
-                case "--dates-before-current":
-                    validator = new DatesBeforeCurrentDate(validator);
                     break;
                 case "--no-bigamy":
                     validator = new NoBigamy(validator);

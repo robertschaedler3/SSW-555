@@ -35,7 +35,7 @@ public class TestValidBirth {
     private final String MARRIAGE = "01 JAN 1990";
 
     private final String CHILD_ID = "CHILD";
-    private final String CHILD_DEATH = "01 JAN 3000";
+    private final String CHILD_DEATH = "01 JAN 2020";
 
     public TestValidBirth() {
         this.dateFmt = new SimpleDateFormat(DATE_FORMAT);
@@ -44,12 +44,9 @@ public class TestValidBirth {
 
     private void buildGedfile(String childBirthday, String marriage) {
         try {
-            Individual mother = makeIndividual(MOTHER_ID, dateFmt.parse(MOTHER_BIRTH), dateFmt.parse(MOTHER_DEATH),
-                    Gender.F);
-            Individual father = makeIndividual(FATHER_ID, dateFmt.parse(FATHER_BIRTH), dateFmt.parse(FATHER_DEATH),
-                    Gender.M);
-            Individual child = makeIndividual(CHILD_ID, dateFmt.parse(childBirthday), dateFmt.parse(CHILD_DEATH),
-                    Gender.M);
+            Individual mother = makeIndividual(MOTHER_ID, dateFmt.parse(MOTHER_BIRTH), dateFmt.parse(MOTHER_DEATH),Gender.F);
+            Individual father = makeIndividual(FATHER_ID, dateFmt.parse(FATHER_BIRTH), dateFmt.parse(FATHER_DEATH),Gender.M);
+            Individual child = makeIndividual(CHILD_ID, dateFmt.parse(childBirthday), dateFmt.parse(CHILD_DEATH),Gender.M);
 
             Family family = new Family("Family");
             family.setWife(mother);
