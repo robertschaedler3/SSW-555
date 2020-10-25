@@ -2,7 +2,9 @@ package gedcom.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
@@ -17,15 +19,16 @@ public class Individual {
     private Date birthday;
     private Date death;
 
-    private List<Family> childFamilies; // Individual is a child in these families
-    private List<Family> spouseFamilies; // Individual is a spouse in these families
+    private Set<Family> childFamilies;  // Individual is a child in these families
+    private Set<Family> spouseFamilies; // Individual is a spouse in these families
 
     public Individual(String ID) {
+        super();
         this.ID = ID;
         this.name = "";
         this.gender = Gender.NOT_SPECIFIED;
-        this.childFamilies = new ArrayList<>();
-        this.spouseFamilies = new ArrayList<>();
+        this.childFamilies = new HashSet<>();
+        this.spouseFamilies = new HashSet<>();
     }
 
     public String getID() {
@@ -102,19 +105,35 @@ public class Individual {
     }
 
     public List<Family> getChildFamilies() {
-        return childFamilies;
+        return new ArrayList<>(childFamilies);
     }
 
     public boolean addChildFamily(Family family) {
-        return (family != null) ? this.childFamilies.add(family) : false;
-    }
+        if (family == null) {
+            throw new IllegalArgumentException("Family cannot be null.");
+        }
 
+        if (!this.childFamilies.add(family)) {
+            throw new IllegalArgumentException("Family already exists as a child family.");
+        }
+
+        return true;
+    }
+    
     public List<Family> getSpouseFamilies() {
-        return spouseFamilies;
+        return new ArrayList<>(spouseFamilies);
     }
-
+    
     public boolean addSpouseFamily(Family family) {
-        return (family != null) ? this.spouseFamilies.add(family) : false;
+        if (family == null) {
+            throw new IllegalArgumentException("Family cannot be null.");
+        }
+        
+        if (!this.spouseFamilies.add(family)) {
+            throw new IllegalArgumentException("Family already exists as a spouse family.");
+        }
+
+        return false;
     }
 
     public int age() {

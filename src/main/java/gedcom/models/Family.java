@@ -1,8 +1,12 @@
 package gedcom.models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
 
@@ -17,11 +21,12 @@ public class Family {
     private Date marriage;
     private Date divorce;
 
-    private List<Individual> children;
+    private Set<Individual> children;
 
     public Family(String ID) {
+        super();
         this.ID = ID;
-        this.children = new ArrayList<>();
+        this.children = new HashSet<>();
     }
 
     public String getID() {
@@ -101,20 +106,22 @@ public class Family {
     }
 
     public List<Individual> getChildren() {
-        return children;
+        return new ArrayList<>(children);
     }
 
     public boolean addChild(Individual child) {
         if (child == null) {
             throw new IllegalArgumentException("Child cannot be null.");
         }
-        if (children.contains(child)) {
+        
+        if (this.children.contains(child)) {
             throw new IllegalArgumentException("Child already exists in family.");
         }
 
-        if (children.size() >= MAX_SIBLINGS) {
+        if (children.size() + 1 >= MAX_SIBLINGS) {
             throw new IllegalStateException(String.format("Error US22: A family can only have a max of %d children.", MAX_SIBLINGS));
         }
+
         return this.children.add(child);
     }
 
