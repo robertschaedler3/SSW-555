@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
 
@@ -130,7 +129,7 @@ public class Family {
             throw new IllegalArgumentException("Child already exists in family.");
         }
 
-        if (children.size() + 1 >= MAX_SIBLINGS) {
+        if (children.size() >= MAX_SIBLINGS) {
             throw new IllegalStateException(String.format("Error US22: A family can only have a max of %d children.", MAX_SIBLINGS));
         }
 
