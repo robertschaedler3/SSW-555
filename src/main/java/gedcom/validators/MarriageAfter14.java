@@ -23,12 +23,12 @@ public class MarriageAfter14 extends Validator {
             Individual husband = family.getHusband();
             Calendar husbandMinMarriage = Calendar.getInstance();
             husbandMinMarriage.setTime(husband.getBirthday());
-            husbandMinMarriage.add(Calendar.YEAR, 14);
+            husbandMinMarriage.add(Calendar.YEAR, Family.MIN_MARRIAGE_AGE);
 
             Individual wife = family.getWife();
             Calendar wifeMinMarriage = Calendar.getInstance();
             wifeMinMarriage.setTime(wife.getBirthday());
-            wifeMinMarriage.add(Calendar.YEAR, 14);
+            wifeMinMarriage.add(Calendar.YEAR, Family.MIN_MARRIAGE_AGE);
 
             if (marriage.compareTo(husbandMinMarriage) < 0) {
                 System.out.printf("Anomaly US10: %s (%s) was married below the age of 14\n", husband.getName(), husband.getID());

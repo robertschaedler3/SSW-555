@@ -12,6 +12,7 @@ import gedcom.interfaces.Gender;
 public class Family {
 
     public static final int MAX_SIBLINGS = 15;
+    public static final int MIN_MARRIAGE_AGE = 14;
     public static final int FATHER_AGE_THRESHOLD = 80;
     public static final int MOTHER_AGE_THRESHOLD = 60;
 
@@ -42,32 +43,36 @@ public class Family {
         return wife;
     }
 
+    public Date getMarriage() {
+        return marriage;
+    }
+
+    public Date getDivorce() {
+        return divorce;
+    }
+
     public void setHusband(Individual husband) {
         if (husband == null) {
             throw new IllegalArgumentException();
         }
-
-        if (husband.getGender() == Gender.F) {
+        
+        if (husband.getGender() == Gender.F) { // Allow NOT_SPECIFIED gender
             throw new IllegalStateException(String.format("Error US21: Individual %s gender is not MALE.", husband.getID()));
         }
-        
+
         this.husband = husband;
     }
-    
+
     public void setWife(Individual wife) {
         if (wife == null) {
             throw new IllegalArgumentException();
         }
-        
-        if (wife.getGender() == Gender.M) {
+
+        if (wife.getGender() == Gender.M) { // Allow NOT_SPECIFIED gender
             throw new IllegalStateException(String.format("Error US21: Individual %s gender is not FEMALE.", wife.getID()));
         }
-        
-        this.wife = wife;
-    }
 
-    public Date getMarriage() {
-        return marriage;
+        this.wife = wife;
     }
 
     public void setMarriage(Date marriage) {
@@ -88,10 +93,6 @@ public class Family {
         } else {
             this.marriage = marriage;
         }
-    }
-
-    public Date getDivorce() {
-        return divorce;
     }
 
     public void setDivorce(Date divorce) {
@@ -124,7 +125,7 @@ public class Family {
         if (child == null) {
             throw new IllegalArgumentException("Child cannot be null.");
         }
-        
+
         if (this.children.contains(child)) {
             throw new IllegalArgumentException("Child already exists in family.");
         }
