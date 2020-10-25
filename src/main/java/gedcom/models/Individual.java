@@ -1,6 +1,7 @@
 package gedcom.models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -197,6 +198,7 @@ public class Individual {
         for (Family family : this.spouseFamilies) {
             children.addAll(family.getChildren());
         }
+        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
         return children;
     }
 

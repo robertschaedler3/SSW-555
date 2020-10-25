@@ -233,20 +233,24 @@ public class TestIndividual {
 
     @Test
     public void testGetChildren() {
-        Individual husband = new IndividualBuilder().male().build();
-        Individual firstWife = new IndividualBuilder().female().build();
-        Individual secondWife = new IndividualBuilder().female().build();
+        Individual parent = new IndividualBuilder().build();
 
-        Individual firstChild = new IndividualBuilder().build();
-        Individual secondChild = new IndividualBuilder().build();
+        Individual child1 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2000).build();
+        Individual child2 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2001).build();
+        Individual child3 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2002).build();
+        Individual child4 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1999).build();
+        Individual child5 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1998).build();
 
-        Family firstMarriage = new FamilyBuilder().withHusband(husband).withWife(firstWife).withChild(firstChild).build();
-        Family secondMarriage = new FamilyBuilder().withHusband(husband).withWife(secondWife).withChild(secondChild).build();
+        Family family = new FamilyBuilder().withHusband(parent).withChildren(child1, child2, child3, child4, child5).build();
+        List<Individual> children = parent.getChildren();
 
-        List<Individual> children = new ArrayList<>(Arrays.asList(firstChild, secondChild));
-        List<Individual> indivChildren = husband.getChildren();
-
-        assertTrue(orderAgnosticEquality(children, indivChildren));
+        Individual previousChild = children.get(0);
+        Individual currentChild;
+        for (int i = 1; i < children.size(); i++) {
+            currentChild = children.get(i);
+            assertTrue(previousChild.getBirthday().after(currentChild.getBirthday()));
+            previousChild = currentChild;
+        }
     }
 
     @Test
