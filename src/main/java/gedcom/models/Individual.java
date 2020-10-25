@@ -11,7 +11,7 @@ import gedcom.interfaces.Gender;
 
 public class Individual {
 
-    private final int MAX_AGE = 150;
+    public static final int MAX_AGE = 150;
 
     private String ID;
     private String name;
@@ -70,32 +70,49 @@ public class Individual {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
-        if (birthday == null) {
+    public Date getDeath() {
+        return death;
+    }
+
+    public int age() {
+        return age(this.birthday, this.death);
+    }
+
+    private int age(Date birth, Date death) {
+        if (birth == null) {
+            throw new IllegalStateException("Cannot determine age without a birth date.");
+        }
+
+        long diff;
+        if (death != null) {
+            diff = death.getTime() - birth.getTime();
+        } else {
+            diff = (new Date()).getTime() - birth.getTime();
+        }
+        return (int) (diff / (1000l * 60 * 60 * 24 * 365));
+    }
+
+    public void setBirthday(Date birth) {
+        if (birth == null) {
             throw new IllegalArgumentException();
         }
 
-        if (birthday.after(new Date())) {
+        if (birth.after(new Date())) {
             throw new IllegalStateException("Error US01: Birth must occur before current time.");
         }
 
         if (this.death != null) {
-            if (this.death.equals(birthday) || this.death.after(birthday)) {
-                this.birthday = birthday;
-                if (this.age() > MAX_AGE) {
-                    this.birthday = null;
+            if (this.death.equals(birth) || this.death.after(birth)) {
+                if (this.age(birth, this.death) > MAX_AGE) {
                     throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
                 }
+                this.birthday = birth;
             } else {
                 throw new IllegalStateException("US03: Birth cannot occur after death.");
             }
         } else {
-            this.birthday = birthday;
+            this.birthday = birth;
         }
-    }
-
-    public Date getDeath() {
-        return death;
     }
 
     public void setDeath(Date death) {
@@ -109,11 +126,10 @@ public class Individual {
 
         if (this.birthday != null) {
             if (this.birthday.equals(death) || this.birthday.before(death)) {
-                this.death = death;
-                if (this.age() > MAX_AGE) {
-                    this.death = null;
+                if (this.age(this.birthday, death) > MAX_AGE) {
                     throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
                 }
+                this.death = death;
             } else {
                 throw new IllegalStateException("US03: Death cannot occur before birth.");
             }
@@ -152,20 +168,6 @@ public class Individual {
         }
 
         return false;
-    }
-
-    public int age() {
-        if (birthday == null) {
-            throw new IllegalStateException("Cannot determine age without a birth date.");
-        }
-
-        long diff;
-        if (death != null) {
-            diff = death.getTime() - birthday.getTime();
-        } else {
-            diff = (new Date()).getTime() - birthday.getTime();
-        }
-        return (int) (diff / (1000l * 60 * 60 * 24 * 365));
     }
 
     public boolean alive() {
