@@ -24,7 +24,7 @@ public class TestUniqueNames {
     Validator uniqueNames = new UniqueNameBirthdays(validator);
 
     @Test
-    public void checkDifferentName() throws ParseException {
+    public void checkDifferentName() {
         Date childBirthday1 = DateBuilder.build(2, Calendar.JANUARY, 1990);
         Date childBirthday2 = DateBuilder.build(2, Calendar.JANUARY, 1994);
         String childName1 = "Terry";
@@ -45,7 +45,7 @@ public class TestUniqueNames {
     }
 
     @Test
-    public void checkSameName() throws ParseException {
+    public void checkSameName() {
         Date childBirthday1 = DateBuilder.build(2, Calendar.JANUARY, 1990);
         Date childBirthday2 = DateBuilder.build(2, Calendar.JANUARY, 1994);
         String childName1 = "Terry";
@@ -66,7 +66,7 @@ public class TestUniqueNames {
     }
 
     @Test
-    public void checkSameNameBirthday() throws ParseException {
+    public void checkSameNameBirthday() {
         Date childBirthday1 = DateBuilder.build(2, Calendar.JANUARY, 1990);
         Date childBirthday2 = DateBuilder.build(2, Calendar.JANUARY, 1990);
         String childName1 = "Terry";
