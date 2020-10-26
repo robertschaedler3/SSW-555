@@ -31,7 +31,7 @@ public class CorrespondingEntries extends Validator {
             }
 
             for(Individual child : familyChildren){
-                if( !(gedFile.getIndividual(child.getID()))){
+                if( gedFile.getIndividual(child.getID()) != null ){
                     valid = false;
                 }
             }
