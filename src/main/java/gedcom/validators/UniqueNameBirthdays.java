@@ -25,8 +25,6 @@ public class UniqueNameBirthdays extends Validator {
             for (Individual child : family.getChildren()) {
                 String childName = child.getName();
                 Date childBirthday = child.getBirthday();
-                System.out.println(childName);
-                System.out.println(childBirthday);
 
                 for(Map<String, Date> checkedChildren : childrenWithoutSameName){
                     if (checkedChildren.containsKey(childName)){
