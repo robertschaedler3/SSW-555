@@ -46,7 +46,7 @@ public class TestCorrespondingEntries {
 		individuals.addAll(family1.getChildren());
 
 		GEDFile gedFile = new GEDFile(individuals, families);
-		assertTrue(validator.isValid(gedFile));
+		assertFalse(validator.isValid(gedFile));
 	}
 
 }
