@@ -25,8 +25,8 @@ public class CorrespondingEntries extends Validator {
             Individual familyWife = family.getWife();
             List<Individual> familyChildren = family.getChildren();
 
-            if( !(gedFile.getIndividual(familyFather.getID())) ||
-                !(gedFile.getIndividual(familyWife.getID())) ){
+            if( gedFile.getIndividual(familyFather.getID()) != null ||
+                gedFile.getIndividual(familyWife.getID()) != null ){
                 valid = false;
             }
 
