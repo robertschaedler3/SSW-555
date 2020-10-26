@@ -15,54 +15,66 @@ public class TestUniqueNames {
     Validator validator = new DefaultValidator();
     Validator uniqueNames = new UniqueNameBirthdays(validator);
 
-    Individual husband1 = new Individual("Husband1");
-    Individual wife1 = new Individual("Wife1");
-
-    Individual child1 = new Individual("Child1");
-    Individual child2 = new Individual("Child2");
-
-    Individual[] individuals = { husband1, wife1, child1, child2 };
-
-    Family family1 = new Family("Family1");
-    Family[] families = { family1 };
-
-    public void setBaseFamilyInfo() throws ParseException {
-        child1.setName("terry");
-        child2.setName("benard");
-
-        child1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1990"));
-        child2.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1994"));
-
-        family1.setHusband(husband1);
-        family1.setWife(wife1);
-
-        family1.addChild(child1);
-        family1.addChild(child2);
-    }
-
     @Test
     public void checkDifferentName() throws ParseException {
-        setBaseFamilyInfo();
+        Date childBirthday1 = DateBuilder.build(2, Calendar.JANUARY, 1990);
+        Date childBirthday2 = DateBuilder.build(2, Calendar.JANUARY, 1994);
+        String childName1 = "Terry";
+        String childName2 = "Bob";
 
-        assertTrue(uniqueNames.isValid((new GEDFile(individuals, families))));
+        Individual husband = new IndividualBuilder().build();
+        Individual wife = new IndividualBuilder().build();
+        Individual child1 = new IndividualBuilder().withName(childName1).withBirth(childBirthday1).build();
+        Individual child2 = new IndividualBuilder().withName(childName2).withBirth(childBirthday2).build();
+
+        Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChild(child1).withChild(child2).build();
+
+        List<Individual> individuals = new ArrayList<>(Arrays.asList(husband, wife, child1, child2));
+        List<Family> families = new ArrayList<>(Arrays.asList(family1));
+        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+
+        assertTrue(uniqueNames.isValid(gedFile));
     }
 
     @Test
     public void checkSameName() throws ParseException {
-        setBaseFamilyInfo();
+        Date childBirthday1 = DateBuilder.build(2, Calendar.JANUARY, 1990);
+        Date childBirthday2 = DateBuilder.build(2, Calendar.JANUARY, 1994);
+        String childName1 = "Terry";
+        String childName2 = "Terry";
 
-        child2.setName("terry");
+        Individual husband = new IndividualBuilder().build();
+        Individual wife = new IndividualBuilder().build();
+        Individual child1 = new IndividualBuilder().withName(childName1).withBirth(childBirthday1).build();
+        Individual child2 = new IndividualBuilder().withName(childName2).withBirth(childBirthday2).build();
 
-        assertTrue(uniqueNames.isValid((new GEDFile(individuals, families))));
+        Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChild(child1).withChild(child2).build();
+
+        List<Individual> individuals = new ArrayList<>(Arrays.asList(husband, wife, child1, child2));
+        List<Family> families = new ArrayList<>(Arrays.asList(family1));
+        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+
+        assertTrue(uniqueNames.isValid(gedFile));
     }
 
     @Test
     public void checkSameNameBirthday() throws ParseException {
-        setBaseFamilyInfo();
+        Date childBirthday1 = DateBuilder.build(2, Calendar.JANUARY, 1990);
+        Date childBirthday2 = DateBuilder.build(2, Calendar.JANUARY, 1990);
+        String childName1 = "Terry";
+        String childName2 = "Terry";
 
-        child2.setName("terry");
-        child2.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1990"));
+        Individual husband = new IndividualBuilder().build();
+        Individual wife = new IndividualBuilder().build();
+        Individual child1 = new IndividualBuilder().withName(childName1).withBirth(childBirthday1).build();
+        Individual child2 = new IndividualBuilder().withName(childName2).withBirth(childBirthday2).build();
 
-        assertFalse(uniqueNames.isValid((new GEDFile(individuals, families))));
+        Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChild(child1).withChild(child2).build();
+
+        List<Individual> individuals = new ArrayList<>(Arrays.asList(husband, wife, child1, child2));
+        List<Family> families = new ArrayList<>(Arrays.asList(family1));
+        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+
+        assertTrue(uniqueNames.isValid(gedFile));
     }
 }
