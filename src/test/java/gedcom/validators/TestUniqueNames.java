@@ -2,14 +2,22 @@ package gedcom.validators;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import gedcom.models.Family;
-import gedcom.models.GEDFile;
-import gedcom.models.Individual;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import gedcom.builders.FamilyBuilder;
+import gedcom.builders.GEDFileBuilder;
+import gedcom.builders.IndividualBuilder;
+import gedcom.models.Family;
+import gedcom.models.GEDFile;
+import gedcom.models.Individual;
+import gedcom.builders.DateBuilder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestUniqueNames {
     Validator validator = new DefaultValidator();
