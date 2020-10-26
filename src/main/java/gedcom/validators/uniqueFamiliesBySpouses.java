@@ -6,8 +6,9 @@ import java.util.List;
  * No more than one family with the same spouses by name 
  * and the same marriage date should appear in a GEDCOM file
  */
-public class uniqueFamiliesBySpouses extends Validator{
-    public uniqueFamiliesBySpouses(Validator validator) {
+public class UniqueFamiliesBySpouses extends Validator {
+    
+    public UniqueFamiliesBySpouses(Validator validator) {
         super(validator);
     }
 
