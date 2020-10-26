@@ -10,6 +10,7 @@ import gedcom.interfaces.Gender;
 public class Family {
 
     public static final int MAX_SIBLINGS = 15;
+    public static final int MAX_MULTIPLE_BIRTH = 5;
     public static final int FATHER_AGE_THRESHOLD = 80;
     public static final int MOTHER_AGE_THRESHOLD = 60;
 
