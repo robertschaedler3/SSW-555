@@ -83,6 +83,6 @@ public class TestUniqueNames {
         List<Family> families = new ArrayList<>(Arrays.asList(family1));
         GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
 
-        assertTrue(uniqueNames.isValid(gedFile));
+        assertFalse(uniqueNames.isValid(gedFile));
     }
 }
