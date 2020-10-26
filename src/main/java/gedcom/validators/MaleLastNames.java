@@ -22,7 +22,7 @@ public class MaleLastNames extends Validator {
                 if (child.getGender() == Gender.M) {
                     if (!child.getLastName().equals(lastName)) {
                         valid = false;
-                        System.out.printf("Anomaly US16: Individual %s does not share father's last name of '%s'", child.getID(), lastName);
+                        System.out.printf("Anomaly US16: Individual %s (male) does not share father's last name of '%s'\n", child.getID(), lastName);
                     }
                 }
             }
