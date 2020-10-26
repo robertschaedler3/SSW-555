@@ -30,7 +30,6 @@ public class UniqueNameBirthdays extends Validator {
 
                 for(Map<String, Date> checkedChildren : childrenWithoutSameName){
                     if (checkedChildren.containsKey(childName)){
-                        System.out.println(checkedChildren.get(childName));
                         if(childBirthday.equals(checkedChildren.get(childName))) {
                             System.out.printf("Anomaly US25: More than one child with the same name in %s\n",
                                     family.getID());
