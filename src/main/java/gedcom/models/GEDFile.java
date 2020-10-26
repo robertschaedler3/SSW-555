@@ -1,7 +1,5 @@
 package gedcom.models;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
 import gedcom.interfaces.Tag;
@@ -33,49 +32,48 @@ public class GEDFile {
         }
     }
 
-    public GEDFile(File file) {
+    public GEDFile(List<Individual> indivs, List<Family> fams) {
+        individuals = new HashMap<String, Individual>(indivs.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
+        families = new HashMap<String, Family>(fams.stream().collect(Collectors.toMap(Family::getID, family -> family)));
+    }
+
+    public GEDFile(Scanner s) {
         individuals = new HashMap<String, Individual>();
         families = new HashMap<String, Family>();
 
-        Scanner s = null;
+        String line;
+        List<GEDLine> gedLines = new ArrayList<>();
+        GEDLine currentLine;
 
-        try {
-            s = new Scanner(file);
-            String line;
-            List<GEDLine> gedLines = new ArrayList<>();
-            GEDLine currentLine;
+        // Read file into GEDLine list
+        while (s.hasNextLine()) {
+            line = s.nextLine();
+            currentLine = new GEDLine(line);
+            gedLines.add(currentLine);
 
-            // Read file into GEDLine list
-            while (s.hasNextLine()) {
-                line = s.nextLine();
-                currentLine = new GEDLine(line);
-                gedLines.add(currentLine);
-
-                // Create 'blank' Individuals and Families
-                if (currentLine.getTag() == Tag.INDI) {
-                    individuals.put(currentLine.getID(), new Individual(currentLine.getID()));
-                } else if (currentLine.getTag() == Tag.FAM) {
-                    families.put(currentLine.getID(), new Family(currentLine.getID()));
+            // Create 'blank' Individuals and Families
+            if (currentLine.getTag() == Tag.INDI) {
+                if (individuals.put(currentLine.getID(), new Individual(currentLine.getID())) != null) {
+                    s.close();
+                    throw new IllegalStateException(String.format("Error US15: cannot create individual with duplicate ID %s.", currentLine.getID()));
+                }
+            } else if (currentLine.getTag() == Tag.FAM) {
+                if (families.put(currentLine.getID(), new Family(currentLine.getID())) != null) {
+                    s.close();
+                    throw new IllegalStateException(String.format("Error US15: cannot create family with duplicate ID %s.", currentLine.getID()));
                 }
             }
-
-            // Populate Individual and Family fields
-            for (int i = 0; i < gedLines.size(); i++) {
-                currentLine = gedLines.get(i);
-                if (currentLine.getTag() == Tag.INDI) {
-                    individuals.put(currentLine.getID(), parseIndividual(gedLines, i, currentLine.getID()));
-                } else if (currentLine.getTag() == Tag.FAM) {
-                    families.put(currentLine.getID(), parseFamily(gedLines, i, currentLine.getID()));
-                }
-            }
-
-            s.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.err.println("The file you entered could not be found.");
-            System.exit(1);
         }
 
+        // Populate Individual and Family fields
+        for (int i = 0; i < gedLines.size(); i++) {
+            currentLine = gedLines.get(i);
+            if (currentLine.getTag() == Tag.INDI) {
+                parseIndividual(gedLines, i, currentLine.getID());
+            } else if (currentLine.getTag() == Tag.FAM) {
+                parseFamily(gedLines, i, currentLine.getID());
+            }
+        }
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {
@@ -180,19 +178,23 @@ public class GEDFile {
     }
 
     public Table getIndividualsTable() {
-        List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Child",
-                "Spouse");
+        List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Children", "Spouse");
         List<List<String>> rows = new ArrayList<>();
-        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-MM-dd");
 
         for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
             Individual individual = entry.getValue();
-            rows.add(Arrays.<String>asList(individual.getID(), individual.getGender().toString(), individual.getName(),
+            rows.add(Arrays.<String>asList(
+                    individual.getID(),
+                    individual.getGender().toString(),
+                    individual.getName(),
                     (individual.getBirthday() != null) ? dateFmt.format(individual.getBirthday()) : "NA",
-                    (individual.getBirthday() != null) ? Long.toString(individual.age()) : "NA",
+                    (individual.getBirthday() != null) ? Integer.toString(individual.age()) : "NA",
                     (individual.getBirthday() != null) ? Boolean.toString(individual.alive()) : "NA",
                     (individual.getDeath() != null) ? dateFmt.format(individual.getDeath()) : "NA",
-                    individual.getChildrenFamily().toString(), individual.getSpouseFamily().toString()));
+                    individual.getChildren().toString(), 
+                    individual.getSpouses().toString()
+                ));
         }
 
         return new Table(headers, rows);
@@ -206,11 +208,16 @@ public class GEDFile {
 
         for (Map.Entry<String, Family> entry : families.entrySet()) {
             Family fam = entry.getValue();
-            rows.add(Arrays.<String>asList(fam.getID(),
+            rows.add(Arrays.<String>asList(
+                    fam.getID(),
                     (fam.getMarriage() != null) ? dateFmt.format(fam.getMarriage()) : "NA",
-                    (fam.getDivorce() != null) ? dateFmt.format(fam.getDivorce()) : "NA", fam.getHusband().getName(),
-                    (fam.getHusband() != null) ? fam.getHusband().getID() : "NA", fam.getWife().getName(),
-                    (fam.getWife() != null) ? fam.getWife().getID() : "NA", fam.getChildren().toString()));
+                    (fam.getDivorce() != null) ? dateFmt.format(fam.getDivorce()) : "NA",
+                    (fam.getHusband() != null) ? fam.getHusband().getID() : "NA",
+                    fam.getHusband().getName(),
+                    (fam.getWife() != null) ? fam.getWife().getID() : "NA", 
+                    fam.getWife().getName(),
+                    fam.getChildren().toString()
+                ));
         }
 
         return new Table(headers, rows);

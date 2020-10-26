@@ -8,9 +8,6 @@ import gedcom.models.Individual;
 
 public class ParentsNotTooOld extends Validator {
 
-	private final int FATHER_THRESHOLD = 80;
-	private final int MOTHER_THRESHOLD = 60;
-
 	public ParentsNotTooOld(Validator validator) {
 		super(validator);
 	}
@@ -38,16 +35,16 @@ public class ParentsNotTooOld extends Validator {
 			Individual mother = family.getWife();
 
 			for (Individual child : family.getChildren()) {
-				if (parentAgeWhenChildBorn(father, child) > FATHER_THRESHOLD) {
+				if (parentAgeWhenChildBorn(father, child) > Family.FATHER_AGE_THRESHOLD) {
 					System.out.println("Anomaly US12: Father too old: Parent " + father.getName() + "(" + father.getID()
-							+ ") is more than " + FATHER_THRESHOLD + " years older than child " + child.getName() + "("
-							+ child.getID() + ")");
+							+ ") is more than " + Family.FATHER_AGE_THRESHOLD + " years older than child "
+							+ child.getName() + "(" + child.getID() + ")");
 					valid = false;
 				}
-				if (parentAgeWhenChildBorn(mother, child) > MOTHER_THRESHOLD) {
+				if (parentAgeWhenChildBorn(mother, child) > Family.MOTHER_AGE_THRESHOLD) {
 					System.out.println("Anomaly US12: Mother too old: Parent " + mother.getName() + "(" + mother.getID()
-							+ ") is more than " + MOTHER_THRESHOLD + " years older than child " + child.getName() + "("
-							+ child.getID() + ")");
+							+ ") is more than " + Family.MOTHER_AGE_THRESHOLD + " years older than child "
+							+ child.getName() + "(" + child.getID() + ")");
 					valid = false;
 				}
 			}
