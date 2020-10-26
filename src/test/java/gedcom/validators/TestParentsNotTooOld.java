@@ -23,16 +23,16 @@ public class TestParentsNotTooOld {
 			Family family2 = new Family("Family2");
 
 			Individual child1 = new Individual("Child1");
-			child1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2020"));
+			child1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1920"));
 			child1.addChildFamily(family1);
 
 			Individual father1 = new Individual("Father1");
-			father1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1940"));
+			father1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1840"));
 			father1.setGender(Gender.M);
 			father1.addSpouseFamily(family1);
 
 			Individual mother1 = new Individual("Mother1");
-			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1960"));
+			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1860"));
 			mother1.setGender(Gender.F);
 			mother1.addSpouseFamily(family1);
 
@@ -46,25 +46,25 @@ public class TestParentsNotTooOld {
 			assertTrue(parentsNotTooOldValidator.isValid(new GEDFile(individuals, families)));
 
 			// test mother too old
-			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1959"));
+			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1859"));
 			assertFalse(parentsNotTooOldValidator.isValid(new GEDFile(individuals, families)));
 
 			// test father too old (and reset motherage)
-			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1960"));
-			father1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1939"));
+			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1860"));
+			father1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1839"));
 			assertFalse(parentsNotTooOldValidator.isValid(new GEDFile(individuals, families)));
 
-			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1980"));
-			father1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1980"));
+			mother1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1880"));
+			father1.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1880"));
 
 			Individual child2 = new Individual("Child2");
-			child2.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2020"));
+			child2.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1920"));
 			child2.addChildFamily(family1);
 			child2.addSpouseFamily(family2);
 			child2.setGender(Gender.M);
 
 			Individual grandchild = new Individual("grandchild1");
-			grandchild.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2080"));
+			grandchild.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1980"));
 			grandchild.addChildFamily(family2);
 
 			Individual[] individuals2 = { child1, father1, mother1, child2, grandchild };
@@ -78,7 +78,7 @@ public class TestParentsNotTooOld {
 			assertTrue(parentsNotTooOldValidator.isValid(new GEDFile(individuals2, families2)));
 
 			// test for child-father too old for grandchild
-			grandchild.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2110"));
+			grandchild.setBirthday(new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2010"));
 			assertFalse(parentsNotTooOldValidator.isValid(new GEDFile(individuals2, families2)));
 
 		} catch (ParseException e) {
