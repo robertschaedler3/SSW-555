@@ -61,7 +61,7 @@ public class TestIndividual {
             individual.setBirthday(birth);
         });
 
-        String expectedMessage = "US03: Birth cannot occur after death.";
+        String expectedMessage = "Error US03: Birth cannot occur after death.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -107,7 +107,7 @@ public class TestIndividual {
             individual.setDeath(death);
         });
 
-        String expectedMessage = "US03: Death cannot occur before birth.";
+        String expectedMessage = "Error US03: Death cannot occur before birth.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

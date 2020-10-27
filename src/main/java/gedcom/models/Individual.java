@@ -108,7 +108,7 @@ public class Individual {
                 }
                 this.birthday = birth;
             } else {
-                throw new IllegalStateException("US03: Birth cannot occur after death.");
+                throw new IllegalStateException("Error US03: Birth cannot occur after death.");
             }
         } else {
             this.birthday = birth;
@@ -131,7 +131,7 @@ public class Individual {
                 }
                 this.death = death;
             } else {
-                throw new IllegalStateException("US03: Death cannot occur before birth.");
+                throw new IllegalStateException("Error US03: Death cannot occur before birth.");
             }
         } else {
             this.death = death;
