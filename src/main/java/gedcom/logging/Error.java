@@ -47,4 +47,9 @@ public enum Error {
         return this.code;
     }
 
+    @Override
+    public String toString() {
+        return super.toString().replace("_", " ");
+    }
+
 }
