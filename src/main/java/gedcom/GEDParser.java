@@ -42,6 +42,12 @@ public class GEDParser {
                 case "--unique-first-names":
                     validator = new UniqueNameBirthdays(validator);
                     break;
+                case "--male-last-names":
+                    validator = new MaleLastNames(validator);
+                    break;
+                case "--no-marriages-to-descendants":
+                    validator = new NoMarriagesToDescendants(validator);
+                    break;
                 case "--tabulate":
                     System.out.println(gedFile);
                     break;
