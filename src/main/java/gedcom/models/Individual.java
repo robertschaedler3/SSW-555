@@ -9,6 +9,8 @@ import gedcom.interfaces.Gender;
 
 public class Individual {
 
+    private final int MAX_AGE = 150;
+
     private String ID;
     private String name;
 
@@ -70,9 +72,17 @@ public class Individual {
             throw new IllegalArgumentException();
         }
 
+        if (birthday.after(new Date())) {
+            throw new IllegalStateException("Error US01: Birth must occur before current time.");
+        }
+
         if (this.death != null) {
             if (this.death.equals(birthday) || this.death.after(birthday)) {
                 this.birthday = birthday;
+                if (this.age() > MAX_AGE) {
+                    this.birthday = null;
+                    throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
+                }
             } else {
                 throw new IllegalStateException("US03: Birth cannot occur after death.");
             }
@@ -90,9 +100,17 @@ public class Individual {
             throw new IllegalArgumentException();
         }
 
+        if (death.after(new Date())) {
+            throw new IllegalStateException("Error US01: Death must occur before current time.");
+        }
+
         if (this.birthday != null) {
             if (this.birthday.equals(death) || this.birthday.before(death)) {
                 this.death = death;
+                if (this.age() > MAX_AGE) {
+                    this.death = null;
+                    throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
+                }
             } else {
                 throw new IllegalStateException("US03: Death cannot occur before birth.");
             }

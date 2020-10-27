@@ -19,7 +19,7 @@ public class MarriageAfterBirth extends Validator {
             Individual wife = family.getWife();
 
             if ((family.getMarriage().before(husband.getBirthday())) || (family.getMarriage().before(wife.getBirthday()))) {
-                System.out.printf("Birth of parent occurs after of marriage in family %s", family.getID());
+                System.out.printf("Error US02: Birth of parent occurs after of marriage in family %s", family.getID());
                 valid = false;
             }
         }
