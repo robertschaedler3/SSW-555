@@ -71,6 +71,7 @@ public class GEDParser {
             scanner = new Scanner(file);
             gedFile = new GEDFile(scanner);
 
+            // TODO: check args for tables
             parseArgs(args);
 
             scanner.close();

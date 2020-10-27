@@ -122,6 +122,8 @@ public class GEDFile {
                 } catch (ParseException e) {
                     System.out.println(String.format("Error parsing date: \"%s\"", gedLine.getArgs()));
                 }
+            } else {
+                // TODO: DATE type not specified
             }
 
         }
@@ -171,6 +173,8 @@ public class GEDFile {
                 } catch (ParseException e) {
                     System.out.println(String.format("Error parsing date: \"%s\"", gedLine.getArgs()));
                 }
+            } else {
+                // TODO: DATE type not specified
             }
         }
 
