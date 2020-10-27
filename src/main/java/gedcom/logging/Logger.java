@@ -1,23 +1,18 @@
 package gedcom.logging;
 
-public abstract class Logger {
+public class Logger {
 
-    private static boolean raiseErrors = false;
+    private static String MESSAGE_FORMAT = "[LINE %d] %s US%02d >> %s";
 
-    public static void raiseAll() {
-        raiseErrors = true;
+    public static void log(int line, Error error) {
+        String fullMessage = String.format(MESSAGE_FORMAT, line, error.type(), error.code(), error);
+        System.out.println(fullMessage);
     }
 
-    public static void printAll() {
-        raiseErrors = false;
-    }
-
-    public static void log(Error error) {
-        if (raiseErrors) {
-            throw new RuntimeException(error.toString());
-        } else {
-            System.err.println(error);
-        }
+    public static void log(int line, Error error, String msgFmt, Object... args) {
+        String messageContext = String.format(MESSAGE_FORMAT, line, error.type(), error.code(), msgFmt);
+        String fullMessage = String.format(messageContext, args);
+        System.out.println(fullMessage);
     }
 
 }
