@@ -27,6 +27,7 @@ public enum Error {
     FAMILY_MARRIAGE_SPOUSES_NOT_UNIQUE(ErrorType.ERROR, 24),
     FAMILY_FIRSTNAMES_NOT_UNIQUE(ErrorType.ANOMALY, 25),
     CORRESPONDING_ENTRIES_NOT_FOUND(ErrorType.ERROR, 26),
+    // US27-41 do not raise parsing errors
     ILLEGITIMATE_DATE(ErrorType.ERROR, 42);
 
 
@@ -38,9 +39,12 @@ public enum Error {
         this.code = code;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s US%d", errorType.toString(), code);
+    public ErrorType type() {
+        return this.errorType;
+    }
+
+    public int code() {
+        return this.code;
     }
 
 }
