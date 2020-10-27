@@ -64,17 +64,16 @@ public class ValidMarriage extends Validator {
             Individual husband = family.getHusband();
             Individual wife = family.getWife();
 
-            if (husband != null && wife != null) {
-
+            if (husband != null) {
                 checkMinMarriageAge(husband, family);
-                checkMinMarriageAge(wife, family);
-
                 checkMarriageAfterBirth(husband, family);
-                checkMarriageAfterBirth(wife, family);
-
                 checkMarriageBeforeDeath(husband, family);
+            }
+            
+            if (wife != null) {
+                checkMinMarriageAge(wife, family);
+                checkMarriageAfterBirth(wife, family);
                 checkMarriageBeforeDeath(wife, family);
-
             }
         }
 
