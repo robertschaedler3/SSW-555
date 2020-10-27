@@ -27,7 +27,6 @@ public class Individual {
 
     public Individual(String ID) {
         this.ID = ID;
-        this.name = "";
         this.gender = Gender.NOT_SPECIFIED;
         this.childFamilies = new HashSet<>();
         this.spouseFamilies = new HashSet<>();
@@ -42,11 +41,17 @@ public class Individual {
     }
 
     public String getFirstName() {
+        if (this.name == null) {
+            return null;
+        }
         String[] parts = this.name.split("/");
         return (parts.length > 0) ? parts[0].trim() : "";
     }
 
     public String getLastName() {
+        if (this.name == null) {
+            return null;
+        }
         String[] parts = this.name.split("/");
         return (parts.length > 1) ? parts[1].trim() : "";
     }

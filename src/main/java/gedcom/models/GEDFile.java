@@ -187,7 +187,7 @@ public class GEDFile {
             rows.add(Arrays.<String>asList(
                     individual.getID(),
                     individual.getGender().toString(),
-                    individual.getName(),
+                    (individual.getName() != null) ? individual.getName() : "NA",
                     (individual.getBirthday() != null) ? dateFmt.format(individual.getBirthday()) : "NA",
                     (individual.getBirthday() != null) ? Integer.toString(individual.age()) : "NA",
                     (individual.getBirthday() != null) ? Boolean.toString(individual.alive()) : "NA",
@@ -215,7 +215,7 @@ public class GEDFile {
                     (fam.getHusband() != null) ? fam.getHusband().getID() : "NA",
                     fam.getHusband().getName(),
                     (fam.getWife() != null) ? fam.getWife().getID() : "NA", 
-                    fam.getWife().getName(),
+                    (fam.getWife() != null && fam.getWife().getName() != null) ? fam.getWife().getName() : "NA",
                     fam.getChildren().toString()
                 ));
         }
