@@ -215,7 +215,7 @@ public class TestFamily {
             }
         });
 
-        String expectedMessage = "Error US22:";
+        String expectedMessage = "Error US15:";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

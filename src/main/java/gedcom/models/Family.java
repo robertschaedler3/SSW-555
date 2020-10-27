@@ -131,7 +131,7 @@ public class Family {
         }
 
         if (children.size() >= MAX_SIBLINGS) {
-            throw new IllegalStateException(String.format("Error US22: A family can only have a max of %d children.", MAX_SIBLINGS));
+            throw new IllegalStateException(String.format("Error US15: A family can only have a max of %d children.", MAX_SIBLINGS));
         }
 
         return this.children.add(child);

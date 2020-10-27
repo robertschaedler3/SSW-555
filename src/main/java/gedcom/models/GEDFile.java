@@ -55,12 +55,12 @@ public class GEDFile {
             if (currentLine.getTag() == Tag.INDI) {
                 if (individuals.put(currentLine.getID(), new Individual(currentLine.getID())) != null) {
                     s.close();
-                    throw new IllegalStateException(String.format("Error US15: cannot create individual with duplicate ID %s.", currentLine.getID()));
+                    throw new IllegalStateException(String.format("Error US2: cannot create individual with duplicate ID %s.", currentLine.getID()));
                 }
             } else if (currentLine.getTag() == Tag.FAM) {
                 if (families.put(currentLine.getID(), new Family(currentLine.getID())) != null) {
                     s.close();
-                    throw new IllegalStateException(String.format("Error US15: cannot create family with duplicate ID %s.", currentLine.getID()));
+                    throw new IllegalStateException(String.format("Error US22: cannot create family with duplicate ID %s.", currentLine.getID()));
                 }
             }
         }
