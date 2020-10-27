@@ -36,6 +36,9 @@ public class GEDParser {
                 case "--parents-not-too-old":
                     validator = new ParentsNotTooOld(validator);
                     break;
+                case "--unique-first-names":
+                    validator = new UniqueNameBirthdays(validator);
+                    break;
                 case "--male-last-names":
                     validator = new MaleLastNames(validator);
                     break;
