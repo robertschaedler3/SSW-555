@@ -27,20 +27,23 @@ public class GEDParser {
                 case "--no-incest":
                     validator = new NoIncest(validator);
                     break;
-                case "--marriage-after-14":
-                    validator = new MarriageAfter14(validator);
-                    break;
                 case "--valid-birth":
                     validator = new ValidBirth(validator);
                     break;
-                case "--marriage-before-death":
-                    validator = new MarriageBeforeDeath(validator);
+                case "--valid-marriage":
+                    validator = new ValidMarriage(validator);
                     break;
                 case "--parents-not-too-old":
                     validator = new ParentsNotTooOld(validator);
                     break;
                 case "--corresponding-entries":
                     validator = new CorrespondingEntries(validator);
+                    break;
+                case "--male-last-names":
+                    validator = new MaleLastNames(validator);
+                    break;
+                case "--no-marriages-to-descendants":
+                    validator = new NoMarriagesToDescendants(validator);
                     break;
                 case "--tabulate":
                     System.out.println(gedFile);

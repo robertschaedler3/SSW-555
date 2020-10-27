@@ -33,6 +33,12 @@ public class FamilyBuilder {
         return this;
     }
 
+    public FamilyBuilder withSpouses(Individual husband, Individual wife) {
+        this.husband = husband;
+        this.wife = wife;
+        return this;
+    }
+
     public FamilyBuilder withChild(Individual child) {
         this.children.add(child);
         return this;
