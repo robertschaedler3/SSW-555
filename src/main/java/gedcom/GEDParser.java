@@ -39,6 +39,9 @@ public class GEDParser {
                 case "--parents-not-too-old":
                     validator = new ParentsNotTooOld(validator);
                     break;
+                case "--no-marriages-to-descendants":
+                    validator = new NoMarriagesToDescendants(validator);
+                    break;
                 case "--tabulate":
                     System.out.println(gedFile);
                     break;
