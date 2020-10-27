@@ -53,7 +53,7 @@ public class ValidMarriage extends Validator {
         Date marriage = family.getMarriage();
 
         if (marriage != null && death != null && marriage.after(death)) {
-            log("Error US02: Birth of %s occurs after of marriage in family %s.", individual, family);
+            log("Error US05: Death of %s occurs before of marriage in family %s.", individual, family);
         }
     }
 
