@@ -17,6 +17,8 @@ import gedcom.interfaces.Tag;
 
 public class GEDFile {
 
+    public static final String GEDCOM_DATE_FORMAT = "dd MMM yyyy";
+
     private Map<String, Individual> individuals;
     private Map<String, Family> families;;
 
@@ -110,7 +112,7 @@ public class GEDFile {
             }
 
             if (gedLine.getTag() == Tag.DATE && dateType != null) {
-                DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+                DateFormat formatter = new SimpleDateFormat(GEDCOM_DATE_FORMAT);
                 try {
                     Date date = formatter.parse(gedLine.getArgs());
                     if (dateType == Tag.BIRT) {
@@ -159,7 +161,7 @@ public class GEDFile {
             }
 
             if (gedLine.getTag() == Tag.DATE && dateType != null) {
-                DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+                DateFormat formatter = new SimpleDateFormat(GEDCOM_DATE_FORMAT);
                 try {
                     Date date = formatter.parse(gedLine.getArgs());
                     if (dateType == Tag.MARR) {
