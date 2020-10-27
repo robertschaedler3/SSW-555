@@ -1,6 +1,8 @@
 .vscode
+.idea
 .settings
 .metadata
+.idea
 
 target
 /.metadata/
