@@ -3,7 +3,6 @@ package gedcom.validators;
 import static org.junit.jupiter.api.Assertions.*;
 
 import gedcom.builders.FamilyBuilder;
-import gedcom.builders.GEDFileBuilder;
 import gedcom.builders.IndividualBuilder;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
