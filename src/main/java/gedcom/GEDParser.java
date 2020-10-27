@@ -39,6 +39,9 @@ public class GEDParser {
                 case "--corresponding-entries":
                     validator = new CorrespondingEntries(validator);
                     break;
+                case "--unique-first-names":
+                    validator = new UniqueNameBirthdays(validator);
+                    break;
                 case "--male-last-names":
                     validator = new MaleLastNames(validator);
                     break;
