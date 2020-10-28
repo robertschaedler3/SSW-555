@@ -49,6 +49,7 @@ public class GEDParser {
                     validator = new NoMarriagesToDescendants(validator);
                     break;
                 case "--tabulate":
+                    // TODO: add list elements to tables
                     System.out.println(gedFile);
                     break;
                 default:
