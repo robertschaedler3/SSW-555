@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +15,8 @@ import gedcom.interfaces.Gender;
 import gedcom.interfaces.Tag;
 
 public class GEDFile {
+
+    private static int TOSTRING_LIST_LENGTH = 75;
 
     private Map<String, Individual> individuals;
     private Map<String, Family> families;;
@@ -177,52 +178,6 @@ public class GEDFile {
         return family;
     }
 
-    public Table getIndividualsTable() {
-        List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Children", "Spouse");
-        List<List<String>> rows = new ArrayList<>();
-        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-MM-dd");
-
-        for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
-            Individual individual = entry.getValue();
-            rows.add(Arrays.<String>asList(
-                    individual.getID(),
-                    individual.getGender().toString(),
-                    individual.getName(),
-                    (individual.getBirthday() != null) ? dateFmt.format(individual.getBirthday()) : "NA",
-                    (individual.getBirthday() != null) ? Integer.toString(individual.age()) : "NA",
-                    (individual.getBirthday() != null) ? Boolean.toString(individual.alive()) : "NA",
-                    (individual.getDeath() != null) ? dateFmt.format(individual.getDeath()) : "NA",
-                    individual.getChildren().toString(), 
-                    individual.getSpouses().toString()
-                ));
-        }
-
-        return new Table(headers, rows);
-    }
-
-    public Table getFamiliesTable() {
-        List<String> headers = Arrays.asList("ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID",
-                "Wife Name", "Children");
-        List<List<String>> rows = new ArrayList<>();
-        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-mm-dd");
-
-        for (Map.Entry<String, Family> entry : families.entrySet()) {
-            Family fam = entry.getValue();
-            rows.add(Arrays.<String>asList(
-                    fam.getID(),
-                    (fam.getMarriage() != null) ? dateFmt.format(fam.getMarriage()) : "NA",
-                    (fam.getDivorce() != null) ? dateFmt.format(fam.getDivorce()) : "NA",
-                    (fam.getHusband() != null) ? fam.getHusband().getID() : "NA",
-                    fam.getHusband().getName(),
-                    (fam.getWife() != null) ? fam.getWife().getID() : "NA", 
-                    fam.getWife().getName(),
-                    fam.getChildren().toString()
-                ));
-        }
-
-        return new Table(headers, rows);
-    }
-
     public List<Individual> getIndividuals() {
         return new ArrayList<Individual>(this.individuals.values());
     }
@@ -239,13 +194,40 @@ public class GEDFile {
         return this.families.get(ID);
     }
 
+    private <T> void addTruncatedList(List<T> items, StringBuilder sb) {
+        int i = 0;
+        int length = sb.length();
+
+        sb.append("[ ");
+        sb.append(items.get(i++));
+
+        while (i < items.size()) {
+            if (items.get(i) == null) {
+                sb.append(", null");
+                i++;
+            } else if (sb.length() + (items.get(i).toString().length() - length) > TOSTRING_LIST_LENGTH) {
+                break;
+            } else {
+                sb.append(", ");
+                sb.append(items.get(i++));
+            }
+        }
+
+        if (i != items.size()) {
+            sb.append(" ...");
+        }
+
+        sb.append(" ]");
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("\nIndividuals");
-        sb.append(getIndividualsTable());
-        sb.append("Families");
-        sb.append(getFamiliesTable());
+        sb.append("\nIndividuals\n");
+        addTruncatedList(getIndividuals(), sb);
+        sb.append("\nFamilies\n");
+        addTruncatedList(getFamilies(), sb);
+        sb.append("\n");
         return sb.toString();
     }
 
