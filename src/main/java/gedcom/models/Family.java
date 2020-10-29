@@ -9,7 +9,7 @@ import java.util.Set;
 
 import gedcom.interfaces.Gender;
 
-public class Family {
+public class Family extends GEDObject {
 
     public static final int MAX_SIBLINGS = 15;
     public static final int MAX_MULTIPLE_BIRTH = 5;
@@ -17,7 +17,6 @@ public class Family {
     public static final int FATHER_AGE_THRESHOLD = 80;
     public static final int MOTHER_AGE_THRESHOLD = 60;
 
-    private String ID;
     private Individual husband;
     private Individual wife;
 
@@ -27,12 +26,8 @@ public class Family {
     private Set<Individual> children;
 
     public Family(String ID) {
-        this.ID = ID;
+        super(ID);
         this.children = new HashSet<>();
-    }
-
-    public String getID() {
-        return ID;
     }
 
     public Individual getHusband() {
@@ -149,11 +144,6 @@ public class Family {
 
     public boolean isChild(Individual individual) {
         return children.contains(individual);
-    }
-
-    @Override
-    public String toString() {
-        return this.ID;
     }
 
 }

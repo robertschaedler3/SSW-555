@@ -10,11 +10,10 @@ import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
 
-public class Individual {
+public class Individual extends GEDObject {
 
     public static final int MAX_AGE = 150;
 
-    private String ID;
     private String name;
 
     private Gender gender;
@@ -26,15 +25,11 @@ public class Individual {
     private Set<Family> spouseFamilies; // Individual is a spouse in these families
 
     public Individual(String ID) {
-        this.ID = ID;
+        super(ID);
         this.name = "";
         this.gender = Gender.NOT_SPECIFIED;
         this.childFamilies = new HashSet<>();
         this.spouseFamilies = new HashSet<>();
-    }
-
-    public String getID() {
-        return ID;
     }
 
     public String getName() {
@@ -436,8 +431,4 @@ public class Individual {
         return cousins;
     }
 
-    @Override
-    public String toString() {
-        return this.ID;
-    }
 }
