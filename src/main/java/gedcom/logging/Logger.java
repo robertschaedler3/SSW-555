@@ -8,43 +8,60 @@ public class Logger {
 
     private static String MESSAGE_FORMAT = "%s US%02d %s>> %s %s";
     private static String LINE_FORMAT = "[LINE %d] ";
+    
+    private static String ERROR = "ERROR";
+    private static String ANOMALY = "ANOMALY";
+
+    private static int line = 0;
 
     private static Logger logger = new Logger();
 
-    private Logger() {
-        // Use getInstance()
+    private Logger() { // Use getInstance()
     }
 
     public static Logger getInstance() {
         return logger;
     }
 
-    private String line(int line) {
-        return String.format(LINE_FORMAT, line);
+    public void setLineContext(int n) {
+        line = n;
+    }
+
+    private String line() {
+        return (line > 0) ? String.format(LINE_FORMAT, line) : "";
     }
 
     private String context(GEDObject... objs) {
         return Arrays.asList(objs).toString();
     }
 
-    public void log(Error error) {
-        String fullMessage = String.format(MESSAGE_FORMAT, error.type(), error.code(), "", error, "");
+    private void log(String type, int code, String message, String context) {
+        String fullMessage = String.format(MESSAGE_FORMAT, type, code, line(), message.toUpperCase(), context);
         System.out.println(fullMessage);
     }
 
-    public void log(Error error, GEDObject... objs) {
-        String fullMessage = String.format(MESSAGE_FORMAT, error.type(), error.code(), "", error.message(), context(objs));
-        System.out.println(fullMessage);
+    public void error(Error error) {
+        log(ERROR, error.code(), error.message(), "");
     }
 
-    public void log(int line, Error error) {
-        String fullMessage = String.format(MESSAGE_FORMAT, error.type(), error.code(), line(line), error, "");
-        System.out.println(fullMessage);
+    public void error(Error error, String message) {
+        log(ERROR, error.code(), message, "");
     }
 
-    public void log(int line, Error error, GEDObject... objs) {
-        String fullMessage = String.format(MESSAGE_FORMAT, error.type(), error.code(), line(line), error.message(), context(objs));
-        System.out.println(fullMessage);
+    public void error(Error error, GEDObject... objs) {
+        log(ERROR, error.code(), error.message(), context(objs));
+    }
+
+    public void anomaly(Error anomaly) {
+        log(ANOMALY, anomaly.code(), anomaly.message(), "");
+    }
+
+    public void anomaly(Error anomaly, String message) {
+        log(ANOMALY, anomaly.code(), message, "");
+    }
+
+    public void anomaly(Error anomaly, GEDObject... objs) {
+        log(ANOMALY, anomaly.code(), anomaly.message(), context(objs));
     }
 
 }
