@@ -1,7 +1,7 @@
 package gedcom.logging;
 
 public enum Error {
-    DATES_BEFORE_CURRENT_DATE(ErrorType.ERROR, 1),
+    DATE_BEFORE_CURRENT_DATE(ErrorType.ERROR, 1),
     BIRTH_BEFORE_MARRIAGE(ErrorType.ERROR, 2),
     BIRTH_BEFORE_DEATH(ErrorType.ERROR, 3),
     MARRIAGE_BEFORE_DIVORCE(ErrorType.ERROR, 4),
@@ -33,10 +33,18 @@ public enum Error {
 
     private final ErrorType errorType;
     private final int code;
+    private final String message;
 
     private Error(ErrorType errorType, int code) {
         this.errorType = errorType;
         this.code = code;
+        this.message = null;
+    }
+
+    private Error(ErrorType errorType, int code, String message) {
+        this.errorType = errorType;
+        this.code = code;
+        this.message = message;
     }
 
     public ErrorType type() {
@@ -45,6 +53,10 @@ public enum Error {
 
     public int code() {
         return this.code;
+    }
+
+    public String message() {
+        return (message == null) ? this.toString() : message.toUpperCase();
     }
 
     @Override
