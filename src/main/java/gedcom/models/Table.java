@@ -19,7 +19,7 @@ public class Table<T> {
     private static String DATE_FORMAT = "dd MMM yyyy";
     private static String NULL_SYMBOL = "NA";
 
-    private final SimpleDateFormat dateFmt = new SimpleDateFormat(DATE_FORMAT);
+    private static final SimpleDateFormat dateFmt = new SimpleDateFormat(DATE_FORMAT);
 
     private String name;
 
@@ -32,7 +32,7 @@ public class Table<T> {
         this.name = name;
 
         if (columns.size() != expanders.size()) {
-            throw new IllegalArgumentException("Not enough functions to expand into columns.");
+            throw new IllegalArgumentException(String.format("Not enough expanders to expand into %d columns.", columns.size()));
         }
 
         this.columns = columns;
@@ -125,7 +125,6 @@ public class Table<T> {
     }
 
     private void fillCell(StringBuilder sb, String cell, int cellIndex, Map<Integer, Integer> columnMaxWidthMapping) {
-
         int cellPaddingSize = getOptimumCellPadding(cellIndex, cell.length(), columnMaxWidthMapping, PADDING_SIZE);
 
         if (cellIndex == 0) {
@@ -134,14 +133,13 @@ public class Table<T> {
 
         fillSpace(sb, cellPaddingSize);
         sb.append(cell);
+
         if (cell.length() % 2 != 0) {
             sb.append(" ");
         }
 
         fillSpace(sb, cellPaddingSize);
-
         sb.append(TABLE_V_SPLIT_SYMBOL);
-
     }
 
     @Override
@@ -173,7 +171,6 @@ public class Table<T> {
 
         sb.append(NEW_LINE);
         createRowLine(sb, columns.size(), columnMaxWidthMapping);
-        sb.append(NEW_LINE);
         sb.append(NEW_LINE);
 
         return sb.toString();
