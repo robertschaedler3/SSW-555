@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
+import gedcom.logging.Error;
 
 public class Individual extends GEDObject {
 
@@ -93,17 +94,17 @@ public class Individual extends GEDObject {
         }
 
         if (birth.after(new Date())) {
-            throw new IllegalStateException("Error US01: Birth must occur before current time.");
+            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "birth occurs before current time");
         }
 
         if (this.death != null) {
             if (this.death.equals(birth) || this.death.after(birth)) {
                 if (this.age(birth, this.death) > MAX_AGE) {
-                    throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
+                    LOGGER.anomaly(Error.MAX_AGE_EXCEEDED, this);
                 }
                 this.birthday = birth;
             } else {
-                throw new IllegalStateException("Error US03: Birth cannot occur after death.");
+                LOGGER.error(Error.DEATH_BEFORE_BIRTH);
             }
         } else {
             this.birthday = birth;
@@ -116,17 +117,17 @@ public class Individual extends GEDObject {
         }
 
         if (death.after(new Date())) {
-            throw new IllegalStateException("Error US01: Death must occur before current time.");
+            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "death occurs before current time");
         }
 
         if (this.birthday != null) {
             if (this.birthday.equals(death) || this.birthday.before(death)) {
                 if (this.age(this.birthday, death) > MAX_AGE) {
-                    throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
+                    LOGGER.anomaly(Error.MAX_AGE_EXCEEDED, this);
                 }
                 this.death = death;
             } else {
-                throw new IllegalStateException("Error US03: Death cannot occur before birth.");
+                LOGGER.error(Error.DEATH_BEFORE_BIRTH);
             }
         } else {
             this.death = death;
@@ -141,12 +142,7 @@ public class Individual extends GEDObject {
         if (family == null) {
             throw new IllegalArgumentException("Family cannot be null.");
         }
-
-        if (!this.childFamilies.add(family)) {
-            throw new IllegalArgumentException("Family already exists as a child family.");
-        }
-
-        return true;
+        return this.childFamilies.add(family);
     }
     
     public List<Family> getSpouseFamilies() {
@@ -157,12 +153,7 @@ public class Individual extends GEDObject {
         if (family == null) {
             throw new IllegalArgumentException("Family cannot be null.");
         }
-        
-        if (!this.spouseFamilies.add(family)) {
-            throw new IllegalArgumentException("Family already exists as a spouse family.");
-        }
-
-        return false;
+        return this.spouseFamilies.add(family);
     }
 
     public boolean alive() {

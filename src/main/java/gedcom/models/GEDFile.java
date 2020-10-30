@@ -14,11 +14,15 @@ import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
 import gedcom.interfaces.Tag;
+import gedcom.logging.Error;
+import gedcom.logging.Logger;
 
 public class GEDFile {
 
     private Map<String, Individual> individuals;
-    private Map<String, Family> families;;
+    private Map<String, Family> families;
+
+    private Logger LOGGER = Logger.getInstance();
 
     public GEDFile(Individual[] indivs, Family[] fams) {
         individuals = new HashMap<String, Individual>();
@@ -46,34 +50,44 @@ public class GEDFile {
         GEDLine currentLine;
 
         // Read file into GEDLine list
+        int n = 0;
         while (s.hasNextLine()) {
+
+            LOGGER.setLineContext(++n);
+
             line = s.nextLine();
             currentLine = new GEDLine(line);
             gedLines.add(currentLine);
 
             // Create 'blank' Individuals and Families
             if (currentLine.getTag() == Tag.INDI) {
-                if (individuals.put(currentLine.getID(), new Individual(currentLine.getID())) != null) {
-                    s.close();
-                    throw new IllegalStateException(String.format("Error US22: cannot create individual with duplicate ID %s.", currentLine.getID()));
+                Individual individual = new Individual(currentLine.getID());
+                if (individuals.put(currentLine.getID(), individual) != null) {
+                    LOGGER.error(Error.ID_NOT_UNIQUE, individual);
                 }
             } else if (currentLine.getTag() == Tag.FAM) {
-                if (families.put(currentLine.getID(), new Family(currentLine.getID())) != null) {
-                    s.close();
-                    throw new IllegalStateException(String.format("Error US22: cannot create family with duplicate ID %s.", currentLine.getID()));
+                Family family = new Family(currentLine.getID());
+                if (families.put(currentLine.getID(), family) != null) {
+                    LOGGER.error(Error.ID_NOT_UNIQUE, family);
                 }
             }
         }
-
+        
         // Populate Individual and Family fields
         for (int i = 0; i < gedLines.size(); i++) {
+
+            LOGGER.setLineContext(i + 1);
+
             currentLine = gedLines.get(i);
+
             if (currentLine.getTag() == Tag.INDI) {
                 parseIndividual(gedLines, i, currentLine.getID());
             } else if (currentLine.getTag() == Tag.FAM) {
                 parseFamily(gedLines, i, currentLine.getID());
             }
         }
+        
+        LOGGER.setLineContext(0);
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {
@@ -81,6 +95,9 @@ public class GEDFile {
         Tag dateType = null;
 
         for (int i = index + 1; i < list.size(); i++) {
+
+            LOGGER.setLineContext(i + 1);
+
             GEDLine gedLine = list.get(i);
             if (gedLine.getLevel() == 0) {
                 break;
@@ -135,6 +152,9 @@ public class GEDFile {
         Tag dateType = null;
 
         for (int i = index + 1; i < list.size(); i++) {
+
+            LOGGER.setLineContext(i + 1);
+
             GEDLine gedLine = list.get(i);
             if (gedLine.getLevel() == 0) {
                 break;
