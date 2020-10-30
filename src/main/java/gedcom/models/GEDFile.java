@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ import gedcom.interfaces.Tag;
 public class GEDFile {
 
     private Map<String, Individual> individuals;
-    private Map<String, Family> families;;
+    private Map<String, Family> families;
 
     public GEDFile(Individual[] indivs, Family[] fams) {
         individuals = new HashMap<String, Individual>();
@@ -178,12 +179,15 @@ public class GEDFile {
     }
 
     public Table getIndividualsTable() {
+    	return getIndividualsTable(this.individuals.values());
+    }
+    
+    public static Table getIndividualsTable(Collection<Individual> individuals) {
         List<String> headers = Arrays.asList("ID", "Gender", "Name", "Birthday", "Age", "Alive", "Death", "Children", "Spouse");
         List<List<String>> rows = new ArrayList<>();
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-MM-dd");
 
-        for (Map.Entry<String, Individual> entry : individuals.entrySet()) {
-            Individual individual = entry.getValue();
+        for (Individual individual : individuals) {
             rows.add(Arrays.<String>asList(
                     individual.getID(),
                     individual.getGender().toString(),
