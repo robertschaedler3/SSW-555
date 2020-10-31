@@ -1,5 +1,6 @@
 package gedcom.validators;
 
+import gedcom.logging.Error;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -19,16 +20,15 @@ public class NoMarriagesToDescendants extends Validator {
 
             // Check husband
             if (wife.isDescendant(husband)) {
-                System.out.printf("Error US17: Husband of Family %s (Individual %s) is married to a descendant.", husband.getID(), family.getID());
+                LOGGER.anomaly(Error.MARRIAGE_TO_SIBLING, family, husband, wife);
                 valid = false;
             }
-
+            
             // Check wife
             if (husband.isDescendant(wife)) {
-                System.out.printf("Error US17: Wife of Family %s (Individual %s) is married to a descendant.", wife.getID(), family.getID());
+                LOGGER.anomaly(Error.MARRIAGE_TO_SIBLING, family, husband, wife);
                 valid = false;
             }
-
         }
 
         return valid;

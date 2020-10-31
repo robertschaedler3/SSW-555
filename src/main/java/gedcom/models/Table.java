@@ -76,6 +76,10 @@ public class Table<T> {
         return obj.toString();
     }
 
+    public void addRow() {
+        // TODO
+    }
+
     private void fillSpace(StringBuilder sb, int length) {
         for (int i = 0; i < length; i++) {
             sb.append(" ");

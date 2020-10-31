@@ -3,21 +3,25 @@ package gedcom.validators;
 import java.util.Calendar;
 import java.util.Date;
 
+import gedcom.logging.Error;
+import gedcom.logging.Level;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
+import gedcom.models.GEDObject;
 import gedcom.models.Individual;
 
 public class ValidMarriage extends Validator {
-
-    private boolean valid = true;
 
     public ValidMarriage(Validator validator) {
         super(validator);
     }
 
-    private void log(String message, Object... args) {
-        String fullMessage = String.format("%s\n", message);
-        System.out.printf(fullMessage, args);
+    private void log(Level level, Error error, GEDObject... objs) {
+        if (level == Level.ERROR) {
+            LOGGER.error(error, objs);
+        } else if (level == Level.ANOMALY) {
+            LOGGER.anomaly(error, objs);
+        }
         valid = false;
     }
 
@@ -34,7 +38,7 @@ public class ValidMarriage extends Validator {
         if (marriage != null && birth != null) {
             Date minMarriage = addYears(birth, Family.MIN_MARRIAGE_AGE);
             if (marriage.compareTo(minMarriage) < 0) {
-                log("Anomaly US10: %s was married below the age of 14 in family %s.\n", individual, family);
+                log(Level.ANOMALY, Error.MARRIED_BELOW_MIN_MARRIAGE_AGE, individual, family);
             }
         }
     }
@@ -44,7 +48,7 @@ public class ValidMarriage extends Validator {
         Date marriage = family.getMarriage();
 
         if (marriage != null && birth != null && marriage.before(birth)) {
-            log("Error US02: Birth of %s occurs after of marriage in family %s.", individual, family);
+            log(Level.ERROR, Error.MARRIAGE_BEFORE_BIRTH, individual, family);
         }
     }
 
@@ -53,7 +57,7 @@ public class ValidMarriage extends Validator {
         Date marriage = family.getMarriage();
 
         if (marriage != null && death != null && marriage.after(death)) {
-            log("Error US02: Birth of %s occurs after of marriage in family %s.", individual, family);
+            log(Level.ERROR, Error.DEATH_BEFORE_MARRIAGE, individual, family);
         }
     }
 

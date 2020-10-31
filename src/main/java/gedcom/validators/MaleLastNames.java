@@ -1,6 +1,7 @@
 package gedcom.validators;
 
 import gedcom.interfaces.Gender;
+import gedcom.logging.Error;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -11,22 +12,20 @@ public class MaleLastNames extends Validator {
         super(validator);
     }
 
-
     protected boolean check(GEDFile gedFile) {
-        boolean valid = true;
-
         for (Family family : gedFile.getFamilies()) {
-            String lastName = family.getHusband().getLastName();
 
-            for (Individual child : family.getChildren()) {
-                if (child.getGender() == Gender.M) {
-                    if (!child.getLastName().equals(lastName)) {
+            Individual husband;
+            if ((husband = family.getHusband()) != null) {
+
+                String lastName = husband.getLastName();
+                for (Individual child : family.getChildren()) {
+                    if (child.getGender() == Gender.M && !child.getLastName().equals(lastName)) {
+                        LOGGER.anomaly(Error.MALE_LAST_NAMES_NOT_MATCHING, family, husband, child);
                         valid = false;
-                        System.out.printf("Anomaly US16: Individual %s (male) does not share father's last name of '%s'\n", child.getID(), lastName);
                     }
                 }
             }
-
         }
 
         return valid;

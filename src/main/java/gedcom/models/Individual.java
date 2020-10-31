@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import gedcom.interfaces.Gender;
+import gedcom.logging.Error;
 
-public class Individual {
+public class Individual extends GEDObject {
 
     public static final int MAX_AGE = 150;
 
-    private String ID;
     private String name;
 
     private Gender gender;
@@ -26,14 +26,11 @@ public class Individual {
     private Set<Family> spouseFamilies; // Individual is a spouse in these families
 
     public Individual(String ID) {
-        this.ID = ID;
+        super(ID);
+        this.name = "";
         this.gender = Gender.NOT_SPECIFIED;
         this.childFamilies = new HashSet<>();
         this.spouseFamilies = new HashSet<>();
-    }
-
-    public String getID() {
-        return ID;
     }
 
     public String getName() {
@@ -103,17 +100,17 @@ public class Individual {
         }
 
         if (birth.after(new Date())) {
-            throw new IllegalStateException("Error US01: Birth must occur before current time.");
+            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "birth occurs before current time");
         }
 
         if (this.death != null) {
             if (this.death.equals(birth) || this.death.after(birth)) {
                 if (this.age(birth, this.death) > MAX_AGE) {
-                    throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
+                    LOGGER.anomaly(Error.MAX_AGE_EXCEEDED, this);
                 }
                 this.birthday = birth;
             } else {
-                throw new IllegalStateException("US03: Birth cannot occur after death.");
+                LOGGER.error(Error.DEATH_BEFORE_BIRTH);
             }
         } else {
             this.birthday = birth;
@@ -126,17 +123,17 @@ public class Individual {
         }
 
         if (death.after(new Date())) {
-            throw new IllegalStateException("Error US01: Death must occur before current time.");
+            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "death occurs before current time");
         }
 
         if (this.birthday != null) {
             if (this.birthday.equals(death) || this.birthday.before(death)) {
                 if (this.age(this.birthday, death) > MAX_AGE) {
-                    throw new IllegalStateException(String.format("Anomaly US07: max age of %d years is exceeded", MAX_AGE));
+                    LOGGER.anomaly(Error.MAX_AGE_EXCEEDED, this);
                 }
                 this.death = death;
             } else {
-                throw new IllegalStateException("US03: Death cannot occur before birth.");
+                LOGGER.error(Error.DEATH_BEFORE_BIRTH);
             }
         } else {
             this.death = death;
@@ -151,28 +148,18 @@ public class Individual {
         if (family == null) {
             throw new IllegalArgumentException("Family cannot be null.");
         }
-
-        if (!this.childFamilies.add(family)) {
-            throw new IllegalArgumentException("Family already exists as a child family.");
-        }
-
-        return true;
+        return this.childFamilies.add(family);
     }
-    
+
     public List<Family> getSpouseFamilies() {
         return new ArrayList<>(spouseFamilies);
     }
-    
+
     public boolean addSpouseFamily(Family family) {
         if (family == null) {
             throw new IllegalArgumentException("Family cannot be null.");
         }
-        
-        if (!this.spouseFamilies.add(family)) {
-            throw new IllegalArgumentException("Family already exists as a spouse family.");
-        }
-
-        return false;
+        return this.spouseFamilies.add(family);
     }
 
     public boolean alive() {
@@ -186,9 +173,10 @@ public class Individual {
         if (individual == null) {
             throw new IllegalArgumentException();
         }
-        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList()).size() != 0;
+        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList())
+                .size() != 0;
     }
-    
+
     public List<Individual> getSiblings() {
         List<Individual> siblings = new ArrayList<>();
         for (Family family : this.childFamilies) {
@@ -203,7 +191,8 @@ public class Individual {
         for (Family family : this.spouseFamilies) {
             children.addAll(family.getChildren());
         }
-        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
+        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .reversed());
         return children;
     }
 
@@ -441,8 +430,4 @@ public class Individual {
         return cousins;
     }
 
-    @Override
-    public String toString() {
-        return this.ID;
-    }
 }
