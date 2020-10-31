@@ -1,7 +1,9 @@
 package gedcom.validators;
 
+import gedcom.logging.Error;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
+import gedcom.models.Individual;
 
 import java.util.Date;
 
@@ -11,23 +13,24 @@ public class DivorceBeforeDeath extends Validator {
         super(validator);
     }
 
+    private void check(Date divorce, Individual individual, Family family) {
+        if (individual != null && individual.getDeath() != null && divorce.after(individual.getDeath())) {
+            LOGGER.error(Error.DEATH_BEFORE_DIVORCE, family, individual);
+            valid = false;
+        }
+    }
+
     protected boolean check(GEDFile gedFile) {
-        boolean valid = true;
 
         for (Family family : gedFile.getFamilies()) {
             
+            Individual husband = family.getHusband();
+            Individual wife = family.getWife();
             Date divorce = family.getDivorce();
-            Date husbandDeath = family.getHusband().getDeath();
-            Date wifeDeath = family.getWife().getDeath();
 
-            if ((divorce != null && husbandDeath != null) && divorce.after(husbandDeath)) {
-                System.out.printf("Error US06: Divorce of Family %s occurs after the death of %s (Individual %s)\n", family.getID(), family.getHusband().getName(), family.getHusband().getID());
-                valid = false;
-            }
-
-            if ((divorce != null && wifeDeath != null) && divorce.after(wifeDeath)) {
-                System.out.printf("Error US06: Divorce of Family %s occurs after the death of %s (Individual %s)\n", family.getID(), family.getWife().getName(), family.getWife().getID());
-                valid = false;
+            if (divorce != null) {
+                check(divorce, husband, family);
+                check(divorce, wife, family);
             }
         }
 

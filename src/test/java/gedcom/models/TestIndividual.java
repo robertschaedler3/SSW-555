@@ -8,13 +8,33 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import gedcom.builders.*;
+import gedcom.logging.Level;
+import gedcom.logging.LogAppender;
+import gedcom.logging.Logger;
 
 public class TestIndividual {
 
     private final int N = 10;
+
+    private LogAppender logAppender;
+
+    @BeforeEach
+    public void setup() {
+        Logger logger = Logger.getInstance();
+        logAppender = new LogAppender();
+        logger.addAppender(logAppender);
+        logAppender.start();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        logAppender.stop();
+    }
 
     @Test
     public void testID() {
@@ -45,7 +65,7 @@ public class TestIndividual {
     }
 
     @Test
-    public void testBirthException1() {
+    public void testBirthException() {
         assertThrows(IllegalArgumentException.class, () -> {
             Individual individual = new IndividualBuilder().build();
             individual.setBirthday(null);
@@ -53,45 +73,38 @@ public class TestIndividual {
     }
 
     @Test
-    public void testBirthException2() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date birth = DateBuilder.build(1, Calendar.JANUARY, 2001);
-            Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
-            Individual individual = new IndividualBuilder().withDeath(death).build();
-            individual.setBirthday(birth);
-        });
+    public void testBirthLogMessage1() {
+        Date birth = DateBuilder.build(1, Calendar.JANUARY, 2001);
+        Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
+        Individual individual = new IndividualBuilder().withDeath(death).build();
+        individual.setBirthday(birth);
 
-        String expectedMessage = "US03: Birth cannot occur after death.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US03", Level.ERROR, 3));
     }
 
     @Test
-    public void testBirthException3() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date now = new Date();
-            Date birth = DateBuilder.newDateDaysAfter(now, 1);
-            Individual individual = new IndividualBuilder().withBirth(birth).build();
-        });
+    public void testBirthLogMessage2() {
+        Date now = new Date();
+        Date birth = DateBuilder.newDateDaysAfter(now, 1);
+        Individual individual = new IndividualBuilder().withBirth(birth).build();
 
-        String expectedMessage = "Error US01: Birth must occur before current time.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US01", Level.ERROR, 1));
     }
 
     @Test
     public void testDeath() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2001);
+
         assertEquals(death, new IndividualBuilder().withDeath(death).build().getDeath());
         assertEquals(death, new IndividualBuilder().withBirth(death).withDeath(death).build().getDeath());
         assertEquals(death, new IndividualBuilder().withBirth(birth).withDeath(death).build().getDeath());
     }
 
     @Test
-    public void testDeathException1() {
+    public void testDeathException() {
         assertThrows(IllegalArgumentException.class, () -> {
             Individual individual = new IndividualBuilder().build();
             individual.setDeath(null);
@@ -99,32 +112,24 @@ public class TestIndividual {
     }
 
     @Test
-    public void testDeathException2() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date birth = DateBuilder.build(1, Calendar.JANUARY, 2001);
-            Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
-            Individual individual = new IndividualBuilder().withBirth(birth).build();
-            individual.setDeath(death);
-        });
+    public void testDeathLogMessage1() {
+        Date birth = DateBuilder.build(1, Calendar.JANUARY, 2001);
+        Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
+        Individual individual = new IndividualBuilder().withBirth(birth).build();
+        individual.setDeath(death);
 
-        String expectedMessage = "US03: Death cannot occur before birth.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US03", Level.ERROR, 3));
     }
     
     @Test
-    public void testDeathException3() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date now = new Date();
-            Date death = DateBuilder.newDateDaysAfter(now, 1);
-            Individual individual = new IndividualBuilder().withDeath(death).build();
-        });
+    public void testDeathLogMessage2() {
+        Date now = new Date();
+        Date death = DateBuilder.newDateDaysAfter(now, 1);
+        Individual individual = new IndividualBuilder().withDeath(death).build();
 
-        String expectedMessage = "Error US01: Death must occur before current time.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US01", Level.ERROR, 1));
     }
 
     @Test
@@ -154,17 +159,13 @@ public class TestIndividual {
     }
 
     @Test
-    public void testMaxAgeException() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date birth = DateBuilder.build(1, Calendar.JANUARY, 1800);
-            Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
-            Individual individual = new IndividualBuilder().withBirth(birth).withDeath(death).build();
-        });
+    public void testMaxAgeLogMessage() {
+        Date birth = DateBuilder.build(1, Calendar.JANUARY, 1800);
+        Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
+        Individual individual = new IndividualBuilder().withBirth(birth).withDeath(death).build();
 
-        String expectedMessage = "Anomaly US07: max age";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US07", Level.ANOMALY, 7));
     }
 
     @Test

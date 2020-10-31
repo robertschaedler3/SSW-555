@@ -3,6 +3,7 @@ package gedcom.validators;
 import java.util.Date;
 import java.util.List;
 
+import gedcom.logging.Error;
 import gedcom.models.*;
 
 public class NoBigamy extends Validator {
@@ -11,52 +12,84 @@ public class NoBigamy extends Validator {
 		super(validator);
 	}
 
-	protected boolean check(GEDFile gedFile) {
-		boolean valid = true;
+	private boolean familiesShareSpouse(Family f1, Family f2) {
+		Individual h1 = f1.getHusband();
+		Individual h2 = f2.getHusband();
+		Individual w1 = f1.getHusband();
+		Individual w2 = f2.getHusband();
 
+		return (h1 != null && h2 != null && h1.equals(h2)) ? true
+				: ((w1 != null && w2 != null && w1.equals(w2)) ? true : false);
+	}
+
+	private void checkDeathBeforeMarriage(Family firstFamily, Family secondFamily, Individual individual) {
+		if (individual == null) {
+			return;
+		}
+		Date death = individual.getDeath();
+		Date marriage = secondFamily.getMarriage();
+		Date divorce = firstFamily.getDivorce();
+		if (death != null && marriage != null && divorce == null) {
+			if (death.after(marriage)) {
+				log(firstFamily, secondFamily, individual);
+			}
+		}
+	}
+
+	private void checkDivorceBeforeMarriage(Family firstFamily, Family secondFamily, Individual individual) {
+		if (individual == null) {
+			return;
+		}
+		Date marriage = secondFamily.getMarriage();
+		Date divorce = firstFamily.getDivorce();
+		if (marriage != null && divorce != null) {
+			if (divorce.after(marriage)) {
+				log(firstFamily, secondFamily, individual);
+			}
+		}
+	}
+
+	private void log(GEDObject... objs) {
+		LOGGER.anomaly(Error.BIGAMY, objs);
+		valid = false;
+	}
+
+	protected boolean check(GEDFile gedFile) {
 		List<Family> families = gedFile.getFamilies();
 
 		for (int i = 0; i < families.size(); i++) {
-			Family baseFam = families.get(i);
-			// + 1 prevents from baseFam being checked against itself
+
+			Family baseFamily = families.get(i);
+
 			for (int j = i + 1; j < families.size(); j++) {
-				Family testFam = families.get(j);
-				// Only check marriages which share a husband or wife
-				if (baseFam.getHusband().equals(testFam.getHusband()) || baseFam.getWife().equals(testFam.getWife())) {
 
-					// Find earlier and later marriage
-					boolean isBaseEarlier = baseFam.getMarriage().before(testFam.getMarriage());
-					Family earlierFam = isBaseEarlier ? baseFam : testFam;
-					Family laterFam = !isBaseEarlier ? baseFam : testFam;
+				Family testFamily = families.get(j);
 
-					// If the earlier marriage has no divorce date, check death dates
-					if (earlierFam.getDivorce() == null) {
-						Date husbandDeath = earlierFam.getHusband().getDeath();
-						Date wifeDeath = earlierFam.getHusband().getDeath();
+				// Check families that share a spouse
+				if (familiesShareSpouse(baseFamily, testFamily)) {
 
-						// if neither have died in the earlier marriage and there was no divorce, that's
-						// bigamy
-						if (husbandDeath == null && wifeDeath == null) {
-							// if neither spouse died or died after the second marriage, that's bigamy
-							System.out.println("Anomaly US11: Bigamy: Marriage " + earlierFam.getID()
-									+ " never got divorced and neither spouse died.");
-							valid = false;
+					// Get earlier and later marriage
+					boolean isBaseEarlier = baseFamily.getMarriage().before(testFamily.getMarriage());
+					Family firstFamily = isBaseEarlier ? baseFamily : testFamily;
+					Family secondFamily = !isBaseEarlier ? baseFamily : testFamily;
+
+					Individual husband = firstFamily.getHusband();
+					Individual wife = secondFamily.getWife();
+
+					if (firstFamily.getDivorce() == null) { // check death dates
+						
+						Date husbandDeath = firstFamily.getHusband().getDeath();
+						Date wifeDeath = secondFamily.getHusband().getDeath();
+
+						if (husbandDeath == null && wifeDeath == null) { // neither spouse died before second marriage
+							log(firstFamily, secondFamily);
+						} else {
+							checkDeathBeforeMarriage(firstFamily, secondFamily, husband);
+							checkDeathBeforeMarriage(firstFamily, secondFamily, wife);
 						}
-						// if either spouse DID die, make sure it's before later marriage
-						else if ((husbandDeath != null && husbandDeath.before(laterFam.getMarriage()))
-								|| (wifeDeath != null && wifeDeath.before(laterFam.getMarriage()))) {
-							System.out.println("Anomaly US11: One spouse died in marriage " + earlierFam.getID()
-									+ " - not bigamy");
-							valid = false;
-						}
-					}
-					// if the earlier marriage DOES have a divorce date, it must be before the later
-					// marriage date
-					else if (earlierFam.getDivorce().after(laterFam.getMarriage())) {
-						System.out.println("Anomaly US11: Bigamy: Earlier marriage " + earlierFam.getID()
-								+ " divorced on " + earlierFam.getDivorce() + " which is after " + laterFam.getID()
-								+ " marriage date " + laterFam.getMarriage());
-						valid = false;
+					} else {
+						checkDivorceBeforeMarriage(firstFamily, secondFamily, husband);
+						checkDivorceBeforeMarriage(firstFamily, secondFamily, wife);
 					}
 				}
 			}

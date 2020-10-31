@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class Table {
 
+    // TODO: Genericize types of columns
     private List<String> headersList;
     private List<List<String>> rowsList;
 
@@ -19,6 +20,10 @@ public class Table {
         // TODO: check dimensions
         this.headersList = headers;
         this.rowsList = rows;
+    }
+
+    public void addRow() {
+        // TODO
     }
 
     private void fillSpace(StringBuilder sb, int length) {

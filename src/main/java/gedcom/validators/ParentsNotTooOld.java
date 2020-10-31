@@ -2,6 +2,7 @@ package gedcom.validators;
 
 import java.util.Date;
 
+import gedcom.logging.Error;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -27,7 +28,6 @@ public class ParentsNotTooOld extends Validator {
 	}
 
 	protected boolean check(GEDFile gedFile) {
-		boolean valid = true;
 
 		for (Family family : gedFile.getFamilies()) {
 
@@ -36,15 +36,11 @@ public class ParentsNotTooOld extends Validator {
 
 			for (Individual child : family.getChildren()) {
 				if (parentAgeWhenChildBorn(father, child) > Family.FATHER_AGE_THRESHOLD) {
-					System.out.println("Anomaly US12: Father too old: Parent " + father.getName() + "(" + father.getID()
-							+ ") is more than " + Family.FATHER_AGE_THRESHOLD + " years older than child "
-							+ child.getName() + "(" + child.getID() + ")");
+					LOGGER.anomaly(Error.PARENT_BIRTH_THRESHOLD_EXCEEDED, family, father, child);
 					valid = false;
 				}
 				if (parentAgeWhenChildBorn(mother, child) > Family.MOTHER_AGE_THRESHOLD) {
-					System.out.println("Anomaly US12: Mother too old: Parent " + mother.getName() + "(" + mother.getID()
-							+ ") is more than " + Family.MOTHER_AGE_THRESHOLD + " years older than child "
-							+ child.getName() + "(" + child.getID() + ")");
+					LOGGER.anomaly(Error.PARENT_BIRTH_THRESHOLD_EXCEEDED, family, mother, child);
 					valid = false;
 				}
 			}

@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.Set;
 
 import gedcom.interfaces.Gender;
+import gedcom.logging.Error;
 
-public class Family {
+public class Family extends GEDObject {
 
-    public static final int MAX_SIBLINGS = 15;
+    public static final int MAX_CHILDREN = 15;
     public static final int MAX_MULTIPLE_BIRTH = 5;
     public static final int MIN_MARRIAGE_AGE = 14;
     public static final int FATHER_AGE_THRESHOLD = 80;
     public static final int MOTHER_AGE_THRESHOLD = 60;
 
-    private String ID;
     private Individual husband;
     private Individual wife;
 
@@ -27,12 +27,8 @@ public class Family {
     private Set<Individual> children;
 
     public Family(String ID) {
-        this.ID = ID;
+        super(ID);
         this.children = new HashSet<>();
-    }
-
-    public String getID() {
-        return ID;
     }
 
     public Individual getHusband() {
@@ -57,7 +53,7 @@ public class Family {
         }
         
         if (husband.getGender() == Gender.F) { // Allow NOT_SPECIFIED gender
-            throw new IllegalStateException(String.format("Error US21: Individual %s gender is not MALE.", husband.getID()));
+            LOGGER.error(Error.INCORRECT_GENDER_ROLE, husband);
         }
 
         this.husband = husband;
@@ -69,7 +65,7 @@ public class Family {
         }
 
         if (wife.getGender() == Gender.M) { // Allow NOT_SPECIFIED gender
-            throw new IllegalStateException(String.format("Error US21: Individual %s gender is not FEMALE.", wife.getID()));
+            LOGGER.error(Error.INCORRECT_GENDER_ROLE, wife);
         }
 
         this.wife = wife;
@@ -81,14 +77,14 @@ public class Family {
         }
 
         if (marriage.after(new Date())) {
-            throw new IllegalStateException("Error US01: Marriage must occur before the current time.");
+            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "marriage occurs before current time");
         }
 
         if (this.divorce != null) {
             if (this.divorce.equals(marriage) || this.divorce.after(marriage)) {
                 this.marriage = marriage;
             } else {
-                throw new IllegalStateException("Error US04: Marriage cannot occur after divorce.");
+                LOGGER.error(Error.DIVORCE_BEFORE_MARRIAGE, "marriage occurs after divorce.");
             }
         } else {
             this.marriage = marriage;
@@ -101,14 +97,14 @@ public class Family {
         }
 
         if (divorce.after(new Date())) {
-            throw new IllegalStateException("Error US01: Divorce must occur before the current time.");
+            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "divorce occurs before current time");
         }
 
         if (this.marriage != null) {
             if (this.marriage.equals(divorce) || this.marriage.before(divorce)) {
                 this.divorce = divorce;
             } else {
-                throw new IllegalStateException("Error US04: Divorce cannot occur before marriage.");
+                LOGGER.error(Error.DIVORCE_BEFORE_MARRIAGE, "divorce occurs before marriage");
             }
         } else {
             this.divorce = divorce;
@@ -126,12 +122,8 @@ public class Family {
             throw new IllegalArgumentException("Child cannot be null.");
         }
 
-        if (this.children.contains(child)) {
-            throw new IllegalArgumentException("Child already exists in family.");
-        }
-
-        if (children.size() >= MAX_SIBLINGS) {
-            throw new IllegalStateException(String.format("Error US22: A family can only have a max of %d children.", MAX_SIBLINGS));
+        if (children.size() >= MAX_CHILDREN) {
+            LOGGER.anomaly(Error.MAX_FAMILY_CHILDREN_EXCEEDED);
         }
 
         return this.children.add(child);
@@ -149,11 +141,6 @@ public class Family {
 
     public boolean isChild(Individual individual) {
         return children.contains(individual);
-    }
-
-    @Override
-    public String toString() {
-        return this.ID;
     }
 
 }

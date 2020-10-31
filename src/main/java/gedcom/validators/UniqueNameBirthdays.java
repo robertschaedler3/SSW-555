@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import gedcom.logging.Error;
 import gedcom.models.Family;
 import gedcom.models.Individual;
 
@@ -18,7 +19,6 @@ public class UniqueNameBirthdays extends Validator {
     }
 
     protected boolean check(GEDFile gedFile) {
-        boolean valid = true;
         List<Map<String, Date>> childrenWithoutSameName = new ArrayList<>();
 
         for (Family family : gedFile.getFamilies()) {
@@ -29,8 +29,7 @@ public class UniqueNameBirthdays extends Validator {
                 for(Map<String, Date> checkedChildren : childrenWithoutSameName){
                     if (checkedChildren.containsKey(childName)){
                         if(childBirthday.equals(checkedChildren.get(childName))) {
-                            System.out.printf("Anomaly US25: More than one child with the same name in %s\n",
-                                    family.getID());
+                            LOGGER.anomaly(Error.FAMILY_FIRSTNAMES_NOT_UNIQUE, family);
                             valid = false;
                         }
                     }
@@ -40,7 +39,6 @@ public class UniqueNameBirthdays extends Validator {
                 checkedChild.put(childName, childBirthday);
 
                 childrenWithoutSameName.add(checkedChild);
-
             }
         }
 
