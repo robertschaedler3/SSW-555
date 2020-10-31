@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import gedcom.logging.Error;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
 
@@ -16,7 +17,6 @@ public class UniqueIndividuals extends Validator {
     }
 
     protected boolean check(GEDFile gedFile) {
-        boolean valid = true;
         Map<String, List<Date>> nameDateMap = new HashMap<>();
 
         for (Individual individual : gedFile.getIndividuals()) {
@@ -25,7 +25,7 @@ public class UniqueIndividuals extends Validator {
             List<Date> dates = null;
             if (birth != null) {
                 if ((dates = nameDateMap.get(name)) != null && dates.contains(birth)) {
-                    System.out.println("Anomaly US23: Multiple individuals with the same name have the same birth date.");
+                    LOGGER.anomaly(Error.NAME_BIRTH_NOT_UNIQUE, individual);
                     valid = false;
                 } 
                 nameDateMap.computeIfAbsent(name, k -> new ArrayList<Date>()).add(birth);
