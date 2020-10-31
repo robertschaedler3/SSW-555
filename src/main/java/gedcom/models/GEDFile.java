@@ -17,6 +17,7 @@ import gedcom.interfaces.Tag;
 public class GEDFile {
 
     private static int TOSTRING_LIST_LENGTH = 75;
+    public static final String GEDCOM_DATE_FORMAT = "dd MMM yyyy";
 
     private Map<String, Individual> individuals;
     private Map<String, Family> families;;
@@ -34,8 +35,10 @@ public class GEDFile {
     }
 
     public GEDFile(List<Individual> indivs, List<Family> fams) {
-        individuals = new HashMap<String, Individual>(indivs.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
-        families = new HashMap<String, Family>(fams.stream().collect(Collectors.toMap(Family::getID, family -> family)));
+        individuals = new HashMap<String, Individual>(
+                indivs.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
+        families = new HashMap<String, Family>(
+                fams.stream().collect(Collectors.toMap(Family::getID, family -> family)));
     }
 
     public GEDFile(Scanner s) {
@@ -56,12 +59,14 @@ public class GEDFile {
             if (currentLine.getTag() == Tag.INDI) {
                 if (individuals.put(currentLine.getID(), new Individual(currentLine.getID())) != null) {
                     s.close();
-                    throw new IllegalStateException(String.format("Error US15: cannot create individual with duplicate ID %s.", currentLine.getID()));
+                    throw new IllegalStateException(String
+                            .format("Error US15: cannot create individual with duplicate ID %s.", currentLine.getID()));
                 }
             } else if (currentLine.getTag() == Tag.FAM) {
                 if (families.put(currentLine.getID(), new Family(currentLine.getID())) != null) {
                     s.close();
-                    throw new IllegalStateException(String.format("Error US15: cannot create family with duplicate ID %s.", currentLine.getID()));
+                    throw new IllegalStateException(String
+                            .format("Error US15: cannot create family with duplicate ID %s.", currentLine.getID()));
                 }
             }
         }
@@ -111,7 +116,7 @@ public class GEDFile {
             }
 
             if (gedLine.getTag() == Tag.DATE && dateType != null) {
-                DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+                DateFormat formatter = new SimpleDateFormat(GEDCOM_DATE_FORMAT);
                 try {
                     Date date = formatter.parse(gedLine.getArgs());
                     if (dateType == Tag.BIRT) {
@@ -160,7 +165,7 @@ public class GEDFile {
             }
 
             if (gedLine.getTag() == Tag.DATE && dateType != null) {
-                DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+                DateFormat formatter = new SimpleDateFormat(GEDCOM_DATE_FORMAT);
                 try {
                     Date date = formatter.parse(gedLine.getArgs());
                     if (dateType == Tag.MARR) {
