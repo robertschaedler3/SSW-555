@@ -1,13 +1,16 @@
 package gedcom.builders;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import gedcom.interfaces.Gender;
 import gedcom.models.Individual;
 
 public class IndividualBuilder {
 
-    private static int id = 0;
+    private static int id = 1;
 
     private String name;
 
@@ -16,8 +19,11 @@ public class IndividualBuilder {
     private Date birth;
     private Date death;
 
+    private List<Individual> individuals;
+
     public IndividualBuilder() {
         this.gender = Gender.NOT_SPECIFIED;
+        this.individuals = new ArrayList<>();
     }
 
     public IndividualBuilder withName(String name) {
@@ -50,6 +56,11 @@ public class IndividualBuilder {
         return this;
     }
 
+    public IndividualBuilder withBirth(int year) {
+        this.birth = DateBuilder.build(1, Calendar.JANUARY, year);
+        return this;
+    }
+
     public IndividualBuilder withDeath(Date death) {
         this.death = death;
         return this;
@@ -57,6 +68,17 @@ public class IndividualBuilder {
 
     public IndividualBuilder withDeath(int date, int month, int year) {
         this.death = DateBuilder.build(date, month, year);
+        return this;
+    }
+
+    public IndividualBuilder withDeath(int year) {
+        this.death = DateBuilder.build(1, Calendar.JANUARY, year);
+        return this;
+    }
+
+    public IndividualBuilder withLife(Date birth, Date death) {
+        this.birth = birth;
+        this.death = death;
         return this;
     }
 
@@ -79,11 +101,25 @@ public class IndividualBuilder {
             individual.setDeath(death);
         }
 
+        this.individuals.add(individual);
+
+        flush();
         return individual;
     }
 
+    public List<Individual> getIndividuals() {
+        return this.individuals;
+    }
+
+    public void flush() {
+        this.name = null;
+        this.gender = Gender.NOT_SPECIFIED;
+        this.birth = null;
+        this.death = null;
+    }
+
     public Individual build() {
-        return buildFrom(new Individual(String.format("I_%d", id++)));
+        return buildFrom(new Individual(String.format("@I%d@", id++)));
     }
 
 }
