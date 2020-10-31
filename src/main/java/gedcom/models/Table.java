@@ -1,25 +1,79 @@
 package gedcom.models;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-public class Table {
+public class Table<T> {
 
-    // TODO: Genericize types of columns
-    private List<String> headersList;
-    private List<List<String>> rowsList;
+    private static int PADDING_SIZE = 1;
+    private static String NEW_LINE = "\n";
+    private static String TABLE_JOINT_SYMBOL = "+";
+    private static String TABLE_V_SPLIT_SYMBOL = "|";
+    private static String TABLE_H_SPLIT_SYMBOL = "-";
 
-    private int PADDING_SIZE = 1;
-    private String NEW_LINE = "\n";
-    private String TABLE_JOINT_SYMBOL = "+";
-    private String TABLE_V_SPLIT_SYMBOL = "|";
-    private String TABLE_H_SPLIT_SYMBOL = "-";
+    private static String DATE_FORMAT = "dd MMM yyyy";
+    private static String NULL_SYMBOL = "NA";
 
-    public Table(List<String> headers, List<List<String>> rows) {
-        // TODO: check dimensions
-        this.headersList = headers;
-        this.rowsList = rows;
+    private static final SimpleDateFormat dateFmt = new SimpleDateFormat(DATE_FORMAT);
+
+    private String name;
+
+    private List<String> columns;
+    private List<T> rows;
+
+    private List<Function<? super T, ? extends Object>> expanders;
+
+    public Table(String name, List<String> columns, List<Function<? super T, ? extends Object>> expanders) {
+        this.name = name;
+
+        if (columns.size() != expanders.size()) {
+            throw new IllegalArgumentException(String.format("Not enough expanders to expand into %d columns.", columns.size()));
+        }
+
+        this.columns = columns;
+        this.rows = new ArrayList<>();
+        this.expanders = expanders;
+    }
+
+    public Table(String name, List<String> columns, List<T> data, List<Function<? super T, ? extends Object>> expanders) {
+        this.name = name;
+
+        if (columns.size() != expanders.size()) {
+            throw new IllegalArgumentException(String.format("Not enough expanders to expand into %d columns.", columns.size()));
+        }
+
+        this.columns = columns;
+        this.rows = data;
+        this.expanders = expanders;
+    }
+
+    private List<Object> expandRow(T item) {
+        List<Object> row = new ArrayList<>();
+        for (int i = 0; i < expanders.size(); i++) {
+            row.add(expanders.get(i).apply(item));
+        }
+        return row;
+    }
+
+    public boolean appendRow(T item) {
+        return rows.add(item);
+    }
+
+    private String stringify(Object obj) {
+        if (obj == null) {
+            return NULL_SYMBOL;
+        }
+            
+        if (obj instanceof Date) {
+            return dateFmt.format(obj);
+        }
+
+        return obj.toString();
     }
 
     public void addRow() {
@@ -48,25 +102,26 @@ public class Table {
     private Map<Integer, Integer> getMaximumWidhtofTable() {
         Map<Integer, Integer> columnMaxWidthMapping = new HashMap<>();
 
-        for (int columnIndex = 0; columnIndex < headersList.size(); columnIndex++) {
+        for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
             columnMaxWidthMapping.put(columnIndex, 0);
         }
 
-        for (int columnIndex = 0; columnIndex < headersList.size(); columnIndex++) {
-            if (headersList.get(columnIndex).length() > columnMaxWidthMapping.get(columnIndex)) {
-                columnMaxWidthMapping.put(columnIndex, headersList.get(columnIndex).length());
+        for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+            if (columns.get(columnIndex).length() > columnMaxWidthMapping.get(columnIndex)) {
+                columnMaxWidthMapping.put(columnIndex, columns.get(columnIndex).length());
             }
         }
 
-        for (List<String> row : rowsList) {
+        for (T item : rows) {
+            List<Object> row = expandRow(item);
             for (int columnIndex = 0; columnIndex < row.size(); columnIndex++) {
-                if (row.get(columnIndex).length() > columnMaxWidthMapping.get(columnIndex)) {
-                    columnMaxWidthMapping.put(columnIndex, row.get(columnIndex).length());
+                if (stringify(row.get(columnIndex)).length() > columnMaxWidthMapping.get(columnIndex)) {
+                    columnMaxWidthMapping.put(columnIndex, stringify(row.get(columnIndex)).length());
                 }
             }
         }
 
-        for (int columnIndex = 0; columnIndex < headersList.size(); columnIndex++) {
+        for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
             if (columnMaxWidthMapping.get(columnIndex) % 2 != 0) {
                 columnMaxWidthMapping.put(columnIndex, columnMaxWidthMapping.get(columnIndex) + 1);
             }
@@ -75,8 +130,7 @@ public class Table {
         return columnMaxWidthMapping;
     }
 
-    private int getOptimumCellPadding(int cellIndex, int datalength, Map<Integer, Integer> columnMaxWidthMapping,
-            int cellPaddingSize) {
+    private int getOptimumCellPadding(int cellIndex, int datalength, Map<Integer, Integer> columnMaxWidthMapping, int cellPaddingSize) {
         if (datalength % 2 != 0) {
             datalength++;
         }
@@ -89,7 +143,6 @@ public class Table {
     }
 
     private void fillCell(StringBuilder sb, String cell, int cellIndex, Map<Integer, Integer> columnMaxWidthMapping) {
-
         int cellPaddingSize = getOptimumCellPadding(cellIndex, cell.length(), columnMaxWidthMapping, PADDING_SIZE);
 
         if (cellIndex == 0) {
@@ -98,19 +151,13 @@ public class Table {
 
         fillSpace(sb, cellPaddingSize);
         sb.append(cell);
+
         if (cell.length() % 2 != 0) {
             sb.append(" ");
         }
 
         fillSpace(sb, cellPaddingSize);
-
         sb.append(TABLE_V_SPLIT_SYMBOL);
-
-    }
-
-    public Table orderBy(String col) {
-        // TODO
-        return null;
     }
 
     @Override
@@ -120,28 +167,29 @@ public class Table {
         Map<Integer, Integer> columnMaxWidthMapping = getMaximumWidhtofTable();
 
         sb.append(NEW_LINE);
+        sb.append(name);
         sb.append(NEW_LINE);
-        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
+        createRowLine(sb, columns.size(), columnMaxWidthMapping);
         sb.append(NEW_LINE);
 
-        for (int headerIndex = 0; headerIndex < headersList.size(); headerIndex++) {
-            fillCell(sb, headersList.get(headerIndex), headerIndex, columnMaxWidthMapping);
+        for (int headerIndex = 0; headerIndex < columns.size(); headerIndex++) {
+            fillCell(sb, columns.get(headerIndex), headerIndex, columnMaxWidthMapping);
         }
 
         sb.append(NEW_LINE);
 
-        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
+        createRowLine(sb, columns.size(), columnMaxWidthMapping);
 
-        for (List<String> row : rowsList) {
+        for (T item : rows) {
             sb.append(NEW_LINE);
+            List<Object> row = expandRow(item);
             for (int cellIndex = 0; cellIndex < row.size(); cellIndex++) {
-                fillCell(sb, row.get(cellIndex), cellIndex, columnMaxWidthMapping);
+                fillCell(sb, stringify(row.get(cellIndex)), cellIndex, columnMaxWidthMapping);
             }
         }
 
         sb.append(NEW_LINE);
-        createRowLine(sb, headersList.size(), columnMaxWidthMapping);
-        sb.append(NEW_LINE);
+        createRowLine(sb, columns.size(), columnMaxWidthMapping);
         sb.append(NEW_LINE);
 
         return sb.toString();
