@@ -24,9 +24,21 @@ public class Table<T> {
     private String name;
 
     private List<String> columns;
-    private List<List<Object>> rows;
+    private List<T> rows;
 
     private List<Function<? super T, ? extends Object>> expanders;
+
+    public Table(String name, List<String> columns, List<Function<? super T, ? extends Object>> expanders) {
+        this.name = name;
+
+        if (columns.size() != expanders.size()) {
+            throw new IllegalArgumentException(String.format("Not enough expanders to expand into %d columns.", columns.size()));
+        }
+
+        this.columns = columns;
+        this.rows = new ArrayList<>();
+        this.expanders = expanders;
+    }
 
     public Table(String name, List<String> columns, List<T> data, List<Function<? super T, ? extends Object>> expanders) {
         this.name = name;
@@ -36,19 +48,20 @@ public class Table<T> {
         }
 
         this.columns = columns;
+        this.rows = data;
         this.expanders = expanders;
-
-        expand(data);
     }
 
-    private void expand(List<T> data) {
-        rows = new ArrayList<>();
-        for (int i = 0; i < data.size(); i++) {
-            rows.add(new ArrayList<>());
-            for (int j = 0; j < columns.size(); j++) {
-                rows.get(i).add(expanders.get(j).apply(data.get(i)));
-            }
+    private List<Object> expandRow(T item) {
+        List<Object> row = new ArrayList<>();
+        for (int i = 0; i < expanders.size(); i++) {
+            row.add(expanders.get(i).apply(item));
         }
+        return row;
+    }
+
+    public boolean appendRow(T item) {
+        return rows.add(item);
     }
 
     private String stringify(Object obj) {
@@ -95,7 +108,8 @@ public class Table<T> {
             }
         }
 
-        for (List<Object> row : rows) {
+        for (T item : rows) {
+            List<Object> row = expandRow(item);
             for (int columnIndex = 0; columnIndex < row.size(); columnIndex++) {
                 if (stringify(row.get(columnIndex)).length() > columnMaxWidthMapping.get(columnIndex)) {
                     columnMaxWidthMapping.put(columnIndex, stringify(row.get(columnIndex)).length());
@@ -162,8 +176,9 @@ public class Table<T> {
 
         createRowLine(sb, columns.size(), columnMaxWidthMapping);
 
-        for (List<Object> row : rows) {
+        for (T item : rows) {
             sb.append(NEW_LINE);
+            List<Object> row = expandRow(item);
             for (int cellIndex = 0; cellIndex < row.size(); cellIndex++) {
                 fillCell(sb, stringify(row.get(cellIndex)), cellIndex, columnMaxWidthMapping);
             }
