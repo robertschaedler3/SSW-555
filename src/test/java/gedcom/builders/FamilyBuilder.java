@@ -1,6 +1,7 @@
 package gedcom.builders;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import gedcom.models.Individual;
 
 public class FamilyBuilder {
 
-    private static int id = 0;
+    private static int id = 1;
 
     private Individual husband;
     private Individual wife;
@@ -19,8 +20,11 @@ public class FamilyBuilder {
 
     private List<Individual> children;
 
+    private List<Family> families;
+
     public FamilyBuilder() {
         this.children = new ArrayList<>();
+        this.families = new ArrayList<>();
     }
 
     public FamilyBuilder withHusband(Individual husband) {
@@ -67,9 +71,20 @@ public class FamilyBuilder {
         this.marriage = marriage;
         return this;
     }
-
+    
     public FamilyBuilder withMarriage(int date, int month, int year) {
         this.marriage = DateBuilder.build(date, month, year);
+        return this;
+    }
+
+    public FamilyBuilder withMarriage(int year) {
+        this.marriage = DateBuilder.build(1, Calendar.JANUARY, year);
+        return this;
+    }
+
+    public FamilyBuilder withMarriage(Date marriage, Date divorce) {
+        this.marriage = marriage;
+        this.divorce = divorce;
         return this;
     }
 
@@ -80,6 +95,11 @@ public class FamilyBuilder {
 
     public FamilyBuilder withDivorce(int date, int month, int year) {
         this.divorce = DateBuilder.build(date, month, year);
+        return this;
+    }
+
+    public FamilyBuilder withDivorce(int year) {
+        this.divorce = DateBuilder.build(1, Calendar.JANUARY, year);
         return this;
     }
 
@@ -112,11 +132,26 @@ public class FamilyBuilder {
             family.setDivorce(divorce);
         }
 
+        this.families.add(family);
+
+        flush();
         return family;
     }
 
+    public List<Family> getFamilies() {
+        return this.families;
+    }
+
+    public void flush() {
+        this.husband = null;
+        this.wife = null;
+        this.marriage = null;
+        this.divorce = null;
+        this.children = new ArrayList<>();
+    }
+
     public Family build() {
-        return buildFrom(new Family(String.format("F_%d", id++)));
+        return buildFrom(new Family(String.format("@F%d@", id++)));
     }
 
 }

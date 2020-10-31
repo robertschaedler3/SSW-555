@@ -38,11 +38,17 @@ public class Individual extends GEDObject {
     }
 
     public String getFirstName() {
+        if (this.name == null) {
+            return null;
+        }
         String[] parts = this.name.split("/");
         return (parts.length > 0) ? parts[0].trim() : "";
     }
 
     public String getLastName() {
+        if (this.name == null) {
+            return null;
+        }
         String[] parts = this.name.split("/");
         return (parts.length > 1) ? parts[1].trim() : "";
     }
@@ -144,11 +150,11 @@ public class Individual extends GEDObject {
         }
         return this.childFamilies.add(family);
     }
-    
+
     public List<Family> getSpouseFamilies() {
         return new ArrayList<>(spouseFamilies);
     }
-    
+
     public boolean addSpouseFamily(Family family) {
         if (family == null) {
             throw new IllegalArgumentException("Family cannot be null.");
@@ -167,9 +173,10 @@ public class Individual extends GEDObject {
         if (individual == null) {
             throw new IllegalArgumentException();
         }
-        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList()).size() != 0;
+        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList())
+                .size() != 0;
     }
-    
+
     public List<Individual> getSiblings() {
         List<Individual> siblings = new ArrayList<>();
         for (Family family : this.childFamilies) {
@@ -184,7 +191,8 @@ public class Individual extends GEDObject {
         for (Family family : this.spouseFamilies) {
             children.addAll(family.getChildren());
         }
-        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
+        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .reversed());
         return children;
     }
 
