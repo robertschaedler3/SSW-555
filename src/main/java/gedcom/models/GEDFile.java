@@ -1,6 +1,5 @@
 package gedcom.models;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,8 +17,9 @@ import gedcom.logging.Logger;
 
 public class GEDFile {
 
-    private static int TOSTRING_LIST_LENGTH = 75;
-    public static final String GEDCOM_DATE_FORMAT = "dd MMM yyyy";
+    private static final int TOSTRING_LIST_LENGTH = 75;
+    public static final String FULL_DATE_FORMAT = "dd MMM yyyy";
+    public static final String[] GEDCOM_DATE_FORMATS = { FULL_DATE_FORMAT, "MMM yyyy", "yyyy" };
 
     private Map<String, Individual> individuals;
     private Map<String, Family> families;
@@ -131,20 +131,17 @@ public class GEDFile {
             }
 
             if (gedLine.getTag() == Tag.DATE && dateType != null) {
-                DateFormat formatter = new SimpleDateFormat(GEDCOM_DATE_FORMAT);
-                try {
-                    Date date = formatter.parse(gedLine.getArgs());
-                    if (dateType == Tag.BIRT) {
-                        individual.setBirthday(date);
-                    } else if (dateType == Tag.DEAT) {
-                        individual.setDeath(date);
-                    }
-                    dateType = null;
-                } catch (ParseException e) {
-                    System.out.println(String.format("Error parsing date: \"%s\"", gedLine.getArgs()));
+                Date date = parseDate(gedLine.getArgs(), individual);
+                if (date == null) {
+                    LOGGER.error(Error.ILLEGITIMATE_DATE, individual);
+                } else if (dateType == Tag.BIRT) {
+                    individual.setBirthday(date);
+                } else if (dateType == Tag.DEAT) {
+                    individual.setDeath(date);
                 }
+                dateType = null;
             } else {
-                // TODO: DATE type not specified
+                LOGGER.error(Error.ILLEGITIMATE_DATE, "date type not defined", individual);
             }
 
         }
@@ -185,24 +182,33 @@ public class GEDFile {
             }
 
             if (gedLine.getTag() == Tag.DATE && dateType != null) {
-                DateFormat formatter = new SimpleDateFormat(GEDCOM_DATE_FORMAT);
-                try {
-                    Date date = formatter.parse(gedLine.getArgs());
-                    if (dateType == Tag.MARR) {
-                        family.setMarriage(date);
-                    } else if (dateType == Tag.DIV) {
-                        family.setDivorce(date);
-                    }
-                    dateType = null;
-                } catch (ParseException e) {
-                    System.out.println(String.format("Error parsing date: \"%s\"", gedLine.getArgs()));
+                Date date = parseDate(gedLine.getArgs(), family);
+                if (date == null) {
+                    LOGGER.error(Error.ILLEGITIMATE_DATE, family);
+                } else if (dateType == Tag.MARR) {
+                    family.setMarriage(date);
+                } else if (dateType == Tag.DIV) {
+                    family.setDivorce(date);
                 }
+                dateType = null;
             } else {
-                // TODO: DATE type not specified
+                LOGGER.error(Error.ILLEGITIMATE_DATE, "date type not defined", family);
             }
         }
 
         return family;
+    }
+
+    private Date parseDate(String date, GEDObject gedObject) {
+        for (String format : GEDCOM_DATE_FORMATS) {
+            try {
+                SimpleDateFormat dateFmt = new SimpleDateFormat(format);
+                return dateFmt.parse(date);
+            } catch (ParseException e) {
+                LOGGER.error(Error.PARTIAL_DATE, gedObject);
+            }
+        }
+        return null;
     }
 
     public List<Individual> getIndividuals() {
