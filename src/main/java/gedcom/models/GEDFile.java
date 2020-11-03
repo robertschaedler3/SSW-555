@@ -57,7 +57,7 @@ public class GEDFile {
         int n = 0;
         while (s.hasNextLine()) {
 
-            LOGGER.setLineContext(++n);
+            Logger.setLineContext(++n);
 
             line = s.nextLine();
             currentLine = new GEDLine(line);
@@ -80,7 +80,7 @@ public class GEDFile {
         // Populate Individual and Family fields
         for (int i = 0; i < gedLines.size(); i++) {
 
-            LOGGER.setLineContext(i + 1);
+            Logger.setLineContext(i + 1);
 
             currentLine = gedLines.get(i);
 
@@ -91,7 +91,7 @@ public class GEDFile {
             }
         }
         
-        LOGGER.setLineContext(0);
+        Logger.setLineContext(0);
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {
@@ -100,7 +100,7 @@ public class GEDFile {
 
         for (int i = index + 1; i < list.size(); i++) {
 
-            LOGGER.setLineContext(i + 1);
+            Logger.setLineContext(i + 1);
 
             GEDLine gedLine = list.get(i);
             if (gedLine.getLevel() == 0) {
@@ -157,7 +157,7 @@ public class GEDFile {
 
         for (int i = index + 1; i < list.size(); i++) {
 
-            LOGGER.setLineContext(i + 1);
+            Logger.setLineContext(i + 1);
 
             GEDLine gedLine = list.get(i);
             if (gedLine.getLevel() == 0) {
