@@ -12,8 +12,8 @@ import gedcom.models.GEDObject;
 
 public class Logger {
 
-    private static String MESSAGE_FORMAT = "%s US%02d %s>> %s %s";
-    private static String LINE_FORMAT = "[LINE %d] ";
+    private static String MESSAGE_FORMAT = "%s US%02d [%s] >> %s %s";
+    private static String LINE_FORMAT = "LINE %d";
 
     private static int line = 0;
 
