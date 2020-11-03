@@ -61,6 +61,15 @@ public class ValidMarriage extends Validator {
         }
     }
 
+    private void checkDivorceBeforeDeath(Individual individual, Family family) {
+        Date death = individual.getDeath();
+        Date divorce = family.getDivorce();
+
+        if (divorce != null && death != null && divorce.after(death)) {
+            log(Level.ERROR, Error.DEATH_BEFORE_DIVORCE, family, individual);
+        }
+    }
+
     protected boolean check(GEDFile gedFile) {
 
         for (Family family : gedFile.getFamilies()) {
@@ -72,12 +81,14 @@ public class ValidMarriage extends Validator {
                 checkMinMarriageAge(husband, family);
                 checkMarriageAfterBirth(husband, family);
                 checkMarriageBeforeDeath(husband, family);
+                checkDivorceBeforeDeath(husband, family);
             }
             
             if (wife != null) {
                 checkMinMarriageAge(wife, family);
                 checkMarriageAfterBirth(wife, family);
                 checkMarriageBeforeDeath(wife, family);
+                checkDivorceBeforeDeath(wife, family);
             }
         }
 
