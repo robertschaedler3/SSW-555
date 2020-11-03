@@ -1,90 +1,23 @@
 package gedcom;
 
-import gedcom.models.GEDFile;
-import gedcom.validators.*;
+import gedcom.cli.*;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
+@Command(
+    name = "ged",
+    subcommands = {
+        ValidateCommand.class,
+        ListCommand.class,
+        CommandLine.HelpCommand.class
+    }
+)
 public class GEDParser {
 
-    private static GEDFile gedFile;
-    private static Validator validator = new DefaultValidator();
-
-    private static void parseArgs(String[] args) {
-        for (int i = 1; i < args.length; i++) {
-            switch (args[i]) {
-                case "--multiple-births":
-                    validator = new MultipleBirths(validator);
-                    break;
-                case "--divorce-before-death":
-                    validator = new DivorceBeforeDeath(validator);
-                    break;
-                case "--no-bigamy":
-                    validator = new NoBigamy(validator);
-                    break;
-                case "--no-incest":
-                    validator = new NoIncest(validator);
-                    break;
-                case "--valid-birth":
-                    validator = new ValidBirth(validator);
-                    break;
-                case "--valid-marriage":
-                    validator = new ValidMarriage(validator);
-                    break;
-                case "--parents-not-too-old":
-                    validator = new ParentsNotTooOld(validator);
-                    break;
-                case "--corresponding-entries":
-                    validator = new CorrespondingEntries(validator);
-                    break;
-                case "--unique-first-names":
-                    validator = new UniqueNameBirthdays(validator);
-                    break;
-                case "--male-last-names":
-                    validator = new MaleLastNames(validator);
-                    break;
-                case "--no-marriages-to-descendants":
-                    validator = new NoMarriagesToDescendants(validator);
-                    break;
-                case "--tabulate":
-                    // TODO: add list elements to tables
-                    System.out.println(gedFile);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
     public static void main(String[] args) {
-        if (args.length < 1) {
-            System.err.println("Usage: ./GEDParser <.ged file> [ARGS]");
-            return;
-        }
-
-        File file;
-        Scanner scanner;
-
-        try {
-            file = new File(args[0]);
-            scanner = new Scanner(file);
-            gedFile = new GEDFile(scanner);
-
-            // TODO: check args for tables
-            parseArgs(args);
-
-            scanner.close();
-
-            boolean valid = validator.isValid(gedFile);
-            System.out.println(String.format("gedcom is %s", valid ? "VALID" : "INVALID"));
-        } catch (FileNotFoundException fe) {
-            System.out.println("The file you entered could not be found.");
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-
+        int exitCode = new CommandLine(new GEDParser()).execute(args);
+        System.exit(exitCode);
     }
 
 }
