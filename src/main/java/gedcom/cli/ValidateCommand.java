@@ -1,5 +1,6 @@
 package gedcom.cli;
 
+import gedcom.logging.Logger;
 import gedcom.models.GEDFile;
 import gedcom.validators.Validator;
 import picocli.CommandLine.ArgGroup;
@@ -28,12 +29,8 @@ public class ValidateCommand implements Runnable {
 
         Validator validator = validateOptions.buildValidator();
 
-        if (loggingOptions.log) {
-            // TODO: set logger output to console
-        }
-
         if (loggingOptions.logFile != null) {
-            // TODO: set logger output to file
+            Logger.setOutput(loggingOptions.logFile);
         }
 
         boolean valid = validator.isValid(gedFile);
