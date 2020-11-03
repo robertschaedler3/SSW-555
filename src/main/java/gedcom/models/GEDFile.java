@@ -1,5 +1,7 @@
 package gedcom.models;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,26 +28,25 @@ public class GEDFile {
 
     private Logger LOGGER = Logger.getInstance();
 
-    public GEDFile(Individual[] indivs, Family[] fams) {
-        individuals = new HashMap<String, Individual>();
-        families = new HashMap<String, Family>();
+    public GEDFile(Individual[] individuals, Family[] families) {
+        this.individuals = new HashMap<String, Individual>();
+        this.families = new HashMap<String, Family>();
 
-        for (Individual indi : indivs) {
-            individuals.put(indi.getID(), indi);
+        for (Individual individual : individuals) {
+            this.individuals.put(individual.getID(), individual);
         }
-        for (Family fam : fams) {
-            families.put(fam.getID(), fam);
+        for (Family family : families) {
+            this.families.put(family.getID(), family);
         }
     }
 
-    public GEDFile(List<Individual> indivs, List<Family> fams) {
-        individuals = new HashMap<String, Individual>(
-                indivs.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
-        families = new HashMap<String, Family>(
-                fams.stream().collect(Collectors.toMap(Family::getID, family -> family)));
+    public GEDFile(List<Individual> individuals, List<Family> families) {
+        this.individuals = new HashMap<String, Individual>(individuals.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
+        this.families = new HashMap<String, Family>(families.stream().collect(Collectors.toMap(Family::getID, family -> family)));
     }
 
-    public GEDFile(Scanner s) {
+    public GEDFile(File file) throws FileNotFoundException {
+        Scanner s = new Scanner(file);
         individuals = new HashMap<String, Individual>();
         families = new HashMap<String, Family>();
 
@@ -92,6 +93,7 @@ public class GEDFile {
         }
         
         LOGGER.setLineContext(0);
+        s.close();
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {

@@ -2,8 +2,8 @@ package gedcom.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,10 +31,13 @@ public class TestGEDFile {
         gedcomBuilder.withFamilies(families);
 
         String GEDCOM = gedcomBuilder.build();
-        GEDFile gedFile = new GEDFile(new Scanner(GEDCOMBuilder.getInputStream(GEDCOM)));
-
-        assertEquals(families.size(), gedFile.getFamilies().size());
-        assertEquals(individuals.size(), gedFile.getIndividuals().size());
+        try {
+            GEDFile gedFile = new GEDFile(GEDCOMBuilder.getTempFile(GEDCOM));
+            assertEquals(families.size(), gedFile.getFamilies().size());
+            assertEquals(individuals.size(), gedFile.getIndividuals().size());            
+        } catch (FileNotFoundException e) {
+            fail();
+        }
 
         // TODO: check list contents for field equality
     }
