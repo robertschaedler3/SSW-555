@@ -1,11 +1,15 @@
 package gedcom.cli;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
+import gedcom.models.Individual;
+import gedcom.models.Table;
 import picocli.CommandLine.Option;
 
 public class ListOptions {
@@ -118,8 +122,39 @@ public class ListOptions {
         // TODO
     }
 
+    private static int diffInYears(Date d1, Date d2) {
+        return 0;
+    }
+
+    /**
+     * List all couples who were married when the older spouse was more than twice
+     * as old as the younger spouse.
+     */
     private static void listLargeAgeDiff(GEDFile gedFile) {
-        // TODO        
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "HUSBAND", "WIFE", "MARRIAGE"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+
+        Table<Family> table = new Table<>("Large age difference", columns, expanders);
+
+        for (Family family : gedFile.getFamilies()) {
+            Individual husband = family.getHusband();
+            Individual wife = family.getHusband();
+
+            Date marriage = family.getMarriage();
+            Date husbandBirth = husband != null ? husband.getBirthday() : null;
+            Date wifeBirth = wife != null ? wife.getBirthday() : null;
+
+            if (marriage != null && husbandBirth != null && wifeBirth != null) {
+                int husbandAge = diffInYears(husbandBirth, marriage);
+                int wifeAge = diffInYears(wifeBirth, marriage);
+
+                if (Math.max(husbandAge, wifeAge) >= Math.min(husbandAge, wifeAge) * 2) {
+                    table.appendRow(family);
+                }
+            }
+        }
+        
+        System.out.println(table);
     }
 
     private static void listRecentBirths(GEDFile gedFile) {
