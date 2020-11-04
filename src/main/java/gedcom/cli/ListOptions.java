@@ -41,19 +41,21 @@ public class ListOptions {
     @Option(names = { "-rd", "--recent-deaths" }, description = "List all individuals who died in the last 30 days")
     protected boolean listRecentDeaths;
 
-    @Option(names = { "-rs", "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
+    @Option(names = { "-rs",
+            "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
     protected boolean listRecentSurvivors;
 
     @Option(names = { "-ub", "--upcoming-births" }, description = "List individuals with birthdays in the next 30 days")
     protected boolean listUpcomingBirths;
 
-    @Option(names = { "-ua", "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
+    @Option(names = { "-ua",
+            "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
     protected boolean listUpcomingAnniversaries;
-    
+
     private boolean listSelected(boolean list) {
         return all || list;
     }
-    
+
     protected void list(GEDFile gedFile) {
 
         if (listSelected(listDeceased)) {
@@ -101,7 +103,7 @@ public class ListOptions {
         }
 
     }
-    
+
     private static void listDeceased(GEDFile gedFile) {
         // TODO
     }
@@ -132,7 +134,8 @@ public class ListOptions {
      */
     private static void listLargeAgeDiff(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "HUSBAND", "WIFE", "MARRIAGE"));
-        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(
+                Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
 
         Table<Family> table = new Table<>("Large age difference", columns, expanders);
 
@@ -153,7 +156,7 @@ public class ListOptions {
                 }
             }
         }
-        
+
         System.out.println(table);
     }
 
