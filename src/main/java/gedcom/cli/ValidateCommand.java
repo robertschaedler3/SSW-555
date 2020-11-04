@@ -6,17 +6,27 @@ import gedcom.validators.Validator;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Option;
 
-@Command(name = "validate", description = "%nVaildate a given GEDCOM file against a set of validators%n")
+@Command(
+    name = "validate",
+    sortOptions = false, 
+    synopsisHeading = "%n", 
+    descriptionHeading = "%n@|bold,underline Description|@:%n%n", 
+    parameterListHeading = "%n@|bold,underline Parameters|@:%n", 
+    optionListHeading = "%n@|bold,underline Options|@:%n", 
+    header = "Validate a GEDCOM file.",
+    description = "Vaildate a GEDCOM file against a set of validators."
+)
 public class ValidateCommand implements Runnable {
 
     @Mixin
     private FileParameter fileParam;
 
-    @ArgGroup(exclusive = true, heading = "%nLogging options%n%n")
+    @Mixin
     private LoggingOptions loggingOptions = new LoggingOptions();
 
-    @ArgGroup(exclusive = true, multiplicity = "1", heading = "%nValidation options%n%n")
+    @ArgGroup(exclusive = false, multiplicity = "1")
     private ValidateOptions validateOptions = new ValidateOptions();
 
     public void run() {
@@ -29,8 +39,8 @@ public class ValidateCommand implements Runnable {
 
         Validator validator = validateOptions.buildValidator();
 
-        if (loggingOptions.logFile != null) {
-            Logger.setOutput(loggingOptions.logFile);
+        if (loggingOptions.logfile != null) {
+            Logger.setOutput(loggingOptions.logfile);
         }
 
         boolean valid = validator.isValid(gedFile);

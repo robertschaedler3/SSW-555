@@ -8,45 +8,38 @@ public class ListOptions {
     @Option(names = { "-A", "--all" }, description = "List all feature groups")
     protected boolean all;
 
-    @ArgGroup(exclusive = false)
-    private ListFeatures features = new ListFeatures();
+    @Option(names = { "-dd", "--deceased" }, description = "List all deceased individuals")
+    protected boolean listDeceased;
 
-    private static class ListFeatures {
+    @Option(names = { "-lm", "--living-married" }, description = "List living married individuals")
+    protected boolean listLivingMarried;
 
-        @Option(names = { "-dd", "--deceased" }, description = "List all deceased individuals")
-        protected boolean listDeceased;
+    @Option(names = { "-ls", "--living-single" }, description = "List living single individuals")
+    protected boolean listLivingSingle;
 
-        @Option(names = { "-lm", "--living-married" }, description = "List living married individuals")
-        protected boolean listLivingMarried;
+    @Option(names = { "-mb", "--mult-births" }, description = "List all multiple births")
+    protected boolean listMultipleBirths;
 
-        @Option(names = { "-ls", "--living-single" }, description = "List living single individuals")
-        protected boolean listLivingSingle;
+    @Option(names = { "-or", "--orphans" }, description = "List all orphans")
+    protected boolean listOrphans;
 
-        @Option(names = { "-mb", "--mult-births" }, description = "List all multiple births")
-        protected boolean listMultipleBirths;
+    @Option(names = { "-ad", "--age-diff" }, description = "List couples with large age differences")
+    protected boolean listLargeAgeDiff;
 
-        @Option(names = { "-or", "--orphans" }, description = "List all orphans")
-        protected boolean listOrphans;
+    @Option(names = { "-rb", "--recent-births" }, description = "List all individuals born in the last 30 days")
+    protected boolean listRecentBirths;
 
-        @Option(names = { "-ad", "--age-diff" }, description = "List couples with large age differences")
-        protected boolean listLargeAgeDiff;
+    @Option(names = { "-rd", "--recent-deaths" }, description = "List all individuals who died in the last 30 days")
+    protected boolean listRecentDeaths;
 
-        @Option(names = { "-rb", "--recent-births" }, description = "List all individuals born in the last 30 days")
-        protected boolean listRecentBirths;
+    @Option(names = { "-rs", "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
+    protected boolean listRecentSurvivors;
 
-        @Option(names = { "-rd", "--recent-deaths" }, description = "List all individuals who died in the last 30 days")
-        protected boolean listRecentDeaths;
+    @Option(names = { "-ub", "--upcoming-births" }, description = "List individuals with birthdays in the next 30 days")
+    protected boolean listUpcomingBirths;
 
-        @Option(names = { "-rs", "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
-        protected boolean listRecentSurvivors;
-
-        @Option(names = { "-ub", "--upcoming-births" }, description = "List individuals with birthdays in the next 30 days")
-        protected boolean listUpcomingBirths;
-
-        @Option(names = { "-ua", "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
-        protected boolean listUpcomingAnniversaries;
-
-    }
+    @Option(names = { "-ua", "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
+    protected boolean listUpcomingAnniversaries;
     
     private boolean listSelected(boolean list) {
         return all || list;
@@ -54,47 +47,47 @@ public class ListOptions {
     
     protected void list() {
 
-        if (listSelected(features.listDeceased)) {
+        if (listSelected(listDeceased)) {
             listDeceased();
         }
 
-        if (listSelected(features.listLivingMarried)) {
+        if (listSelected(listLivingMarried)) {
             listLivingMarried();
         }
 
-        if (listSelected(features.listLivingSingle)) {
+        if (listSelected(listLivingSingle)) {
             listLivingSingle();
         }
 
-        if (listSelected(features.listMultipleBirths)) {
+        if (listSelected(listMultipleBirths)) {
             listMultipleBirths();
         }
 
-        if (listSelected(features.listOrphans)) {
+        if (listSelected(listOrphans)) {
             listOrphans();
         }
 
-        if (listSelected(features.listLargeAgeDiff)) {
+        if (listSelected(listLargeAgeDiff)) {
             listLargeAgeDiff();
         }
 
-        if (listSelected(features.listRecentBirths)) {
+        if (listSelected(listRecentBirths)) {
             listRecentBirths();
         }
 
-        if (listSelected(features.listRecentDeaths)) {
+        if (listSelected(listRecentDeaths)) {
             listRecentDeaths();
         }
 
-        if (listSelected(features.listRecentSurvivors)) {
+        if (listSelected(listRecentSurvivors)) {
             listRecentSurvivors();
         }
 
-        if (listSelected(features.listUpcomingBirths)) {
+        if (listSelected(listUpcomingBirths)) {
             listUpcomingBirths();
         }
 
-        if (listSelected(features.listUpcomingAnniversaries)) {
+        if (listSelected(listUpcomingAnniversaries)) {
             listUpcomingAnniversaries();
         }
 
