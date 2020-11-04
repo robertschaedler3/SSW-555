@@ -37,7 +37,7 @@ public class GEDCOMBuilder {
     }
 
     private void addDateLine(Date date) {
-        SimpleDateFormat dateFmt = new SimpleDateFormat(GEDFile.GEDCOM_DATE_FORMAT);
+        SimpleDateFormat dateFmt = new SimpleDateFormat(GEDFile.FULL_DATE_FORMAT);
         sb.append(GEDLineBuilder.build(2, Tag.DATE, dateFmt.format(date)));
     }
 

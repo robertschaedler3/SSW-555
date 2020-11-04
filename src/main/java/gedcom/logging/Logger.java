@@ -119,6 +119,10 @@ public class Logger {
     public void error(Error error, GEDObject... objs) {
         log(Level.ERROR, error.code(), error.message(), objs);
     }
+    
+    public void error(Error error, String message, GEDObject... objs) {
+        log(Level.ERROR, error.code(), message, objs);
+    }
 
     public void anomaly(Error anomaly) {
         log(Level.ANOMALY, anomaly.code(), anomaly.message());
@@ -130,6 +134,10 @@ public class Logger {
 
     public void anomaly(Error anomaly, GEDObject... objs) {
         log(Level.ANOMALY, anomaly.code(), anomaly.message(), objs);
+    }
+    
+    public void anomaly(Error anomaly, String message, GEDObject... objs) {
+        log(Level.ANOMALY, anomaly.code(), message, objs);
     }
 
 }

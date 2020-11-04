@@ -31,6 +31,7 @@ public enum Error {
     FAMILY_FIRSTNAMES_NOT_UNIQUE(25),
     CORRESPONDING_ENTRIES_NOT_FOUND(26),
     // US27-41 do not raise parsing errors
+    PARTIAL_DATE(41),
     ILLEGITIMATE_DATE(42);
 
 
