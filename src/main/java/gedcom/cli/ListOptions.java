@@ -1,5 +1,11 @@
 package gedcom.cli;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import gedcom.models.Family;
+import gedcom.models.GEDFile;
 import picocli.CommandLine.Option;
 
 public class ListOptions {
@@ -44,95 +50,95 @@ public class ListOptions {
         return all || list;
     }
     
-    protected void list() {
+    protected void list(GEDFile gedFile) {
 
         if (listSelected(listDeceased)) {
-            listDeceased();
+            listDeceased(gedFile);
         }
 
         if (listSelected(listLivingMarried)) {
-            listLivingMarried();
+            listLivingMarried(gedFile);
         }
 
         if (listSelected(listLivingSingle)) {
-            listLivingSingle();
+            listLivingSingle(gedFile);
         }
 
         if (listSelected(listMultipleBirths)) {
-            listMultipleBirths();
+            listMultipleBirths(gedFile);
         }
 
         if (listSelected(listOrphans)) {
-            listOrphans();
+            listOrphans(gedFile);
         }
 
         if (listSelected(listLargeAgeDiff)) {
-            listLargeAgeDiff();
+            listLargeAgeDiff(gedFile);
         }
 
         if (listSelected(listRecentBirths)) {
-            listRecentBirths();
+            listRecentBirths(gedFile);
         }
 
         if (listSelected(listRecentDeaths)) {
-            listRecentDeaths();
+            listRecentDeaths(gedFile);
         }
 
         if (listSelected(listRecentSurvivors)) {
-            listRecentSurvivors();
+            listRecentSurvivors(gedFile);
         }
 
         if (listSelected(listUpcomingBirths)) {
-            listUpcomingBirths();
+            listUpcomingBirths(gedFile);
         }
 
         if (listSelected(listUpcomingAnniversaries)) {
-            listUpcomingAnniversaries();
+            listUpcomingAnniversaries(gedFile);
         }
 
     }
     
-    private static void listDeceased() {
+    private static void listDeceased(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listLivingMarried() {
+    private static void listLivingMarried(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listLivingSingle() {
+    private static void listLivingSingle(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listMultipleBirths() {
+    private static void listMultipleBirths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listOrphans() {
+    private static void listOrphans(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listLargeAgeDiff() {
+    private static void listLargeAgeDiff(GEDFile gedFile) {
+        // TODO        
+    }
+
+    private static void listRecentBirths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listRecentBirths() {
+    private static void listRecentDeaths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listRecentDeaths() {
+    private static void listRecentSurvivors(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listRecentSurvivors() {
+    private static void listUpcomingBirths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listUpcomingBirths() {
-        // TODO
-    }
-
-    private static void listUpcomingAnniversaries() {
+    private static void listUpcomingAnniversaries(GEDFile gedFile) {
         // TODO
     }
 

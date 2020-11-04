@@ -1,5 +1,6 @@
 package gedcom.cli;
 
+import gedcom.models.GEDFile;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -22,7 +23,13 @@ public class ListCommand implements Runnable {
     private ListOptions listOptions = new ListOptions();
 
     public void run() {
-        listOptions.list();
+        GEDFile gedFile = fileParam.getFile();
+        if (gedFile == null) {
+            System.out.println("File not found!");
+            return;
+        }
+
+        listOptions.list(gedFile);
     }
 
 }
