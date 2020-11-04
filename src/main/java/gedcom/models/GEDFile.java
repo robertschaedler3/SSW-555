@@ -123,10 +123,20 @@ public class GEDFile {
                     dateType = Tag.DEAT;
                     break;
                 case FAMC:
-                    individual.addChildFamily(this.families.get(gedLine.getArgs()));
+                    Family childFamily = this.families.get(gedLine.getArgs());
+                    if (childFamily != null) {
+                        individual.addChildFamily(childFamily);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 case FAMS:
-                    individual.addSpouseFamily(this.families.get(gedLine.getArgs()));
+                    Family spouseFamily = this.families.get(gedLine.getArgs());
+                    if (spouseFamily != null) {
+                        individual.addSpouseFamily(this.families.get(gedLine.getArgs()));
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 default:
                     break;
@@ -174,13 +184,28 @@ public class GEDFile {
                     dateType = Tag.DIV;
                     break;
                 case HUSB:
-                    family.setHusband(this.individuals.get(gedLine.getArgs()));
+                    Individual husband = this.individuals.get(gedLine.getArgs());
+                    if (husband != null) {
+                        family.setHusband(husband);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 case WIFE:
-                    family.setWife(this.individuals.get(gedLine.getArgs()));
+                    Individual wife = this.individuals.get(gedLine.getArgs());
+                    if (wife != null) {
+                        family.setWife(wife);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 case CHIL:
-                    family.addChild(this.individuals.get(gedLine.getArgs()));
+                    Individual child = this.individuals.get(gedLine.getArgs());
+                    if (child != null) {
+                        family.addChild(child);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 default:
                     break;
