@@ -1,6 +1,7 @@
 package gedcom.validators;
 
 import java.util.Map;
+import java.util.Date;
 import java.util.HashMap;
 
 import gedcom.logging.Error;
@@ -21,11 +22,14 @@ public class MultipleBirths extends Validator {
             siblingsWithBirthday.clear();
 
             for (Individual child : family.getChildren()) {
-                String birthday = child.getBirthday().toString();
-                if (siblingsWithBirthday.containsKey(birthday)) {
-                    siblingsWithBirthday.replace(birthday, siblingsWithBirthday.get(birthday) + 1);
-                } else {
-                    siblingsWithBirthday.put(birthday, 1);
+                Date birthday = child.getBirthday();
+                if (birthday != null) {
+                    String birth = birthday.toString();
+                    if (siblingsWithBirthday.containsKey(birth)) {
+                        siblingsWithBirthday.replace(birth, siblingsWithBirthday.get(birth) + 1);
+                    } else {
+                        siblingsWithBirthday.put(birth, 1);
+                    }
                 }
             }
 

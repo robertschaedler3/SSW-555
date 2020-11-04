@@ -1,5 +1,7 @@
 package gedcom.models;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,26 +28,25 @@ public class GEDFile {
 
     private Logger LOGGER = Logger.getInstance();
 
-    public GEDFile(Individual[] indivs, Family[] fams) {
-        individuals = new HashMap<String, Individual>();
-        families = new HashMap<String, Family>();
+    public GEDFile(Individual[] individuals, Family[] families) {
+        this.individuals = new HashMap<String, Individual>();
+        this.families = new HashMap<String, Family>();
 
-        for (Individual indi : indivs) {
-            individuals.put(indi.getID(), indi);
+        for (Individual individual : individuals) {
+            this.individuals.put(individual.getID(), individual);
         }
-        for (Family fam : fams) {
-            families.put(fam.getID(), fam);
+        for (Family family : families) {
+            this.families.put(family.getID(), family);
         }
     }
 
-    public GEDFile(List<Individual> indivs, List<Family> fams) {
-        individuals = new HashMap<String, Individual>(
-                indivs.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
-        families = new HashMap<String, Family>(
-                fams.stream().collect(Collectors.toMap(Family::getID, family -> family)));
+    public GEDFile(List<Individual> individuals, List<Family> families) {
+        this.individuals = new HashMap<String, Individual>(individuals.stream().collect(Collectors.toMap(Individual::getID, individual -> individual)));
+        this.families = new HashMap<String, Family>(families.stream().collect(Collectors.toMap(Family::getID, family -> family)));
     }
 
-    public GEDFile(Scanner s) {
+    public GEDFile(File file) throws FileNotFoundException {
+        Scanner s = new Scanner(file);
         individuals = new HashMap<String, Individual>();
         families = new HashMap<String, Family>();
 
@@ -57,7 +58,7 @@ public class GEDFile {
         int n = 0;
         while (s.hasNextLine()) {
 
-            LOGGER.setLineContext(++n);
+            Logger.setLineContext(++n);
 
             line = s.nextLine();
             currentLine = new GEDLine(line);
@@ -80,7 +81,7 @@ public class GEDFile {
         // Populate Individual and Family fields
         for (int i = 0; i < gedLines.size(); i++) {
 
-            LOGGER.setLineContext(i + 1);
+            Logger.setLineContext(i + 1);
 
             currentLine = gedLines.get(i);
 
@@ -91,7 +92,8 @@ public class GEDFile {
             }
         }
         
-        LOGGER.setLineContext(0);
+        Logger.setLineContext(0);
+        s.close();
     }
 
     private Individual parseIndividual(List<GEDLine> list, int index, String ID) {
@@ -100,7 +102,7 @@ public class GEDFile {
 
         for (int i = index + 1; i < list.size(); i++) {
 
-            LOGGER.setLineContext(i + 1);
+            Logger.setLineContext(i + 1);
 
             GEDLine gedLine = list.get(i);
             if (gedLine.getLevel() == 0) {
@@ -121,10 +123,20 @@ public class GEDFile {
                     dateType = Tag.DEAT;
                     break;
                 case FAMC:
-                    individual.addChildFamily(this.families.get(gedLine.getArgs()));
+                    Family childFamily = this.families.get(gedLine.getArgs());
+                    if (childFamily != null) {
+                        individual.addChildFamily(childFamily);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 case FAMS:
-                    individual.addSpouseFamily(this.families.get(gedLine.getArgs()));
+                    Family spouseFamily = this.families.get(gedLine.getArgs());
+                    if (spouseFamily != null) {
+                        individual.addSpouseFamily(this.families.get(gedLine.getArgs()));
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 default:
                     break;
@@ -157,7 +169,7 @@ public class GEDFile {
 
         for (int i = index + 1; i < list.size(); i++) {
 
-            LOGGER.setLineContext(i + 1);
+            Logger.setLineContext(i + 1);
 
             GEDLine gedLine = list.get(i);
             if (gedLine.getLevel() == 0) {
@@ -172,13 +184,28 @@ public class GEDFile {
                     dateType = Tag.DIV;
                     break;
                 case HUSB:
-                    family.setHusband(this.individuals.get(gedLine.getArgs()));
+                    Individual husband = this.individuals.get(gedLine.getArgs());
+                    if (husband != null) {
+                        family.setHusband(husband);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 case WIFE:
-                    family.setWife(this.individuals.get(gedLine.getArgs()));
+                    Individual wife = this.individuals.get(gedLine.getArgs());
+                    if (wife != null) {
+                        family.setWife(wife);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 case CHIL:
-                    family.addChild(this.individuals.get(gedLine.getArgs()));
+                    Individual child = this.individuals.get(gedLine.getArgs());
+                    if (child != null) {
+                        family.addChild(child);
+                    } else {
+                        LOGGER.error(Error.CORRESPONDING_ENTRIES_NOT_FOUND);
+                    }
                     break;
                 default:
                     break;

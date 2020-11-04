@@ -77,14 +77,14 @@ public class Family extends GEDObject {
         }
 
         if (marriage.after(new Date())) {
-            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "marriage occurs before current time");
+            LOGGER.error(Error.DATE_AFTER_CURRENT_DATE, this);
         }
 
         if (this.divorce != null) {
             if (this.divorce.equals(marriage) || this.divorce.after(marriage)) {
                 this.marriage = marriage;
             } else {
-                LOGGER.error(Error.DIVORCE_BEFORE_MARRIAGE, "marriage occurs after divorce.");
+                LOGGER.error(Error.DIVORCE_BEFORE_MARRIAGE, this);
             }
         } else {
             this.marriage = marriage;
@@ -97,14 +97,14 @@ public class Family extends GEDObject {
         }
 
         if (divorce.after(new Date())) {
-            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "divorce occurs before current time");
+            LOGGER.error(Error.DATE_AFTER_CURRENT_DATE, this);
         }
 
         if (this.marriage != null) {
             if (this.marriage.equals(divorce) || this.marriage.before(divorce)) {
                 this.divorce = divorce;
             } else {
-                LOGGER.error(Error.DIVORCE_BEFORE_MARRIAGE, "divorce occurs before marriage");
+                LOGGER.error(Error.DIVORCE_BEFORE_MARRIAGE, this);
             }
         } else {
             this.divorce = divorce;
@@ -123,7 +123,7 @@ public class Family extends GEDObject {
         }
 
         if (children.size() >= MAX_CHILDREN) {
-            LOGGER.anomaly(Error.MAX_FAMILY_CHILDREN_EXCEEDED);
+            LOGGER.anomaly(Error.MAX_FAMILY_CHILDREN_EXCEEDED, this);
         }
 
         return this.children.add(child);

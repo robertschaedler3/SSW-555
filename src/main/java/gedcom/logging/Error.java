@@ -4,7 +4,7 @@ import gedcom.models.Family;
 import gedcom.models.Individual;
 
 public enum Error {
-    DATE_BEFORE_CURRENT_DATE(1),
+    DATE_AFTER_CURRENT_DATE(1),
     MARRIAGE_BEFORE_BIRTH(2),
     DEATH_BEFORE_BIRTH(3),
     DIVORCE_BEFORE_MARRIAGE(4),

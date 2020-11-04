@@ -100,7 +100,7 @@ public class Individual extends GEDObject {
         }
 
         if (birth.after(new Date())) {
-            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "birth occurs before current time");
+            LOGGER.error(Error.DATE_AFTER_CURRENT_DATE, this);
         }
 
         if (this.death != null) {
@@ -110,7 +110,7 @@ public class Individual extends GEDObject {
                 }
                 this.birthday = birth;
             } else {
-                LOGGER.error(Error.DEATH_BEFORE_BIRTH);
+                LOGGER.error(Error.DEATH_BEFORE_BIRTH, this);
             }
         } else {
             this.birthday = birth;
@@ -123,7 +123,7 @@ public class Individual extends GEDObject {
         }
 
         if (death.after(new Date())) {
-            LOGGER.error(Error.DATE_BEFORE_CURRENT_DATE, "death occurs before current time");
+            LOGGER.error(Error.DATE_AFTER_CURRENT_DATE, this);
         }
 
         if (this.birthday != null) {
@@ -133,7 +133,7 @@ public class Individual extends GEDObject {
                 }
                 this.death = death;
             } else {
-                LOGGER.error(Error.DEATH_BEFORE_BIRTH);
+                LOGGER.error(Error.DEATH_BEFORE_BIRTH, this);
             }
         } else {
             this.death = death;
