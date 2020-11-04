@@ -6,7 +6,6 @@ import gedcom.validators.Validator;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
-import picocli.CommandLine.Option;
 
 @Command(
     name = "validate",

@@ -1,6 +1,5 @@
 package gedcom.cli;
 
-import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Option;
 
 public class ListOptions {
