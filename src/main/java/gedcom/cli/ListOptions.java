@@ -134,8 +134,7 @@ public class ListOptions {
      */
     private static void listLargeAgeDiff(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "HUSBAND", "WIFE", "MARRIAGE"));
-        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(
-                Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
 
         Table<Family> table = new Table<>("Large age difference", columns, expanders);
 
