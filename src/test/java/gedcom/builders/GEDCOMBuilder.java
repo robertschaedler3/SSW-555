@@ -1,7 +1,12 @@
 package gedcom.builders;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -135,8 +140,14 @@ public class GEDCOMBuilder {
         return sb.toString();
     }
 
-    public static InputStream getInputStream(String GEDCOM) {
-        return new ByteArrayInputStream(GEDCOM.getBytes());
+    public static File getTempFile(String GEDCOM) {
+        try {
+            Path tempFile = Files.createTempFile(null, null);
+            Files.write(tempFile, GEDCOM.getBytes(StandardCharsets.UTF_8));
+            return tempFile.toFile();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 }

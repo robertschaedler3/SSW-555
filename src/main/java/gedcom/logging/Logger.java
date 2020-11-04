@@ -1,5 +1,9 @@
 package gedcom.logging;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +16,8 @@ public class Logger {
     private static String LINE_FORMAT = "LINE %d";
 
     private static int line = 0;
+
+    private static String file;
 
     private static Logger logger = new Logger();
     private static List<LogAppender> appenders = new ArrayList<>();
@@ -66,8 +72,23 @@ public class Logger {
         return logger;
     }
 
-    public void setLineContext(int n) {
+    public static void setLineContext(int n) {
         line = n;
+    }
+
+    public static void setOutput(String output) {
+        file = output;
+    }
+
+    private static void appendToFile(String message) {
+        try {
+            Writer output = new BufferedWriter(new FileWriter(file, true));
+            output.append(message);
+            output.append("\n");
+            output.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void addAppender(LogAppender appender) {
@@ -79,7 +100,12 @@ public class Logger {
         for (LogAppender appender : appenders) {
             appender.append(logEvent);
         }
-        System.out.println(logEvent);
+
+        if (file != null) {
+            appendToFile(logEvent.toString());
+        } else {
+            System.out.println(logEvent);
+        }
     }
 
     public void error(Error error) {

@@ -91,4 +91,30 @@ public class TestValidMarriage {
         assertFalse(validator.isValid(gedFile));
     }
 
+    @Test
+    public void testValidDivorceBeforeDeath() {
+        Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2000);
+        Date death = addYears(divorce, 1); // Death 1 year after divorce
+
+        Individual individual = new IndividualBuilder().withDeath(death).build();
+
+        Family family = new FamilyBuilder().withHusband(individual).withDivorce(divorce).build();
+        GEDFile gedFile = new GEDFileBuilder().withFamily(family).withIndividual(individual).build();
+
+        assertTrue(validator.isValid(gedFile));
+    }
+
+    @Test
+    public void testInvalidDivorceBeforeDeath() {
+        Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
+        Date divorce = addYears(death, 1); // Divorce 1 year after death
+
+        Individual individual = new IndividualBuilder().withDeath(death).build();
+
+        Family family = new FamilyBuilder().withHusband(individual).withDivorce(divorce).build();
+        GEDFile gedFile = new GEDFileBuilder().withFamily(family).withIndividual(individual).build();
+
+        assertFalse(validator.isValid(gedFile));
+    }
+
 }
