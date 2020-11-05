@@ -205,7 +205,23 @@ public class ListOptions {
     }
 
     private static void listUpcomingBirths(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getBirthday));
+
+        Table<Individual> table = new Table<>("Upcoming birthdays", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date birth = indi.getBirthday();
+            if (birth == null) continue;
+            Date birthdayThisYear = new Date(now.getYear(), birth.getMonth(), birth.getDate());
+
+            if (daysBetween(birthdayThisYear, now) < 30) {
+                table.add(indi);
+            }
+        }
+
+        System.out.println(table);
     }
 
     private static void listUpcomingAnniversaries(GEDFile gedFile) {
