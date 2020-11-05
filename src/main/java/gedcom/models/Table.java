@@ -2,6 +2,7 @@ package gedcom.models;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -60,8 +61,17 @@ public class Table<T> {
         return row;
     }
 
+    @Deprecated
     public boolean appendRow(T item) {
         return rows.add(item);
+    }
+
+    public boolean add(T e) {
+        return rows.add(e);
+    }
+
+    public boolean addAll(Collection<? extends T> c) {
+        return rows.addAll(c);
     }
 
     private String stringify(Object obj) {
