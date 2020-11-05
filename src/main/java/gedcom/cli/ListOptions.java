@@ -1,7 +1,10 @@
 package gedcom.cli;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -124,8 +127,12 @@ public class ListOptions {
         // TODO
     }
 
-    private static int diffInYears(Date d1, Date d2) {
-        return (int) (Math.abs(d1.getTime() - d2.getTime()) / (1000l * 60 * 60 * 24 * 365));
+    private static long daysBetween(Date d1, Date d2) {
+        return ChronoUnit.DAYS.between(d1.toInstant(), d2.toInstant());
+    }
+
+    private static long yearsBetween(Date d1, Date d2) {
+        return ChronoUnit.YEARS.between(d1.toInstant(), d2.toInstant());
     }
 
     /**
@@ -147,11 +154,11 @@ public class ListOptions {
             Date wifeBirth = wife != null ? wife.getBirthday() : null;
 
             if (marriage != null && husbandBirth != null && wifeBirth != null) {
-                int husbandAge = diffInYears(husbandBirth, marriage);
-                int wifeAge = diffInYears(wifeBirth, marriage);
+                long husbandAge = yearsBetween(husbandBirth, marriage);
+                long wifeAge = yearsBetween(wifeBirth, marriage);
 
                 if (Math.max(husbandAge, wifeAge) >= Math.min(husbandAge, wifeAge) * 2) {
-                    table.appendRow(family);
+                    table.add(family);
                 }
             }
         }
@@ -168,7 +175,33 @@ public class ListOptions {
     }
 
     private static void listRecentSurvivors(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH", "AGE"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getBirthday, Individual::age));
+
+        Table<Individual> table = new Table<>("Recent survivors", columns, expanders);
+
+        for (Family family : gedFile.getFamilies()) {
+
+            Individual husband = family.getHusband();
+            Individual wife = family.getWife();
+
+            Date husbandDeath = husband != null ? husband.getDeath() : null;
+            Date wifeDeath = wife != null ? wife.getDeath() : null;
+
+            if (husbandDeath != null && daysBetween(husbandDeath, new Date()) < 30) {
+                if (wife != null) {
+                    table.add(wife);
+                }
+                table.addAll(family.getChildren());
+            } else if (wifeDeath != null && daysBetween(wifeDeath, new Date()) < 30) {
+                if (husband != null) {
+                    table.add(husband);
+                }
+                table.addAll(family.getChildren());
+            }
+        }
+
+        System.out.println(table);
     }
 
     private static void listUpcomingBirths(GEDFile gedFile) {
