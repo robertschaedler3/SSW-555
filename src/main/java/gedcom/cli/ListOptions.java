@@ -1,5 +1,15 @@
 package gedcom.cli;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Function;
+
+import gedcom.models.Family;
+import gedcom.models.GEDFile;
+import gedcom.models.Individual;
+import gedcom.models.Table;
 import picocli.CommandLine.Option;
 
 public class ListOptions {
@@ -31,108 +41,141 @@ public class ListOptions {
     @Option(names = { "-rd", "--recent-deaths" }, description = "List all individuals who died in the last 30 days")
     protected boolean listRecentDeaths;
 
-    @Option(names = { "-rs", "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
+    @Option(names = { "-rs",
+            "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
     protected boolean listRecentSurvivors;
 
     @Option(names = { "-ub", "--upcoming-births" }, description = "List individuals with birthdays in the next 30 days")
     protected boolean listUpcomingBirths;
 
-    @Option(names = { "-ua", "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
+    @Option(names = { "-ua",
+            "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
     protected boolean listUpcomingAnniversaries;
-    
+
     private boolean listSelected(boolean list) {
         return all || list;
     }
-    
-    protected void list() {
+
+    protected void list(GEDFile gedFile) {
 
         if (listSelected(listDeceased)) {
-            listDeceased();
+            listDeceased(gedFile);
         }
 
         if (listSelected(listLivingMarried)) {
-            listLivingMarried();
+            listLivingMarried(gedFile);
         }
 
         if (listSelected(listLivingSingle)) {
-            listLivingSingle();
+            listLivingSingle(gedFile);
         }
 
         if (listSelected(listMultipleBirths)) {
-            listMultipleBirths();
+            listMultipleBirths(gedFile);
         }
 
         if (listSelected(listOrphans)) {
-            listOrphans();
+            listOrphans(gedFile);
         }
 
         if (listSelected(listLargeAgeDiff)) {
-            listLargeAgeDiff();
+            listLargeAgeDiff(gedFile);
         }
 
         if (listSelected(listRecentBirths)) {
-            listRecentBirths();
+            listRecentBirths(gedFile);
         }
 
         if (listSelected(listRecentDeaths)) {
-            listRecentDeaths();
+            listRecentDeaths(gedFile);
         }
 
         if (listSelected(listRecentSurvivors)) {
-            listRecentSurvivors();
+            listRecentSurvivors(gedFile);
         }
 
         if (listSelected(listUpcomingBirths)) {
-            listUpcomingBirths();
+            listUpcomingBirths(gedFile);
         }
 
         if (listSelected(listUpcomingAnniversaries)) {
-            listUpcomingAnniversaries();
+            listUpcomingAnniversaries(gedFile);
         }
 
     }
-    
-    private static void listDeceased() {
+
+    private static void listDeceased(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listLivingMarried() {
+    private static void listLivingMarried(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listLivingSingle() {
+    private static void listLivingSingle(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listMultipleBirths() {
+    private static void listMultipleBirths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listOrphans() {
+    private static void listOrphans(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listLargeAgeDiff() {
+    private static int diffInYears(Date d1, Date d2) {
+        return (int) (Math.abs(d1.getTime() - d2.getTime()) / (1000l * 60 * 60 * 24 * 365));
+    }
+
+    /**
+     * List all couples who were married when the older spouse was more than twice
+     * as old as the younger spouse.
+     */
+    private static void listLargeAgeDiff(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "HUSBAND", "WIFE", "MARRIAGE"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+
+        Table<Family> table = new Table<>("Large age difference", columns, expanders);
+
+        for (Family family : gedFile.getFamilies()) {
+            Individual husband = family.getHusband();
+            Individual wife = family.getHusband();
+
+            Date marriage = family.getMarriage();
+            Date husbandBirth = husband != null ? husband.getBirthday() : null;
+            Date wifeBirth = wife != null ? wife.getBirthday() : null;
+
+            if (marriage != null && husbandBirth != null && wifeBirth != null) {
+                int husbandAge = diffInYears(husbandBirth, marriage);
+                int wifeAge = diffInYears(wifeBirth, marriage);
+
+                if (Math.max(husbandAge, wifeAge) >= Math.min(husbandAge, wifeAge) * 2) {
+                    table.appendRow(family);
+                }
+            }
+        }
+
+        System.out.println(table);
+    }
+
+    private static void listRecentBirths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listRecentBirths() {
+    private static void listRecentDeaths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listRecentDeaths() {
+    private static void listRecentSurvivors(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listRecentSurvivors() {
+    private static void listUpcomingBirths(GEDFile gedFile) {
         // TODO
     }
 
-    private static void listUpcomingBirths() {
-        // TODO
-    }
-
-    private static void listUpcomingAnniversaries() {
+    private static void listUpcomingAnniversaries(GEDFile gedFile) {
         // TODO
     }
 
