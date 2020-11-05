@@ -209,7 +209,23 @@ public class ListOptions {
     }
 
     private static void listUpcomingAnniversaries(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "HUSBAND", "WIFE", "MARRIAGE"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+
+        Table<Family> table = new Table<>("Upcoming Anniversaries", columns, expanders);
+
+        for (Family family : gedFile.getFamilies()) {
+            Date now = new Date();
+            Date marriage = family.getMarriage();
+            if (marriage == null) continue;
+            Date anniversary = new Date(now.getYear(), marriage.getMonth(), marriage.getDate());
+
+            if (daysBetween(anniversary, now) < 30) {
+                table.add(family);
+            }
+        }
+
+        System.out.println(table);
     }
 
 }
