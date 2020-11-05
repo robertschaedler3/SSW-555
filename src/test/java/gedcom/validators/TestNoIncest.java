@@ -74,7 +74,7 @@ public class TestNoIncest {
 	@Test
 	public void testAuntUncleIncest() {
 		Individual individual = new IndividualBuilder().build();
-		
+
 		Individual parent = new IndividualBuilder().build();
 		Individual uncle = new IndividualBuilder().build();
 
@@ -87,6 +87,26 @@ public class TestNoIncest {
 		List<Family> families = Arrays.asList(family1, family2, family3);
 
 		GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+		assertFalse(validator.isValid(gedFile));
+	}
+	
+	@Test
+	public void testDescendantIncest() {
+
+		IndividualBuilder individualBuilder = new IndividualBuilder();
+		Individual individual = individualBuilder.build();
+
+		Individual parent = individualBuilder.build();
+		Individual grandparent = individualBuilder.build();
+		Individual greatgrandparent = individualBuilder.build();
+
+		FamilyBuilder familyBuilder = new FamilyBuilder();
+		familyBuilder.withHusband(greatgrandparent).withChild(grandparent).build();
+		familyBuilder.withHusband(grandparent).withChild(parent).build();
+		familyBuilder.withHusband(parent).withChild(individual).build();
+		familyBuilder.withHusband(greatgrandparent).withWife(individual).build();
+
+		GEDFile gedFile = new GEDFile(individualBuilder.getIndividuals(), familyBuilder.getFamilies());
 		assertFalse(validator.isValid(gedFile));
 	}
 

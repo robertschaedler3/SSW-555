@@ -6,21 +6,35 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import gedcom.builders.*;
+import gedcom.logging.Level;
+import gedcom.logging.LogAppender;
+import gedcom.logging.Logger;
 
 import org.junit.jupiter.api.Test;
 
 public class TestFamily {
 
-    private final int MAX_CHILDREN = 15;
-
     private Family family;
+
+    private LogAppender logAppender;
 
     @BeforeEach
     public void setup() {
-        this.family = new FamilyBuilder().build();
+        family = new FamilyBuilder().build();
+
+        Logger logger = Logger.getInstance();
+        logAppender = new LogAppender();
+        logger.addAppender(logAppender);
+        logAppender.start();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        logAppender.stop();
     }
 
     @Test
@@ -38,22 +52,18 @@ public class TestFamily {
     }
 
     @Test
-    public void testSetHusbandException1() {
+    public void testSetHusbandException() {
         assertThrows(IllegalArgumentException.class, () -> {
             family.setHusband(null);
         });
     }
 
     @Test
-    public void testSetHusbandException2() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            family.setHusband(new IndividualBuilder().female().build());
-        });
+    public void testSetHusbandLogMessage() {
+        family.setHusband(new IndividualBuilder().female().build());
 
-        String expectedMessage = "Error US21:";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US21", Level.ERROR, 21));
     }
 
     @Test
@@ -64,22 +74,18 @@ public class TestFamily {
     }
 
     @Test
-    public void testSetWifeException1() {
+    public void testSetWifeException() {
         assertThrows(IllegalArgumentException.class, () -> {
             family.setWife(null);
         });
     }
 
     @Test
-    public void testSetWifeException2() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            family.setWife(new IndividualBuilder().male().build());
-        });
+    public void testSetWifeLogMessage() {
+        family.setWife(new IndividualBuilder().male().build());
 
-        String expectedMessage = "Error US21:";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US21", Level.ERROR, 21));
     }
 
     @Test
@@ -92,7 +98,7 @@ public class TestFamily {
     }
 
     @Test
-    public void testMarriageException1() {
+    public void testMarriageException() {
         assertThrows(IllegalArgumentException.class, () -> {
             Family family = new FamilyBuilder().build();
             family.setMarriage(null);
@@ -100,32 +106,24 @@ public class TestFamily {
     }
 
     @Test
-    public void testMarriageException2() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2001);
-            Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2000);
-            Family family = new FamilyBuilder().withDivorce(divorce).build();
-            family.setMarriage(marriage);
-        });
+    public void testMarriageLogMessage1() {
+        Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2001);
+        Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2000);
+        Family family = new FamilyBuilder().withDivorce(divorce).build();
+        family.setMarriage(marriage);
 
-        String expectedMessage = "Error US04: Marriage cannot occur after divorce.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US04", Level.ERROR, 4));
     }
     
     @Test
-    public void testMarriageException3() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date now = new Date();
-            Date marriage = DateBuilder.newDateDaysAfter(now, 1);
-            Family family = new FamilyBuilder().withMarriage(marriage).build();
-        });
+    public void testMarriageLogMessage2() {
+        Date now = new Date();
+        Date marriage = DateBuilder.newDateDaysAfter(now, 1);
+        Family family = new FamilyBuilder().withMarriage(marriage).build();
 
-        String expectedMessage = "Error US01: Marriage must occur before the current time.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US01", Level.ERROR, 1));
     }
 
     @Test
@@ -138,7 +136,7 @@ public class TestFamily {
     }
 
     @Test
-    public void testDivorceExcpetion1() {
+    public void testDivorceExcpetion() {
         assertThrows(IllegalArgumentException.class, () -> {
             Family family = new FamilyBuilder().build();
             family.setDivorce(null);
@@ -146,42 +144,34 @@ public class TestFamily {
     }
 
     @Test
-    public void testDivorceExcpetion2() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2001);
-            Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2000);
-            Family family = new FamilyBuilder().withMarriage(marriage).build();
-            family.setDivorce(divorce);
-        });
+    public void testDivorceLogMessage1() {
+        Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2001);
+        Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2000);
+        Family family = new FamilyBuilder().withMarriage(marriage).build();
+        family.setDivorce(divorce);
 
-        String expectedMessage = "Error US04: Divorce cannot occur before marriage.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US04", Level.ERROR, 4));
     }
     @Test
-    public void testDivorceExcpetion3() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Date now = new Date();
-            Date marriage = DateBuilder.newDateDaysAfter(now, 1);
-            Family family = new FamilyBuilder().withDivorce(marriage).build();
-        });
+    public void testDivorceLogMessage2() {
+        Date now = new Date();
+        Date marriage = DateBuilder.newDateDaysAfter(now, 1);
+        Family family = new FamilyBuilder().withDivorce(marriage).build();
 
-        String expectedMessage = "Error US01: Divorce must occur before the current time.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US01", Level.ERROR, 1));
     }
 
     @Test
     public void testAddChildren() {
-        for (int i = 0; i < MAX_CHILDREN; i++) {
+        for (int i = 0; i < Family.MAX_CHILDREN; i++) {
             assertTrue(family.addChild(new IndividualBuilder().build()));
         }
     }
 
     @Test
-    public void testAddChildrenExcpetion1() {
+    public void testAddChildrenExcpetion() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             family.addChild(null);
         });
@@ -193,33 +183,14 @@ public class TestFamily {
     }
 
     @Test
-    public void testAddChildrenExcpetion2() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+    public void testAddChildrenLogMessage() {
+        for (int i = 0; i < Family.MAX_CHILDREN + 1; i++) {
             Individual child = new IndividualBuilder().build();
-            family.addChild(child);
-            family.addChild(child);
-        });
+            assertTrue(family.addChild(child));
+        }
 
-        String expectedMessage = "Child already exists in family.";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    public void testAddChildrenExcpetion3() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            for (int i = 0; i < MAX_CHILDREN + 1; i++) {
-                Individual child = new IndividualBuilder().build();
-                assertTrue(family.addChild(child));
-            }
-        });
-
-        String expectedMessage = "Error US22:";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-
+        assertEquals(1, logAppender.countEvents());
+        assertTrue(logAppender.contains("US15", Level.ANOMALY, 15));
     }
 
     @Test

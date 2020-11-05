@@ -21,6 +21,8 @@ public class GEDLine {
             } else if (params.length == 3 && parseTag(params[2]) != Tag.INVALID) { // <level> <id> <tag>
                 tag = parseTag(params[2]);
                 ID = params[1];
+            } else {
+                // TODO: parse error
             }
         } else {
             tag = parseTag(params[1]);
