@@ -13,6 +13,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
+import gedcom.interfaces.Gender;
+import gedcom.models.Family;
+import gedcom.models.GEDFile;
+import gedcom.models.Individual;
+import gedcom.models.Table;
+import picocli.CommandLine.Option;
+
 public class ListOptions {
 
     @Option(names = {"-A", "--all"}, description = "List all feature groups")
@@ -84,8 +91,29 @@ public class ListOptions {
         System.out.println(table);
     }
 
+    /**
+     * Lists all living individuals who are currently not married.
+     */
     private static void listLivingSingle(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
+
+        Table<Individual> table = new Table<>("Living singles", columns, expanders);
+
+        individualSearch:
+        for (Individual individual: gedFile.getIndividuals()) {
+            if(individual.alive()){
+                for(Family family : individual.getSpouseFamilies()) {
+                    // Individual is currently in an active, non-divorced marriage
+                    if((family.getDivorce() == null) && (family.getHusband().alive() && family.getWife().alive())) {
+                        continue individualSearch;
+                    }
+                }
+                table.add(individual);
+            }
+        }
+
+        System.out.println(table);
     }
 
     private static void listMultipleBirths(GEDFile gedFile) {
