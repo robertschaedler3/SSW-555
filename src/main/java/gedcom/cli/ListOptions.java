@@ -1,10 +1,14 @@
 package gedcom.cli;
 
-import java.time.LocalDateTime;
+import gedcom.models.Family;
+import gedcom.models.GEDFile;
+import gedcom.models.Individual;
+import gedcom.models.Table;
+import picocli.CommandLine.Option;
+
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -18,102 +22,73 @@ import picocli.CommandLine.Option;
 
 public class ListOptions {
 
-    @Option(names = { "-A", "--all" }, description = "List all feature groups")
+    @Option(names = {"-A", "--all"}, description = "List all feature groups")
     protected boolean all;
 
-    @Option(names = { "-dd", "--deceased" }, description = "List all deceased individuals")
+    @Option(names = {"-dd", "--deceased"}, description = "List all deceased individuals")
     protected boolean listDeceased;
 
-    @Option(names = { "-lm", "--living-married" }, description = "List living married individuals")
+    @Option(names = {"-lm", "--living-married"}, description = "List living married individuals")
     protected boolean listLivingMarried;
 
-    @Option(names = { "-ls", "--living-single" }, description = "List living single individuals")
+    @Option(names = {"-ls", "--living-single"}, description = "List living single individuals")
     protected boolean listLivingSingle;
 
-    @Option(names = { "-mb", "--mult-births" }, description = "List all multiple births")
+    @Option(names = {"-mb", "--mult-births"}, description = "List all multiple births")
     protected boolean listMultipleBirths;
 
-    @Option(names = { "-or", "--orphans" }, description = "List all orphans")
+    @Option(names = {"-or", "--orphans"}, description = "List all orphans")
     protected boolean listOrphans;
 
-    @Option(names = { "-ad", "--age-diff" }, description = "List couples with large age differences")
+    @Option(names = {"-ad", "--age-diff"}, description = "List couples with large age differences")
     protected boolean listLargeAgeDiff;
 
-    @Option(names = { "-rb", "--recent-births" }, description = "List all individuals born in the last 30 days")
+    @Option(names = {"-rb", "--recent-births"}, description = "List all individuals born in the last 30 days")
     protected boolean listRecentBirths;
 
-    @Option(names = { "-rd", "--recent-deaths" }, description = "List all individuals who died in the last 30 days")
+    @Option(names = {"-rd", "--recent-deaths"}, description = "List all individuals who died in the last 30 days")
     protected boolean listRecentDeaths;
 
-    @Option(names = { "-rs",
-            "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
+    @Option(names = {"-rs",
+            "--recent-survivors"}, description = "List living descendants/spouses of individuals who died in the last 30 days")
     protected boolean listRecentSurvivors;
 
-    @Option(names = { "-ub", "--upcoming-births" }, description = "List individuals with birthdays in the next 30 days")
+    @Option(names = {"-ub", "--upcoming-births"}, description = "List individuals with birthdays in the next 30 days")
     protected boolean listUpcomingBirths;
 
-    @Option(names = { "-ua",
-            "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
+    @Option(names = {"-ua",
+            "--upcoming-anniversaries"}, description = "List all families with a marriage anniversary in the next 30 days")
     protected boolean listUpcomingAnniversaries;
-
-    private boolean listSelected(boolean list) {
-        return all || list;
-    }
-
-    protected void list(GEDFile gedFile) {
-
-        if (listSelected(listDeceased)) {
-            listDeceased(gedFile);
-        }
-
-        if (listSelected(listLivingMarried)) {
-            listLivingMarried(gedFile);
-        }
-
-        if (listSelected(listLivingSingle)) {
-            listLivingSingle(gedFile);
-        }
-
-        if (listSelected(listMultipleBirths)) {
-            listMultipleBirths(gedFile);
-        }
-
-        if (listSelected(listOrphans)) {
-            listOrphans(gedFile);
-        }
-
-        if (listSelected(listLargeAgeDiff)) {
-            listLargeAgeDiff(gedFile);
-        }
-
-        if (listSelected(listRecentBirths)) {
-            listRecentBirths(gedFile);
-        }
-
-        if (listSelected(listRecentDeaths)) {
-            listRecentDeaths(gedFile);
-        }
-
-        if (listSelected(listRecentSurvivors)) {
-            listRecentSurvivors(gedFile);
-        }
-
-        if (listSelected(listUpcomingBirths)) {
-            listUpcomingBirths(gedFile);
-        }
-
-        if (listSelected(listUpcomingAnniversaries)) {
-            listUpcomingAnniversaries(gedFile);
-        }
-
-    }
 
     private static void listDeceased(GEDFile gedFile) {
         // TODO
     }
 
+    /**
+     * Lists all living individuals who are currently married.
+     */
     private static void listLivingMarried(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
+
+        Table<Individual> table = new Table<>("Living married", columns, expanders);
+
+        individualSearch:
+        for (Individual individual: gedFile.getIndividuals()) {
+            if(individual.alive()){
+                for(Family family : individual.getSpouseFamilies()) {
+                    // Individual is currently in an active, non-divorced marriage
+                    if((family.getDivorce() == null) && (family.getHusband().alive() && family.getWife().alive())) {
+                        continue;
+                    } else { // Individual is currently single
+                        continue individualSearch;
+                    }
+                }
+                table.add(individual);
+            }
+        }
+
+        System.out.println(table);
     }
 
     /**
@@ -189,11 +164,41 @@ public class ListOptions {
     }
 
     private static void listRecentBirths(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getBirthday));
+
+        Table<Individual> table = new Table<>("Recent birthdays", columns, expanders);
+
+        for (Individual ind : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date indBirthday = ind.getBirthday();
+            if (indBirthday == null) continue;
+
+            if (daysBetween(indBirthday, now) < 30) {
+                table.add(ind);
+            }
+        }
+
+        System.out.println(table);
     }
 
     private static void listRecentDeaths(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "DEATH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getDeath));
+
+        Table<Individual> table = new Table<>("Recent deaths", columns, expanders);
+
+        for (Individual ind : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date indDeath = ind.getDeath();
+            if (indDeath == null) continue;
+
+            if (daysBetween(indDeath, now) < 30) {
+                table.add(ind);
+            }
+        }
+
+        System.out.println(table);
     }
 
     private static void listRecentSurvivors(GEDFile gedFile) {
@@ -232,6 +237,58 @@ public class ListOptions {
 
     private static void listUpcomingAnniversaries(GEDFile gedFile) {
         // TODO
+    }
+
+    private boolean listSelected(boolean list) {
+        return all || list;
+    }
+
+    protected void list(GEDFile gedFile) {
+
+        if (listSelected(listDeceased)) {
+            listDeceased(gedFile);
+        }
+
+        if (listSelected(listLivingMarried)) {
+            listLivingMarried(gedFile);
+        }
+
+        if (listSelected(listLivingSingle)) {
+            listLivingSingle(gedFile);
+        }
+
+        if (listSelected(listMultipleBirths)) {
+            listMultipleBirths(gedFile);
+        }
+
+        if (listSelected(listOrphans)) {
+            listOrphans(gedFile);
+        }
+
+        if (listSelected(listLargeAgeDiff)) {
+            listLargeAgeDiff(gedFile);
+        }
+
+        if (listSelected(listRecentBirths)) {
+            listRecentBirths(gedFile);
+        }
+
+        if (listSelected(listRecentDeaths)) {
+            listRecentDeaths(gedFile);
+        }
+
+        if (listSelected(listRecentSurvivors)) {
+            listRecentSurvivors(gedFile);
+        }
+
+        if (listSelected(listUpcomingBirths)) {
+            listUpcomingBirths(gedFile);
+        }
+
+        if (listSelected(listUpcomingAnniversaries)) {
+            listUpcomingAnniversaries(gedFile);
+        }
+
     }
 
 }
