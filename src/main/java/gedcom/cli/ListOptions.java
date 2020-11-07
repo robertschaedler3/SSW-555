@@ -171,7 +171,22 @@ public class ListOptions {
     }
 
     private static void listRecentDeaths(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "DEATH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getDeath));
+
+        Table<Individual> table = new Table<>("Recent deaths", columns, expanders);
+
+        for (Individual ind : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date indDeath = ind.getDeath();
+            if (indDeath == null) continue;
+
+            if (daysBetween(indDeath, now) < 30) {
+                table.add(ind);
+            }
+        }
+
+        System.out.println(table);
     }
 
     private static void listRecentSurvivors(GEDFile gedFile) {
