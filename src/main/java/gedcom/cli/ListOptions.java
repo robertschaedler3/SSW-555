@@ -10,7 +10,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import gedcom.interfaces.Gender;
@@ -117,7 +120,32 @@ public class ListOptions {
     }
 
     private static void listMultipleBirths(GEDFile gedFile) {
-        // TODO
+    	List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "BIRTH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName, Individual::getBirthday));
+
+        Table<Individual> table = new Table<>("Multiple Birthdays", columns, expanders);
+
+    	Map<String, List<Individual>> birthsMap = new HashMap<>();
+    	
+        for (Individual ind : gedFile.getIndividuals()) {
+        	if(birthsMap.containsKey(ind.getBirthday().toString())) {
+        		birthsMap.get(ind.getBirthday().toString()).add(ind);
+        	} else {
+        		List<Individual> birthsOnDate = new ArrayList<>();
+        		birthsOnDate.add(ind);
+        		birthsMap.put(ind.getBirthday().toString(), birthsOnDate);
+        	}
+        }
+        
+        for (Entry<String, List<Individual>> entry : birthsMap.entrySet()) {
+        	if(entry.getValue().size() > 1) {
+        		for (Individual indi : entry.getValue()) {
+        			table.add(indi);
+        		}
+        	}
+        }
+
+        System.out.println(table);
     }
 
     private static void listOrphans(GEDFile gedFile) {
