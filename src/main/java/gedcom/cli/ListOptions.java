@@ -64,7 +64,15 @@ public class ListOptions {
     protected boolean listUpcomingAnniversaries;
 
     private static void listDeceased(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
+        Table<Individual> table = new Table<>("Deceased People", columns, expanders);
+        for (Individual individual : gedFile.getIndividuals()) {
+            if (!individual.alive()) {
+                table.add(individual);
+            }
+        }
+        System.out.println(table);
     }
 
     /**
@@ -149,7 +157,20 @@ public class ListOptions {
     }
 
     private static void listOrphans(GEDFile gedFile) {
-        // TODO
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
+        Table<Individual> table = new Table<>("Orphans", columns, expanders);
+        for (Individual individual : gedFile.getIndividuals()) {
+            if (individual.alive()) {
+                List<Individual> parents = individual.getParents();
+                if (parents.get(0).alive() || parents.get(1).alive()) { //if either are alive
+                    continue;
+                } else {
+                    table.add(individual);
+                }
+            }
+        }
+        System.out.println(table);
     }
 
     private static long daysBetween(Date d1, Date d2) {
