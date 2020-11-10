@@ -77,7 +77,7 @@ public class GEDFile {
                 }
             }
         }
-        
+
         // Populate Individual and Family fields
         for (int i = 0; i < gedLines.size(); i++) {
 
@@ -91,7 +91,7 @@ public class GEDFile {
                 parseFamily(gedLines, i, currentLine.getID());
             }
         }
-        
+
         Logger.setLineContext(0);
         s.close();
     }
@@ -152,8 +152,6 @@ public class GEDFile {
                     individual.setDeath(date);
                 }
                 dateType = null;
-            } else {
-                LOGGER.error(Error.ILLEGITIMATE_DATE, "date type not defined", individual);
             }
 
         }
@@ -218,8 +216,6 @@ public class GEDFile {
                     family.setDivorce(date);
                 }
                 dateType = null;
-            } else {
-                LOGGER.error(Error.ILLEGITIMATE_DATE, "date type not defined", family);
             }
         }
 

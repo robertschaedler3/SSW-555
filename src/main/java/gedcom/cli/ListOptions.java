@@ -84,18 +84,24 @@ public class ListOptions {
 
         Table<Individual> table = new Table<>("Living married", columns, expanders);
 
+        boolean married = false;
+
         individualSearch:
         for (Individual individual: gedFile.getIndividuals()) {
             if(individual.alive()){
                 for(Family family : individual.getSpouseFamilies()) {
                     // Individual is currently in an active, non-divorced marriage
                     if((family.getDivorce() == null) && (family.getHusband().alive() && family.getWife().alive())) {
+                        married = true;
                         continue;
                     } else { // Individual is currently single
                         continue individualSearch;
                     }
                 }
-                table.add(individual);
+                if (married) {
+                    table.add(individual);
+                    married = false;
+                }
             }
         }
 
@@ -128,29 +134,29 @@ public class ListOptions {
     }
 
     private static void listMultipleBirths(GEDFile gedFile) {
-    	List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "BIRTH"));
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "BIRTH"));
         List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName, Individual::getBirthday));
 
         Table<Individual> table = new Table<>("Multiple Birthdays", columns, expanders);
 
-    	Map<String, List<Individual>> birthsMap = new HashMap<>();
-    	
+        Map<String, List<Individual>> birthsMap = new HashMap<>();
+
         for (Individual ind : gedFile.getIndividuals()) {
-        	if(birthsMap.containsKey(ind.getBirthday().toString())) {
-        		birthsMap.get(ind.getBirthday().toString()).add(ind);
-        	} else {
-        		List<Individual> birthsOnDate = new ArrayList<>();
-        		birthsOnDate.add(ind);
-        		birthsMap.put(ind.getBirthday().toString(), birthsOnDate);
-        	}
+            if(birthsMap.containsKey(ind.getBirthday().toString())) {
+                birthsMap.get(ind.getBirthday().toString()).add(ind);
+            } else {
+                List<Individual> birthsOnDate = new ArrayList<>();
+                birthsOnDate.add(ind);
+                birthsMap.put(ind.getBirthday().toString(), birthsOnDate);
+            }
         }
-        
+
         for (Entry<String, List<Individual>> entry : birthsMap.entrySet()) {
-        	if(entry.getValue().size() > 1) {
-        		for (Individual indi : entry.getValue()) {
-        			table.add(indi);
-        		}
-        	}
+            if(entry.getValue().size() > 1) {
+                for (Individual indi : entry.getValue()) {
+                    table.add(indi);
+                }
+            }
         }
 
         System.out.println(table);
@@ -163,7 +169,7 @@ public class ListOptions {
         for (Individual individual : gedFile.getIndividuals()) {
             if (individual.alive()) {
                 List<Individual> parents = individual.getParents();
-                if (parents.get(0).alive() || parents.get(1).alive()) { //if either are alive
+                if ((!parents.isEmpty()) && (parents.get(0).alive() || parents.get(1).alive())) { //if either are alive
                     continue;
                 } else {
                     table.add(individual);
@@ -178,7 +184,7 @@ public class ListOptions {
     }
 
     private static long yearsBetween(Date d1, Date d2) {
-        return ChronoUnit.YEARS.between(d1.toInstant(), d2.toInstant());
+        return (d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24 * 365);
     }
 
     /**
