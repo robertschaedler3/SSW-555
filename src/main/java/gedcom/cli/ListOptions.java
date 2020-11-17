@@ -51,6 +51,14 @@ public class ListOptions {
 
     @Option(names = {"-rd", "--recent-deaths"}, description = "List all individuals who died in the last 30 days")
     protected boolean listRecentDeaths;
+    
+    @Option(names = {"-ge",
+			"--generation"}, description = "List individuals with their generation number")
+    protected boolean listGenerations;
+
+    @Option(names = {"-gn",
+    	"--generation-number"}, description = "List individuals in given generation number e.g. -gn=2")
+    protected int listGenerationNumber;
 
     @Option(names = {"-rs",
             "--recent-survivors"}, description = "List living descendants/spouses of individuals who died in the last 30 days")
@@ -255,6 +263,32 @@ public class ListOptions {
 
         System.out.println(table);
     }
+    
+    private static void listGenerations(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "GENERATION"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName, Individual::getGeneration));
+
+        Table<Individual> table = new Table<>("Individual generations", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+        	table.add(indi);
+        }
+
+        System.out.println(table);
+    }
+    
+    private static void listGeneration(GEDFile gedFile, int genNumber) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "GENERATION"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName, Individual::getGeneration));
+
+        Table<Individual> table = new Table<>("Individual generations", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+        	if(indi.getGeneration() == genNumber) table.add(indi);
+        }
+
+        System.out.println(table);
+    }
 
     private static void listRecentSurvivors(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH", "AGE"));
@@ -329,6 +363,10 @@ public class ListOptions {
     private boolean listSelected(boolean list) {
         return all || list;
     }
+    
+    private int listSelected(int list) {
+        return list;
+    }
 
     protected void list(GEDFile gedFile) {
 
@@ -364,6 +402,14 @@ public class ListOptions {
             listRecentDeaths(gedFile);
         }
 
+        if (listSelected(listGenerations)) {
+        	listGenerations(gedFile);
+        }
+        
+        if (listGenerationNumber != 0) {
+        	listGeneration(gedFile, listGenerationNumber);
+        }
+
         if (listSelected(listRecentSurvivors)) {
             listRecentSurvivors(gedFile);
         }
@@ -375,7 +421,7 @@ public class ListOptions {
         if (listSelected(listUpcomingAnniversaries)) {
             listUpcomingAnniversaries(gedFile);
         }
-
+        
     }
 
 }
