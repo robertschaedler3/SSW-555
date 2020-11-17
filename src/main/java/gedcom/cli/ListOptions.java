@@ -58,7 +58,7 @@ public class ListOptions {
 
     @Option(names = {"-gn",
     	"--generation-number"}, description = "List individuals in given generation number e.g. -gn=2")
-    protected int listGenerationNumber;
+    protected int listGenerationNumber = -1;
 
     @Option(names = {"-rs",
             "--recent-survivors"}, description = "List living descendants/spouses of individuals who died in the last 30 days")
@@ -363,10 +363,6 @@ public class ListOptions {
     private boolean listSelected(boolean list) {
         return all || list;
     }
-    
-    private int listSelected(int list) {
-        return list;
-    }
 
     protected void list(GEDFile gedFile) {
 
@@ -406,7 +402,7 @@ public class ListOptions {
         	listGenerations(gedFile);
         }
         
-        if (listGenerationNumber != 0) {
+        if (listGenerationNumber != -1) {
         	listGeneration(gedFile, listGenerationNumber);
         }
 
