@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -285,6 +286,56 @@ public class GEDFile {
         addTruncatedList(getFamilies(), sb);
         sb.append("\n");
         return sb.toString();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+
+        private List<Individual> individuals;
+        private List<Family> families;
+
+        private Builder() {
+            this.individuals = new ArrayList<>();
+            this.families = new ArrayList<>();
+        }
+
+        public Builder individual(Individual individual) {
+            this.individuals.add(individual);
+            return this;
+        }
+
+        public Builder individuals(List<Individual> individuals) {
+            this.individuals.addAll(individuals);
+            return this;
+        }
+
+        public Builder individuals(Individual... individuals) {
+            this.individuals.addAll(Arrays.asList(individuals));
+            return this;
+        }
+
+        public Builder family(Family family) {
+            this.families.add(family);
+            return this;
+        }
+
+        public Builder families(List<Family> families) {
+            this.families.addAll(families);
+            return this;
+        }
+
+        public Builder families(Family... families) {
+            this.families.addAll(Arrays.asList(families));
+            return this;
+        }
+
+        public GEDFile build() {
+            return new GEDFile(individuals, families);
+        }
+
     }
 
 }
