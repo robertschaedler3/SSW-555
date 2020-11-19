@@ -10,9 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import gedcom.builders.DateBuilder;
-import gedcom.builders.FamilyBuilder;
-import gedcom.builders.GEDFileBuilder;
-import gedcom.builders.IndividualBuilder;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -23,35 +20,35 @@ public class TestMultipleBirths {
 
     @Test
     public void testValid() {
-        Family family = new FamilyBuilder().build();
+        Family family = Family.builder().build();
 
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         List<Individual> individuals = new ArrayList<>();
 
         for (int i = 0; i < Family.MAX_MULTIPLE_BIRTH; i++) {
-            Individual child = new IndividualBuilder().withBirth(birth).build();
+            Individual child = Individual.builder().birth(birth).build();
             individuals.add(child);
             family.addChild(child);
         }
 
-        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamily(family).build();
+        GEDFile gedFile = GEDFile.builder().individuals(individuals).family(family).build();
         assertTrue(validator.isValid(gedFile));
     }
 
     @Test
     public void testInvalid() {
-        Family family = new FamilyBuilder().build();
+        Family family = Family.builder().build();
 
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         List<Individual> individuals = new ArrayList<>();
 
         for (int i = 0; i < Family.MAX_MULTIPLE_BIRTH + 1; i++) {
-            Individual child = new IndividualBuilder().withBirth(birth).build();
+            Individual child = Individual.builder().birth(birth).build();
             individuals.add(child);
             family.addChild(child);
         }
 
-        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamily(family).build();
+        GEDFile gedFile = GEDFile.builder().individuals(individuals).family(family).build();
         assertFalse(validator.isValid(gedFile));
     }
 

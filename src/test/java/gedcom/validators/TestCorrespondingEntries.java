@@ -2,8 +2,6 @@ package gedcom.validators;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import gedcom.builders.FamilyBuilder;
-import gedcom.builders.IndividualBuilder;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -20,10 +18,10 @@ public class TestCorrespondingEntries {
 
 	@Test
 	public void testCorrespondingEntries() {
-		Individual husband = new IndividualBuilder().build();
-		Individual wife = new IndividualBuilder().build();
+		Individual husband = Individual.builder().build();
+		Individual wife = Individual.builder().build();
 
-		Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChildren(2).build();
+		Family family1 = Family.builder().husband(husband).wife(wife).children(2).build();
 
 		List<Individual> individuals = new ArrayList<>(Arrays.asList(husband, wife));
 		List<Family> families = new ArrayList<>(Arrays.asList(family1));
@@ -35,10 +33,10 @@ public class TestCorrespondingEntries {
 
 	@Test
 	public void testNonCorrespondingEntries() {
-		Individual husband = new IndividualBuilder().build();
-		Individual wife = new IndividualBuilder().build();
+		Individual husband = Individual.builder().build();
+		Individual wife = Individual.builder().build();
 
-		Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChildren(2).build();
+		Family family1 = Family.builder().husband(husband).wife(wife).children(2).build();
 
 		List<Individual> individuals = new ArrayList<>();
 		List<Family> families = new ArrayList<>(Arrays.asList(family1));
