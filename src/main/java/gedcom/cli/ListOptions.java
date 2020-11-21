@@ -133,6 +133,24 @@ public class ListOptions {
         System.out.println(table);
     }
 
+    /**
+     * Lists all current divorces.
+     */
+    private static void listMarriage(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "Husband", "Wife", "Divorce"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getDivorce));
+
+        Table<Family> table = new Table<>("All Divorces", columns, expanders);
+
+        for (Family family: gedFile.getFamilies()) {
+            if(family.getDivorce() != null && family.getHusband() != null && family.getWife() != null) {
+                table.add(family);
+            }
+        }
+
+        System.out.println(table);
+    }
+
     private static void listMultipleBirths(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "BIRTH"));
         List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName, Individual::getBirthday));
