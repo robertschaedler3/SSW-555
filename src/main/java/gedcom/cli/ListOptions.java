@@ -161,6 +161,24 @@ public class ListOptions {
 
         System.out.println(table);
     }
+    /**
+     * list users with n siblings
+     * @param gedFile
+     */
+    private static void listnsiblings(GEDFile gedFile, int n) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
+
+        Table<Individual> table = new Table<>("Users with N Siblings", columns, expanders);
+        for (Individual ind : gedFile.getIndividuals()) {
+            if (ind.getSiblings().size() == n) {
+                table.add(ind);
+            }
+        }
+        System.out.println(table);
+    }
+
+
 
     private static void listOrphans(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
@@ -375,6 +393,7 @@ public class ListOptions {
         if (listSelected(listUpcomingAnniversaries)) {
             listUpcomingAnniversaries(gedFile);
         }
+
 
     }
 
