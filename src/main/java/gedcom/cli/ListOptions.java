@@ -4,6 +4,7 @@ import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
 import gedcom.models.Table;
+import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import java.time.temporal.ChronoUnit;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+
+
 
 import gedcom.interfaces.Gender;
 import gedcom.models.Family;
@@ -36,6 +39,9 @@ public class ListOptions {
 
     @Option(names = {"-ls", "--living-single"}, description = "List living single individuals")
     protected boolean listLivingSingle;
+
+    @Option(names = {"-ld", "--list-descendants"}, description = "List all descendants of an individual")
+    protected boolean listDescendants;
 
     @Option(names = {"-mb", "--mult-births"}, description = "List all multiple births")
     protected boolean listMultipleBirths;
@@ -128,6 +134,35 @@ public class ListOptions {
                 }
                 table.add(individual);
             }
+        }
+
+        System.out.println(table);
+    }
+
+    /**
+     * Lists the descendants of an individual. If no individual is specified, @I1@ will always be listed.
+     */
+    private static void listDescendants(GEDFile gedFile, String ancestor) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
+
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
+        Table<Individual> table = new Table<>("Descendants", columns, expanders);
+
+        boolean valid = false;
+
+        for (Individual individual: gedFile.getIndividuals()) {
+            if (individual.getID().equals(ancestor)){
+                valid = true;
+                for (Individual desc : individual.getDescendants()){
+                    table.add(desc);
+                }
+                break;
+            }
+        }
+
+        if (valid = false) {
+            System.out.println("Error US44: invalid user to list descendants from (not in file)");
+            return;
         }
 
         System.out.println(table);
@@ -330,7 +365,7 @@ public class ListOptions {
         return all || list;
     }
 
-    protected void list(GEDFile gedFile) {
+    protected void list(GEDFile gedFile, String ancestor) {
 
         if (listSelected(listDeceased)) {
             listDeceased(gedFile);
@@ -342,6 +377,10 @@ public class ListOptions {
 
         if (listSelected(listLivingSingle)) {
             listLivingSingle(gedFile);
+        }
+
+        if (listSelected(listDescendants)) {
+            listDescendants(gedFile, ancestor);
         }
 
         if (listSelected(listMultipleBirths)) {
