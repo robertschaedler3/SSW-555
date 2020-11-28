@@ -49,7 +49,7 @@ public class TestIndividual {
         String LAST_NAME = "Smith";
         String FULL_NAME = String.format("%s /%s/", FIRST_NAME, LAST_NAME);
 
-        Individual individual = new IndividualBuilder().withName(FULL_NAME).build();
+        Individual individual = Individual.builder().name(FULL_NAME).build();
         assertEquals(FULL_NAME, individual.getName());
         assertEquals(FIRST_NAME, individual.getFirstName());
         assertEquals(LAST_NAME, individual.getLastName());
@@ -59,15 +59,15 @@ public class TestIndividual {
     public void testBirth() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2001);
-        assertEquals(birth, new IndividualBuilder().withBirth(birth).build().getBirthday());
-        assertEquals(birth, new IndividualBuilder().withDeath(birth).withBirth(birth).build().getBirthday());
-        assertEquals(birth, new IndividualBuilder().withDeath(death).withBirth(birth).build().getBirthday());
+        assertEquals(birth, Individual.builder().birth(birth).build().getBirthday());
+        assertEquals(birth, Individual.builder().death(birth).birth(birth).build().getBirthday());
+        assertEquals(birth, Individual.builder().death(death).birth(birth).build().getBirthday());
     }
 
     @Test
     public void testBirthException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Individual individual = new IndividualBuilder().build();
+            Individual individual = Individual.builder().build();
             individual.setBirthday(null);
         });
     }
@@ -76,7 +76,7 @@ public class TestIndividual {
     public void testBirthLogMessage1() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2001);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
-        Individual individual = new IndividualBuilder().withDeath(death).build();
+        Individual individual = Individual.builder().death(death).build();
         individual.setBirthday(birth);
 
         assertEquals(1, logAppender.countEvents());
@@ -87,7 +87,7 @@ public class TestIndividual {
     public void testBirthLogMessage2() {
         Date now = new Date();
         Date birth = DateBuilder.newDateDaysAfter(now, 1);
-        Individual individual = new IndividualBuilder().withBirth(birth).build();
+        Individual individual = Individual.builder().birth(birth).build();
 
         assertEquals(1, logAppender.countEvents());
         assertTrue(logAppender.contains("US01", Level.ERROR, 1));
@@ -98,15 +98,15 @@ public class TestIndividual {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2001);
 
-        assertEquals(death, new IndividualBuilder().withDeath(death).build().getDeath());
-        assertEquals(death, new IndividualBuilder().withBirth(death).withDeath(death).build().getDeath());
-        assertEquals(death, new IndividualBuilder().withBirth(birth).withDeath(death).build().getDeath());
+        assertEquals(death, Individual.builder().death(death).build().getDeath());
+        assertEquals(death, Individual.builder().birth(death).death(death).build().getDeath());
+        assertEquals(death, Individual.builder().birth(birth).death(death).build().getDeath());
     }
 
     @Test
     public void testDeathException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Individual individual = new IndividualBuilder().build();
+            Individual individual = Individual.builder().build();
             individual.setDeath(null);
         });
     }
@@ -115,7 +115,7 @@ public class TestIndividual {
     public void testDeathLogMessage1() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2001);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
-        Individual individual = new IndividualBuilder().withBirth(birth).build();
+        Individual individual = Individual.builder().birth(birth).build();
         individual.setDeath(death);
 
         assertEquals(1, logAppender.countEvents());
@@ -126,7 +126,7 @@ public class TestIndividual {
     public void testDeathLogMessage2() {
         Date now = new Date();
         Date death = DateBuilder.newDateDaysAfter(now, 1);
-        Individual individual = new IndividualBuilder().withDeath(death).build();
+        Individual individual = Individual.builder().death(death).build();
 
         assertEquals(1, logAppender.countEvents());
         assertTrue(logAppender.contains("US01", Level.ERROR, 1));
@@ -140,7 +140,7 @@ public class TestIndividual {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, BIRTH_YEAR);
         Date death = DateBuilder.build(1, Calendar.JANUARY, BIRTH_YEAR + AGE);
 
-        Individual individual = new IndividualBuilder().withBirth(birth).withDeath(death).build();
+        Individual individual = Individual.builder().birth(birth).death(death).build();
 
         assertEquals(AGE, individual.age());
     }
@@ -148,7 +148,7 @@ public class TestIndividual {
     @Test
     public void testAgeException() {
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Individual individual = new IndividualBuilder().build();
+            Individual individual = Individual.builder().build();
             individual.age();
         });
 
@@ -162,7 +162,7 @@ public class TestIndividual {
     public void testMaxAgeLogMessage() {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 1800);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2000);
-        Individual individual = new IndividualBuilder().withBirth(birth).withDeath(death).build();
+        Individual individual = Individual.builder().birth(birth).death(death).build();
 
         assertEquals(1, logAppender.countEvents());
         assertTrue(logAppender.contains("US07", Level.ANOMALY, 7));
@@ -173,7 +173,7 @@ public class TestIndividual {
         Date birth = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date death = DateBuilder.build(1, Calendar.JANUARY, 2001);
 
-        Individual individual = new IndividualBuilder().withBirth(birth).build();
+        Individual individual = Individual.builder().birth(birth).build();
         assertTrue(individual.alive());
 
         individual.setDeath(death);
@@ -183,7 +183,7 @@ public class TestIndividual {
     @Test
     public void testAliveException() {
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            Individual individual = new IndividualBuilder().build();
+            Individual individual = Individual.builder().build();
             individual.alive();
         });
 
@@ -195,12 +195,12 @@ public class TestIndividual {
 
     @Test
     public void testIsSibling() {
-        Individual child1 = new IndividualBuilder().build();
-        Individual child2 = new IndividualBuilder().build();
-        Individual child3 = new IndividualBuilder().build();
+        Individual child1 = Individual.builder().build();
+        Individual child2 = Individual.builder().build();
+        Individual child3 = Individual.builder().build();
 
-        Family family1 = new FamilyBuilder().withChild(child1).withChild(child2).build();
-        Family family2 = new FamilyBuilder().withChild(child2).withChild(child3).build();
+        Family family1 = Family.builder().child(child1).child(child2).build();
+        Family family2 = Family.builder().child(child2).child(child3).build();
 
         // Family 1
         assertTrue(child1.isSibling(child2));
@@ -217,10 +217,10 @@ public class TestIndividual {
     
     @Test
     public void testGetSiblings() {
-        Individual child1 = new IndividualBuilder().build();
-        Individual child2 = new IndividualBuilder().build();
+        Individual child1 = Individual.builder().build();
+        Individual child2 = Individual.builder().build();
 
-        Family family = new FamilyBuilder().withChild(child1).withChild(child2).build();
+        Family family = Family.builder().child(child1).child(child2).build();
 
         assertTrue(orderAgnosticEquality(Arrays.asList(child1), child2.getSiblings()));
         assertTrue(orderAgnosticEquality(Arrays.asList(child2), child1.getSiblings()));
@@ -234,15 +234,15 @@ public class TestIndividual {
 
     @Test
     public void testGetChildren() {
-        Individual parent = new IndividualBuilder().build();
+        Individual parent = Individual.builder().build();
 
-        Individual child1 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2000).build();
-        Individual child2 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2001).build();
-        Individual child3 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2002).build();
-        Individual child4 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1999).build();
-        Individual child5 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1998).build();
+        Individual child1 = Individual.builder().birth(1, Calendar.JANUARY, 2000).build();
+        Individual child2 = Individual.builder().birth(1, Calendar.JANUARY, 2001).build();
+        Individual child3 = Individual.builder().birth(1, Calendar.JANUARY, 2002).build();
+        Individual child4 = Individual.builder().birth(1, Calendar.JANUARY, 1999).build();
+        Individual child5 = Individual.builder().birth(1, Calendar.JANUARY, 1998).build();
 
-        Family family = new FamilyBuilder().withHusband(parent).withChildren(child1, child2, child3, child4, child5).build();
+        Family family = Family.builder().husband(parent).children(child1, child2, child3, child4, child5).build();
         List<Individual> children = parent.getChildren();
 
         Individual previousChild = children.get(0);
@@ -256,15 +256,15 @@ public class TestIndividual {
 
     @Test
     public void testGetSpouses() {
-        Individual husband = new IndividualBuilder().male().build();
-        Individual firstWife = new IndividualBuilder().female().build();
-        Individual secondWife = new IndividualBuilder().female().build();
+        Individual husband = Individual.builder().male().build();
+        Individual firstWife = Individual.builder().female().build();
+        Individual secondWife = Individual.builder().female().build();
 
-        Individual firstChild = new IndividualBuilder().build();
-        Individual secondChild = new IndividualBuilder().build();
+        Individual firstChild = Individual.builder().build();
+        Individual secondChild = Individual.builder().build();
 
-        Family firstMarriage = new FamilyBuilder().withHusband(husband).withWife(firstWife).withChild(firstChild).build();
-        Family secondMarriage = new FamilyBuilder().withHusband(husband).withWife(secondWife).withChild(secondChild).build();
+        Family firstMarriage = Family.builder().husband(husband).wife(firstWife).child(firstChild).build();
+        Family secondMarriage = Family.builder().husband(husband).wife(secondWife).child(secondChild).build();
 
         List<Individual> spouses = new ArrayList<>(Arrays.asList(firstWife, secondWife));
         List<Individual> indivSpouses = husband.getSpouses();
@@ -279,6 +279,11 @@ public class TestIndividual {
         Individual child = new IndividualBuilder().build();
         
         Family family = new FamilyBuilder().withHusband(father).withWife(mother).withChild(child).build();
+        Individual father = Individual.builder().male().build();
+        Individual mother = Individual.builder().female().build();
+        Individual child = Individual.builder().build();
+
+        Family family = Family.builder().husband(father).wife(mother).child(child).build();
 
         assertTrue(orderAgnosticEquality(Arrays.asList(father, mother),child.getParents()));
     }
@@ -286,8 +291,8 @@ public class TestIndividual {
     private List<Individual> createFamilyDescendants(Individual individual, int numDescendants) {
         List<Individual> descendants = new ArrayList<>();
         for (int i = 0; i < numDescendants; i++) {
-            Individual child = new IndividualBuilder().build();
-            Family family = new FamilyBuilder().withHusband(individual).withChild(child).build();
+            Individual child = Individual.builder().build();
+            Family family = Family.builder().husband(individual).child(child).build();
             descendants.add(child);
             individual = child;
         }
@@ -296,7 +301,7 @@ public class TestIndividual {
 
     @Test
     public void testGetDescendants() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
 
         List<Individual> descendants = createFamilyDescendants(individual, N);
         List<Individual> indivDescendants = individual.getDescendants();
@@ -306,7 +311,7 @@ public class TestIndividual {
 
     @Test
     public void testGetDescendantsAt() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
         List<Individual> descendants = createFamilyDescendants(individual, N);
 
         for (int i = 0; i < N - 1; i++) {
@@ -318,7 +323,7 @@ public class TestIndividual {
 
     @Test
     public void testIsDescendant() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
         List<Individual> descendants = createFamilyDescendants(individual, N);
 
         for (Individual descendant : descendants) {
@@ -328,7 +333,7 @@ public class TestIndividual {
 
     @Test
     public void testHasDescendant() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
         List<Individual> descendants = createFamilyDescendants(individual, N);
 
         for (Individual descendant : descendants) {
@@ -339,8 +344,8 @@ public class TestIndividual {
     private List<Individual> createFamilyAncestors(Individual individual, int numAncestors) {
         List<Individual> ancestors = new ArrayList<>();
         for (int i = 0; i < numAncestors; i++) {
-            Individual parent = new IndividualBuilder().build();
-            Family family = new FamilyBuilder().withHusband(parent).withChild(individual).build();
+            Individual parent = Individual.builder().build();
+            Family family = Family.builder().husband(parent).child(individual).build();
             ancestors.add(parent);
             individual = parent;
         }
@@ -349,7 +354,7 @@ public class TestIndividual {
 
     @Test
     public void testGetAncestors() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
 
         List<Individual> ancestors = createFamilyAncestors(individual, N);
         List<Individual> indivAncestors = individual.getAncestors();
@@ -359,7 +364,7 @@ public class TestIndividual {
 
     @Test
     public void testGetAncestorsAt() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
         List<Individual> ancestors = createFamilyAncestors(individual, N);
 
         for (int i = 0; i < N - 1; i++) {
@@ -371,7 +376,7 @@ public class TestIndividual {
 
     @Test
     public void testIsAncestor() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
         List<Individual> ancestors = createFamilyAncestors(individual, N);
 
         for (Individual ancestor : ancestors) {
@@ -381,7 +386,7 @@ public class TestIndividual {
 
     @Test
     public void testHasAncestor() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
         List<Individual> ancestors = createFamilyAncestors(individual, N);
 
         for (Individual ancestor : ancestors) {
@@ -402,7 +407,7 @@ public class TestIndividual {
 
     @Test
     void testGetCousins() {
-        Individual individual = new IndividualBuilder().build();
+        Individual individual = Individual.builder().build();
         List<Individual> cousins = createFamilyCousins(individual, N);
 
         for (int i = 1; i <= N; i++) {

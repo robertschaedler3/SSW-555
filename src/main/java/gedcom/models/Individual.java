@@ -1,10 +1,13 @@
 package gedcom.models;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -173,8 +176,7 @@ public class Individual extends GEDObject {
         if (individual == null) {
             throw new IllegalArgumentException();
         }
-        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList())
-                .size() != 0;
+        return this.childFamilies.stream().filter(individual.getChildFamilies()::contains).collect(Collectors.toList()).size() != 0;
     }
 
     public List<Individual> getSiblings() {
@@ -191,8 +193,7 @@ public class Individual extends GEDObject {
         for (Family family : this.spouseFamilies) {
             children.addAll(family.getChildren());
         }
-        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder()))
-                .reversed());
+        children.sort(Comparator.comparing(Individual::getBirthday, Comparator.nullsFirst(Comparator.naturalOrder())).reversed());
         return children;
     }
 
@@ -217,16 +218,19 @@ public class Individual extends GEDObject {
      * are no descendants.
      */
     public List<Individual> getDescendants() {
-        List<Individual> descendants = new ArrayList<>();
         List<Individual> children = this.getChildren();
+        Set<Individual> descendants = new HashSet<>(children);
+        Queue<Individual> q = new LinkedList<>(children);
 
-        descendants.addAll(children);
-
-        for (Individual child : children) {
-            descendants.addAll(child.getDescendants());
+        while (!q.isEmpty()) {
+            for (Individual child : q.poll().getChildren()) {
+                if (descendants.add(child)) {
+                    q.add(child);
+                }
+            }
         }
 
-        return descendants;
+        return new ArrayList<>(descendants);
     }
 
     /**
@@ -241,16 +245,30 @@ public class Individual extends GEDObject {
             throw new IllegalArgumentException();
         }
 
-        List<Individual> descendants = new ArrayList<>();
-        if (i == 0) {
-            descendants.add(this);
-            return descendants;
-        } else {
-            for (Individual child : this.getChildren()) {
-                descendants.addAll(child.getDescendantsAt(i - 1));
+        List<Individual> children = this.getChildren();
+        Set<Individual> descendants = new HashSet<>(children);
+        Queue<Individual> q = new LinkedList<>(children);
+        Individual current;
+
+        q.add(null);
+        i--;
+
+        while (!q.isEmpty() && i > 0) {
+            current = q.poll();
+            if (current == null) {
+                q.add(null);
+                i--;
+                continue;
             }
-            return descendants;
+            for (Individual child : current.getChildren()) {
+                if (descendants.add(child)) {
+                    q.add(child);
+                }
+            }
         }
+
+        q.remove(null);
+        return (i == 0) ? new ArrayList<>(q) : new ArrayList<>();
     }
 
     /**
@@ -260,19 +278,7 @@ public class Individual extends GEDObject {
      * @return true if the individual is a descendant, false otherwise
      */
     public boolean isDescendant(Individual individual) {
-        List<Individual> children = individual.getChildren();
-        if (children.isEmpty()) {
-            return false;
-        } else if (children.contains(this)) {
-            return true;
-        } else {
-            for (Individual child : children) {
-                if (this.isDescendant(child)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return individual.getDescendants().contains(this);
     }
 
     /**
@@ -282,19 +288,7 @@ public class Individual extends GEDObject {
      * @return true if the individual is a descendant, false otherwise
      */
     public boolean hasDescendant(Individual individual) {
-        List<Individual> children = this.getChildren();
-        if (children.isEmpty()) {
-            return false;
-        } else if (children.contains(individual)) {
-            return true;
-        } else {
-            for (Individual child : children) {
-                if (child.hasDescendant(individual)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return this.getDescendants().contains(individual);
     }
 
     /**
@@ -320,40 +314,57 @@ public class Individual extends GEDObject {
      * are no ancestors.
      */
     public List<Individual> getAncestors() {
-        List<Individual> ancestors = new ArrayList<>();
         List<Individual> parents = this.getParents();
+        Set<Individual> ancestors = new HashSet<>(parents);
+        Queue<Individual> q = new LinkedList<>(parents);
 
-        ancestors.addAll(parents);
-
-        for (Individual parent : parents) {
-            ancestors.addAll(parent.getAncestors());
+        while (!q.isEmpty()) {
+            for (Individual parent : q.poll().getParents()) {
+                if (ancestors.add(parent)) {
+                    q.add(parent);
+                }
+            }
         }
 
-        return ancestors;
+        return new ArrayList<>(ancestors);
     }
 
     /**
      * Creates a list of all the ancestors at distance i from the current
      * individual.
      * 
-     * @param i
+     * @param i 
      * @return list of ancestors
      */
     public List<Individual> getAncestorsAt(int i) {
         if (i < 0) {
             throw new IllegalArgumentException();
         }
+        
+        List<Individual> parents = this.getParents();
+        Set<Individual> ancestors = new HashSet<>(parents);
+        Queue<Individual> q = new LinkedList<>(parents);
+        Individual current;
 
-        List<Individual> ancestors = new ArrayList<>();
-        if (i == 0) {
-            ancestors.add(this);
-            return ancestors;
-        } else {
-            for (Individual parent : this.getParents()) {
-                ancestors.addAll(parent.getAncestorsAt(i - 1));
+        q.add(null);
+        i--;
+        
+        while (!q.isEmpty() && i > 0) {
+            current = q.poll();
+            if (current == null) {
+                q.add(null);
+                i--;
+                continue;
+            }
+            for (Individual parent : current.getParents()) {
+                if (ancestors.add(parent)) {
+                    q.add(parent);
+                }
             }
         }
-        return ancestors;
+
+        q.remove(null);
+        return (i == 0) ? new ArrayList<>(q) : new ArrayList<>();
     }
 
     /**
@@ -363,19 +374,7 @@ public class Individual extends GEDObject {
      * @return true if the given individual is an ancestor, false otherwise
      */
     public boolean isAncestor(Individual individual) {
-        List<Individual> parents = individual.getParents();
-        if (parents.isEmpty()) {
-            return false;
-        } else if (parents.contains(this)) {
-            return true;
-        } else {
-            for (Individual parent : parents) {
-                if (this.isAncestor(parent)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return individual.getAncestors().contains(this);
     }
 
     /**
@@ -385,19 +384,7 @@ public class Individual extends GEDObject {
      * @return true if the individual is an ancestor, false otherwise
      */
     public boolean hasAncestor(Individual individual) {
-        List<Individual> parents = this.getParents();
-        if (parents.isEmpty()) {
-            return false;
-        } else if (parents.contains(individual)) {
-            return true;
-        } else {
-            for (Individual parent : parents) {
-                if (parent.hasAncestor(individual)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return this.getAncestors().contains(individual);
     }
 
     /**
@@ -416,17 +403,17 @@ public class Individual extends GEDObject {
         }
 
         List<Individual> cousins = new ArrayList<>();
-        List<Individual> descendants = new ArrayList<>();
+        List<Individual> linkingReliatives = new ArrayList<>();
 
-        for (Individual individual : this.getAncestorsAt(n)) {
-            descendants.addAll(individual.getDescendantsAt(n));
+        for (Individual ancestor : this.getAncestorsAt(n)) {
+            linkingReliatives.addAll(ancestor.getDescendantsAt(n));
         }
 
-        for (Individual individual : this.getAncestorsAt(n + 1)) {
-            cousins.addAll(individual.getDescendantsAt(n + 1));
+        for (Individual ancestor : this.getAncestorsAt(n + 1)) {
+            cousins.addAll(ancestor.getDescendantsAt(n + 1));
         }
 
-        cousins.removeAll(descendants);
+        cousins.removeAll(linkingReliatives);
         return cousins;
     }
     
@@ -443,6 +430,141 @@ public class Individual extends GEDObject {
     	}
     	
     	return generation;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder extends GEDObjectBuilder {
+
+        // A count to keep track of auto generated IDs
+        private static int id = 1;
+
+        private String ID;
+
+        private String name;
+
+        private Gender gender;
+
+        private Date birth;
+        private Date death;
+
+        // A list of all the Individuals created by this builder
+        private List<Individual> individuals;
+
+        private Builder() {
+            this.gender = Gender.NOT_SPECIFIED;
+            this.individuals = new ArrayList<>();
+        }
+
+        public Builder ID(String ID) {
+            this.ID = ID;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder gender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public Builder male() {
+            return gender(Gender.M);
+        }
+
+        public Builder female() {
+            return gender(Gender.F);
+        }
+
+        public Builder birth(Date birth) {
+            this.birth = birth;
+            return this;
+        }
+
+        public Builder birth(int date, int month, int year) {
+            this.birth = buildDate(date, month, year);
+            return this;
+        }
+
+        public Builder birth(int year) {
+            this.birth = buildDate(1, Calendar.JANUARY, year);
+            return this;
+        }
+
+        public Builder death(Date death) {
+            this.death = death;
+            return this;
+        }
+
+        public Builder death(int date, int month, int year) {
+            this.death = buildDate(date, month, year);
+            return this;
+        }
+
+        public Builder death(int year) {
+            this.death = buildDate(1, Calendar.JANUARY, year);
+            return this;
+        }
+
+        public Builder life(Date birth, Date death) {
+            this.birth = birth;
+            this.death = death;
+            return this;
+        }
+
+        private void clear() {
+            this.ID = null;
+            this.name = null;
+            this.gender = Gender.NOT_SPECIFIED;
+            this.birth = null;
+            this.death = null;
+        }
+
+        public Individual build() {
+
+            Individual individual;
+
+            if (ID != null) {
+                individual = new Individual(ID);
+            } else {
+                individual = new Individual(String.format("@F%d@", id++));
+            }
+
+            individual.setGender(gender);
+
+            if (name != null) {
+                individual.setName(name);
+            }
+
+            if (birth != null) {
+                individual.setBirthday(birth);
+            }
+
+            if (death != null) {
+                individual.setDeath(death);
+            }
+
+            this.individuals.add(individual);
+
+            clear();
+
+            return individual;
+        }
+
+        /**
+         * Returns a list of all the Individuals built by this builder.
+         * 
+         * @return
+         */
+        public List<Individual> getIndividuals() {
+            return this.individuals;
+        }
+
     }
 
 }

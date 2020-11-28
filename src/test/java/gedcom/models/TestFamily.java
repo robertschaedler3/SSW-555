@@ -24,7 +24,7 @@ public class TestFamily {
 
     @BeforeEach
     public void setup() {
-        family = new FamilyBuilder().build();
+        family = Family.builder().build();
 
         Logger logger = Logger.getInstance();
         logAppender = new LogAppender();
@@ -46,8 +46,8 @@ public class TestFamily {
 
     @Test
     public void testGetSetHusband() {
-        Individual husband = new IndividualBuilder().male().build();
-        family = new FamilyBuilder().withHusband(husband).build();
+        Individual husband = Individual.builder().male().build();
+        family = Family.builder().husband(husband).build();
         assertEquals(husband, family.getHusband());
     }
 
@@ -60,7 +60,7 @@ public class TestFamily {
 
     @Test
     public void testSetHusbandLogMessage() {
-        family.setHusband(new IndividualBuilder().female().build());
+        family.setHusband(Individual.builder().female().build());
 
         assertEquals(1, logAppender.countEvents());
         assertTrue(logAppender.contains("US21", Level.ERROR, 21));
@@ -68,8 +68,8 @@ public class TestFamily {
 
     @Test
     public void testGetSetWife() {
-        Individual wife = new IndividualBuilder().female().build();
-        family = new FamilyBuilder().withWife(wife).build();
+        Individual wife = Individual.builder().female().build();
+        family = Family.builder().wife(wife).build();
         assertEquals(wife, family.getWife());
     }
 
@@ -82,7 +82,7 @@ public class TestFamily {
 
     @Test
     public void testSetWifeLogMessage() {
-        family.setWife(new IndividualBuilder().male().build());
+        family.setWife(Individual.builder().male().build());
 
         assertEquals(1, logAppender.countEvents());
         assertTrue(logAppender.contains("US21", Level.ERROR, 21));
@@ -92,15 +92,15 @@ public class TestFamily {
     public void testMarriage() {
         Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2001);
-        assertEquals(marriage, new FamilyBuilder().withMarriage(marriage).build().getMarriage());
-        assertEquals(marriage, new FamilyBuilder().withDivorce(marriage).withMarriage(marriage).build().getMarriage());
-        assertEquals(marriage, new FamilyBuilder().withDivorce(divorce).withMarriage(marriage).build().getMarriage());
+        assertEquals(marriage, Family.builder().marriage(marriage).build().getMarriage());
+        assertEquals(marriage, Family.builder().divorce(marriage).marriage(marriage).build().getMarriage());
+        assertEquals(marriage, Family.builder().divorce(divorce).marriage(marriage).build().getMarriage());
     }
 
     @Test
     public void testMarriageException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Family family = new FamilyBuilder().build();
+            Family family = Family.builder().build();
             family.setMarriage(null);
         });
     }
@@ -109,7 +109,7 @@ public class TestFamily {
     public void testMarriageLogMessage1() {
         Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2001);
         Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2000);
-        Family family = new FamilyBuilder().withDivorce(divorce).build();
+        Family family = Family.builder().divorce(divorce).build();
         family.setMarriage(marriage);
 
         assertEquals(1, logAppender.countEvents());
@@ -120,7 +120,7 @@ public class TestFamily {
     public void testMarriageLogMessage2() {
         Date now = new Date();
         Date marriage = DateBuilder.newDateDaysAfter(now, 1);
-        Family family = new FamilyBuilder().withMarriage(marriage).build();
+        Family family = Family.builder().marriage(marriage).build();
 
         assertEquals(1, logAppender.countEvents());
         assertTrue(logAppender.contains("US01", Level.ERROR, 1));
@@ -130,15 +130,15 @@ public class TestFamily {
     public void testDivorce() {
         Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2000);
         Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2001);
-        assertEquals(divorce, new FamilyBuilder().withDivorce(divorce).build().getDivorce());
-        assertEquals(divorce, new FamilyBuilder().withMarriage(divorce).withDivorce(divorce).build().getDivorce());
-        assertEquals(divorce, new FamilyBuilder().withMarriage(marriage).withDivorce(divorce).build().getDivorce());
+        assertEquals(divorce, Family.builder().divorce(divorce).build().getDivorce());
+        assertEquals(divorce, Family.builder().marriage(divorce).divorce(divorce).build().getDivorce());
+        assertEquals(divorce, Family.builder().marriage(marriage).divorce(divorce).build().getDivorce());
     }
 
     @Test
     public void testDivorceExcpetion() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Family family = new FamilyBuilder().build();
+            Family family = Family.builder().build();
             family.setDivorce(null);
         });
     }
@@ -147,7 +147,7 @@ public class TestFamily {
     public void testDivorceLogMessage1() {
         Date marriage = DateBuilder.build(1, Calendar.JANUARY, 2001);
         Date divorce = DateBuilder.build(1, Calendar.JANUARY, 2000);
-        Family family = new FamilyBuilder().withMarriage(marriage).build();
+        Family family = Family.builder().marriage(marriage).build();
         family.setDivorce(divorce);
 
         assertEquals(1, logAppender.countEvents());
@@ -157,7 +157,7 @@ public class TestFamily {
     public void testDivorceLogMessage2() {
         Date now = new Date();
         Date marriage = DateBuilder.newDateDaysAfter(now, 1);
-        Family family = new FamilyBuilder().withDivorce(marriage).build();
+        Family family = Family.builder().divorce(marriage).build();
 
         assertEquals(1, logAppender.countEvents());
         assertTrue(logAppender.contains("US01", Level.ERROR, 1));
@@ -166,7 +166,7 @@ public class TestFamily {
     @Test
     public void testAddChildren() {
         for (int i = 0; i < Family.MAX_CHILDREN; i++) {
-            assertTrue(family.addChild(new IndividualBuilder().build()));
+            assertTrue(family.addChild(Individual.builder().build()));
         }
     }
 
@@ -185,7 +185,7 @@ public class TestFamily {
     @Test
     public void testAddChildrenLogMessage() {
         for (int i = 0; i < Family.MAX_CHILDREN + 1; i++) {
-            Individual child = new IndividualBuilder().build();
+            Individual child = Individual.builder().build();
             assertTrue(family.addChild(child));
         }
 
@@ -195,13 +195,13 @@ public class TestFamily {
 
     @Test
     public void testGetChildren() {
-        Individual child1 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2000).build();
-        Individual child2 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2001).build();
-        Individual child3 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 2002).build();
-        Individual child4 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1999).build();
-        Individual child5 = new IndividualBuilder().withBirth(1, Calendar.JANUARY, 1998).build();
+        Individual child1 = Individual.builder().birth(1, Calendar.JANUARY, 2000).build();
+        Individual child2 = Individual.builder().birth(1, Calendar.JANUARY, 2001).build();
+        Individual child3 = Individual.builder().birth(1, Calendar.JANUARY, 2002).build();
+        Individual child4 = Individual.builder().birth(1, Calendar.JANUARY, 1999).build();
+        Individual child5 = Individual.builder().birth(1, Calendar.JANUARY, 1998).build();
 
-        Family family = new FamilyBuilder().withChildren(child1, child2, child3, child4, child5).build();
+        Family family = Family.builder().children(child1, child2, child3, child4, child5).build();
         List<Individual> children = family.getChildren();
 
         Individual previousChild = children.get(0);

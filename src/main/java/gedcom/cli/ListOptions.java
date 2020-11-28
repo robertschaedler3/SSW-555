@@ -117,6 +117,26 @@ public class ListOptions {
     }
 
     /**
+     * Lists all current marriages.
+     */
+    private static void listMarriage(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "Husband", "Wife", "Marriage"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+
+        Table<Family> table = new Table<>("All Marriages", columns, expanders);
+
+        boolean married = false;
+
+        for (Family family: gedFile.getFamilies()) {
+            if(family.getMarriage() != null && family.getHusband() != null && family.getWife() != null) {
+                table.add(family);
+            }
+        }
+
+        System.out.println(table);
+    }
+
+    /**
      * Lists all living individuals who are currently not married.
      */
     private static void listLivingSingle(GEDFile gedFile) {
