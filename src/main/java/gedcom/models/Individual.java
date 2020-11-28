@@ -1,6 +1,7 @@
 package gedcom.models;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -414,6 +415,141 @@ public class Individual extends GEDObject {
 
         cousins.removeAll(linkingReliatives);
         return cousins;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder extends GEDObjectBuilder {
+
+        // A count to keep track of auto generated IDs
+        private static int id = 1;
+
+        private String ID;
+
+        private String name;
+
+        private Gender gender;
+
+        private Date birth;
+        private Date death;
+
+        // A list of all the Individuals created by this builder
+        private List<Individual> individuals;
+
+        private Builder() {
+            this.gender = Gender.NOT_SPECIFIED;
+            this.individuals = new ArrayList<>();
+        }
+
+        public Builder ID(String ID) {
+            this.ID = ID;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder gender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public Builder male() {
+            return gender(Gender.M);
+        }
+
+        public Builder female() {
+            return gender(Gender.F);
+        }
+
+        public Builder birth(Date birth) {
+            this.birth = birth;
+            return this;
+        }
+
+        public Builder birth(int date, int month, int year) {
+            this.birth = buildDate(date, month, year);
+            return this;
+        }
+
+        public Builder birth(int year) {
+            this.birth = buildDate(1, Calendar.JANUARY, year);
+            return this;
+        }
+
+        public Builder death(Date death) {
+            this.death = death;
+            return this;
+        }
+
+        public Builder death(int date, int month, int year) {
+            this.death = buildDate(date, month, year);
+            return this;
+        }
+
+        public Builder death(int year) {
+            this.death = buildDate(1, Calendar.JANUARY, year);
+            return this;
+        }
+
+        public Builder life(Date birth, Date death) {
+            this.birth = birth;
+            this.death = death;
+            return this;
+        }
+
+        private void clear() {
+            this.ID = null;
+            this.name = null;
+            this.gender = Gender.NOT_SPECIFIED;
+            this.birth = null;
+            this.death = null;
+        }
+
+        public Individual build() {
+
+            Individual individual;
+
+            if (ID != null) {
+                individual = new Individual(ID);
+            } else {
+                individual = new Individual(String.format("@F%d@", id++));
+            }
+
+            individual.setGender(gender);
+
+            if (name != null) {
+                individual.setName(name);
+            }
+
+            if (birth != null) {
+                individual.setBirthday(birth);
+            }
+
+            if (death != null) {
+                individual.setDeath(death);
+            }
+
+            this.individuals.add(individual);
+
+            clear();
+
+            return individual;
+        }
+
+        /**
+         * Returns a list of all the Individuals built by this builder.
+         * 
+         * @return
+         */
+        public List<Individual> getIndividuals() {
+            return this.individuals;
+        }
+
     }
 
 }

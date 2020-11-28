@@ -71,19 +71,19 @@ public class GEDCOMBuilder {
         }
     }
 
-    public GEDCOMBuilder withIndividual(Individual individual) {
+    public GEDCOMBuilder individual(Individual individual) {
         addIndividual(individual);
         return this;
     }
 
-    public GEDCOMBuilder withIndividuals(Individual... individuals) {
+    public GEDCOMBuilder individuals(Individual... individuals) {
         for (Individual individual : individuals) {
             addIndividual(individual);
         }
         return this;
     }
 
-    public GEDCOMBuilder withIndividuals(Iterable<Individual> individuals) {
+    public GEDCOMBuilder individuals(Iterable<Individual> individuals) {
         for (Individual individual : individuals) {
             addIndividual(individual);
         }
@@ -116,19 +116,19 @@ public class GEDCOMBuilder {
         }
     }
 
-    public GEDCOMBuilder withFamily(Family family) {
+    public GEDCOMBuilder family(Family family) {
         addFamily(family);
         return this;
     }
 
-    public GEDCOMBuilder withFamilies(Family... families) {
+    public GEDCOMBuilder families(Family... families) {
         for (Family family : families) {
             addFamily(family);
         }
         return this;
     }
 
-    public GEDCOMBuilder withFamilies(Iterable<Family> families) {
+    public GEDCOMBuilder families(Iterable<Family> families) {
         for (Family family : families) {
             addFamily(family);
         }
