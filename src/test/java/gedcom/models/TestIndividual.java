@@ -274,6 +274,11 @@ public class TestIndividual {
 
     @Test
     public void testGetParents() {
+        Individual father = new IndividualBuilder().male().build();
+        Individual mother = new IndividualBuilder().female().build();
+        Individual child = new IndividualBuilder().build();
+        
+        Family family = new FamilyBuilder().withHusband(father).withWife(mother).withChild(child).build();
         Individual father = Individual.builder().male().build();
         Individual mother = Individual.builder().female().build();
         Individual child = Individual.builder().build();
@@ -411,5 +416,25 @@ public class TestIndividual {
             assertEquals(cousins.get(i - 1), indivCousins.get(0));
         }
     }
+    
+	@Test
+	public void testGetGeneration() {
+		IndividualBuilder individualBuilder = new IndividualBuilder();
+		Individual individual = individualBuilder.build();
+
+		Individual parent = individualBuilder.build();
+		Individual grandparent = individualBuilder.build();
+		Individual greatgrandparent = individualBuilder.build();
+
+		FamilyBuilder familyBuilder = new FamilyBuilder();
+		familyBuilder.withHusband(greatgrandparent).withChild(grandparent).build();
+		familyBuilder.withHusband(grandparent).withChild(parent).build();
+		familyBuilder.withHusband(parent).withChild(individual).build();
+		familyBuilder.withHusband(greatgrandparent).withWife(individual).build();
+
+		GEDFile gedFile = new GEDFile(individualBuilder.getIndividuals(), familyBuilder.getFamilies());
+
+		assertTrue(individual.getGeneration() == 4);
+	}
 
 }

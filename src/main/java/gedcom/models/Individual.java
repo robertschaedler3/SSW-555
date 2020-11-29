@@ -416,6 +416,21 @@ public class Individual extends GEDObject {
         cousins.removeAll(linkingReliatives);
         return cousins;
     }
+    
+    public int getGeneration() {
+    	int generation = 0;
+    	
+    	if(this.getParents().size() > 0) {
+    		for(Individual indi : this.getParents()) {
+    			generation = Math.max(generation, indi.getGeneration() + 1);
+    		}
+    	}
+    	else {
+    		return 1;
+    	}
+    	
+    	return generation;
+    }
 
     public static Builder builder() {
         return new Builder();
