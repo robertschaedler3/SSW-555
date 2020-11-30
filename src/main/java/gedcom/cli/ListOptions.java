@@ -4,12 +4,12 @@ import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
 import gedcom.models.Table;
-import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -58,23 +58,19 @@ public class ListOptions {
     @Option(names = { "-ge", "--generation" }, description = "List individuals with their generation number")
     protected boolean listGenerations;
 
-    @Option(names = { "-gn",
-            "--generation-number" }, description = "List individuals in given generation number e.g. -gn=2")
+    @Option(names = { "-gn", "--generation-number" }, description = "List individuals in given generation number e.g. -gn=2")
     protected int listGenerationNumber = -1;
 
-    @Option(names = { "-rs",
-            "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
+    @Option(names = { "-rs", "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
     protected boolean listRecentSurvivors;
 
     @Option(names = { "-ub", "--upcoming-births" }, description = "List individuals with birthdays in the next 30 days")
     protected boolean listUpcomingBirths;
 
-    @Option(names = { "-ud",
-            "--upcoming-deaths" }, description = "List individuals with death anniversaries in the next 30 days")
+    @Option(names = { "-ud", "--upcoming-deaths" }, description = "List individuals with death anniversaries in the next 30 days")
     protected boolean listUpComingDeaths;
 
-    @Option(names = { "-ua",
-            "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
+    @Option(names = { "-ua", "--upcoming-anniversaries" }, description = "List all families with a marriage anniversary in the next 30 days")
     protected boolean listUpcomingAnniversaries;
 
     private static void listDeceased(GEDFile gedFile) {
@@ -133,8 +129,6 @@ public class ListOptions {
 
         Table<Family> table = new Table<>("All Marriages", columns, expanders);
 
-        boolean married = false;
-
         for (Family family : gedFile.getFamilies()) {
             if (family.getMarriage() != null && family.getHusband() != null && family.getWife() != null) {
                 table.add(family);
@@ -180,11 +174,9 @@ public class ListOptions {
                 Arrays.asList(Individual::getID, Individual::getName));
         Table<Individual> table = new Table<>("Descendants", columns, expanders);
 
-        boolean valid = false;
 
         for (Individual individual : gedFile.getIndividuals()) {
             if (individual.getID().equals(ancestor)) {
-                valid = true;
                 for (Individual desc : individual.getDescendants()) {
                     table.add(desc);
                 }
@@ -192,10 +184,7 @@ public class ListOptions {
             }
         }
 
-        if (valid = false) {
-            System.out.println("Error US44: invalid user to list descendants from (not in file)");
-            return;
-        }
+        System.out.println(table);
     }
 
     /**
@@ -407,6 +396,19 @@ public class ListOptions {
         System.out.println(table);
     }
 
+    private static Date dateThisYear(Date date) {
+        if (date == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        cal.setTime(date);
+        cal.set(Calendar.YEAR, year);
+
+        return cal.getTime();
+    }
+
     private static void listUpcomingBirths(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH"));
         List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(
@@ -419,7 +421,7 @@ public class ListOptions {
             Date birth = indi.getBirthday();
             if (birth == null)
                 continue;
-            Date birthdayThisYear = new Date(now.getYear(), birth.getMonth(), birth.getDate());
+            Date birthdayThisYear = dateThisYear(birth);
 
             if (daysBetween(birthdayThisYear, now) < 30) {
                 table.add(indi);
@@ -444,7 +446,7 @@ public class ListOptions {
             Date death = indi.getDeath();
             if (death == null)
                 continue;
-            Date deathDayThisYear = new Date(now.getYear(), death.getMonth(), death.getDate());
+            Date deathDayThisYear = dateThisYear(death);
 
             if (daysBetween(deathDayThisYear, now) < 30) {
                 table.add(indi);
@@ -466,7 +468,7 @@ public class ListOptions {
             Date marriage = family.getMarriage();
             if (marriage == null)
                 continue;
-            Date anniversary = new Date(now.getYear(), marriage.getMonth(), marriage.getDate());
+            Date anniversary = dateThisYear(marriage);
 
             if (daysBetween(anniversary, now) < 30) {
                 table.add(family);
