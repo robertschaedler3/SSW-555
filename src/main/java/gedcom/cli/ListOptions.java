@@ -67,6 +67,9 @@ public class ListOptions {
     @Option(names = {"-ub", "--upcoming-births"}, description = "List individuals with birthdays in the next 30 days")
     protected boolean listUpcomingBirths;
 
+    @Option(names = {"-ud", "--upcoming-deaths"}, description = "List individuals with death anniversaries in the next 30 days")
+    protected boolean listUpComingDeaths;
+
     @Option(names = {"-ua",
             "--upcoming-anniversaries"}, description = "List all families with a marriage anniversary in the next 30 days")
     protected boolean listUpcomingAnniversaries;
@@ -378,6 +381,29 @@ public class ListOptions {
         System.out.println(table);
     }
 
+    /**
+     * Lists all individuals who's anniversaries of death fall within 30 days
+     */
+    private static void listUpComingDeaths(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "DEATH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getDeath));
+
+        Table<Individual> table = new Table<>("Upcoming death anniversaries", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date death = indi.getDeath();
+            if (death == null) continue;
+            Date deathDayThisYear = new Date(now.getYear(), death.getMonth(), death.getDate());
+
+            if (daysBetween(deathDayThisYear, now) < 30) {
+                table.add(indi);
+            }
+        }
+
+        System.out.println(table);
+    }
+
     private static void listUpcomingAnniversaries(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "HUSBAND", "WIFE", "MARRIAGE"));
         List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
@@ -450,6 +476,10 @@ public class ListOptions {
 
         if (listSelected(listUpcomingBirths)) {
             listUpcomingBirths(gedFile);
+        }
+
+        if (listSelected(listUpComingDeaths)) {
+            listUpComingDeaths(gedFile);
         }
 
         if (listSelected(listUpcomingAnniversaries)) {
