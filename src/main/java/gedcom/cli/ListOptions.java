@@ -57,6 +57,14 @@ public class ListOptions {
 
     @Option(names = {"-rd", "--recent-deaths"}, description = "List all individuals who died in the last 30 days")
     protected boolean listRecentDeaths;
+    
+    @Option(names = {"-ge",
+			"--generation"}, description = "List individuals with their generation number")
+    protected boolean listGenerations;
+
+    @Option(names = {"-gn",
+    	"--generation-number"}, description = "List individuals in given generation number e.g. -gn=2")
+    protected int listGenerationNumber = -1;
 
     @Option(names = {"-rs",
             "--recent-survivors"}, description = "List living descendants/spouses of individuals who died in the last 30 days")
@@ -64,6 +72,9 @@ public class ListOptions {
 
     @Option(names = {"-ub", "--upcoming-births"}, description = "List individuals with birthdays in the next 30 days")
     protected boolean listUpcomingBirths;
+
+    @Option(names = {"-ud", "--upcoming-deaths"}, description = "List individuals with death anniversaries in the next 30 days")
+    protected boolean listUpComingDeaths;
 
     @Option(names = {"-ua",
             "--upcoming-anniversaries"}, description = "List all families with a marriage anniversary in the next 30 days")
@@ -108,6 +119,26 @@ public class ListOptions {
                     table.add(individual);
                     married = false;
                 }
+            }
+        }
+
+        System.out.println(table);
+    }
+
+    /**
+     * Lists all current marriages.
+     */
+    private static void listMarriage(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "Husband", "Wife", "Marriage"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+
+        Table<Family> table = new Table<>("All Marriages", columns, expanders);
+
+        boolean married = false;
+
+        for (Family family: gedFile.getFamilies()) {
+            if(family.getMarriage() != null && family.getHusband() != null && family.getWife() != null) {
+                table.add(family);
             }
         }
 
@@ -163,6 +194,20 @@ public class ListOptions {
         if (valid = false) {
             System.out.println("Error US44: invalid user to list descendants from (not in file)");
             return;
+        }
+
+     * Lists all current divorces.
+     */
+    private static void listMarriage(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "Husband", "Wife", "Divorce"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getDivorce));
+
+        Table<Family> table = new Table<>("All Divorces", columns, expanders);
+
+        for (Family family: gedFile.getFamilies()) {
+            if(family.getDivorce() != null && family.getHusband() != null && family.getWife() != null) {
+                table.add(family);
+            }
         }
 
         System.out.println(table);
@@ -290,6 +335,32 @@ public class ListOptions {
 
         System.out.println(table);
     }
+    
+    private static void listGenerations(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "GENERATION"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName, Individual::getGeneration));
+
+        Table<Individual> table = new Table<>("Individual generations", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+        	table.add(indi);
+        }
+
+        System.out.println(table);
+    }
+    
+    private static void listGeneration(GEDFile gedFile, int genNumber) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME", "GENERATION"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName, Individual::getGeneration));
+
+        Table<Individual> table = new Table<>("Individual generations", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+        	if(indi.getGeneration() == genNumber) table.add(indi);
+        }
+
+        System.out.println(table);
+    }
 
     private static void listRecentSurvivors(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH", "AGE"));
@@ -334,6 +405,29 @@ public class ListOptions {
             Date birthdayThisYear = new Date(now.getYear(), birth.getMonth(), birth.getDate());
 
             if (daysBetween(birthdayThisYear, now) < 30) {
+                table.add(indi);
+            }
+        }
+
+        System.out.println(table);
+    }
+
+    /**
+     * Lists all individuals who's anniversaries of death fall within 30 days
+     */
+    private static void listUpComingDeaths(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "DEATH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getDeath));
+
+        Table<Individual> table = new Table<>("Upcoming death anniversaries", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date death = indi.getDeath();
+            if (death == null) continue;
+            Date deathDayThisYear = new Date(now.getYear(), death.getMonth(), death.getDate());
+
+            if (daysBetween(deathDayThisYear, now) < 30) {
                 table.add(indi);
             }
         }
@@ -403,6 +497,14 @@ public class ListOptions {
             listRecentDeaths(gedFile);
         }
 
+        if (listSelected(listGenerations)) {
+        	listGenerations(gedFile);
+        }
+        
+        if (listGenerationNumber != -1) {
+        	listGeneration(gedFile, listGenerationNumber);
+        }
+
         if (listSelected(listRecentSurvivors)) {
             listRecentSurvivors(gedFile);
         }
@@ -411,10 +513,14 @@ public class ListOptions {
             listUpcomingBirths(gedFile);
         }
 
+        if (listSelected(listUpComingDeaths)) {
+            listUpComingDeaths(gedFile);
+        }
+
         if (listSelected(listUpcomingAnniversaries)) {
             listUpcomingAnniversaries(gedFile);
         }
-
+        
     }
 
 }

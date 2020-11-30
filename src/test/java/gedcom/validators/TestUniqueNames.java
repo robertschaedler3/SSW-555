@@ -7,9 +7,6 @@ import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
-import gedcom.builders.FamilyBuilder;
-import gedcom.builders.GEDFileBuilder;
-import gedcom.builders.IndividualBuilder;
 import gedcom.models.Family;
 import gedcom.models.GEDFile;
 import gedcom.models.Individual;
@@ -30,16 +27,16 @@ public class TestUniqueNames {
         String childName1 = "Terry";
         String childName2 = "Bob";
 
-        Individual husband = new IndividualBuilder().build();
-        Individual wife = new IndividualBuilder().build();
-        Individual child1 = new IndividualBuilder().withName(childName1).withBirth(childBirthday1).build();
-        Individual child2 = new IndividualBuilder().withName(childName2).withBirth(childBirthday2).build();
+        Individual husband = Individual.builder().build();
+        Individual wife = Individual.builder().build();
+        Individual child1 = Individual.builder().name(childName1).birth(childBirthday1).build();
+        Individual child2 = Individual.builder().name(childName2).birth(childBirthday2).build();
 
-        Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChild(child1).withChild(child2).build();
+        Family family1 = Family.builder().husband(husband).wife(wife).child(child1).child(child2).build();
 
         List<Individual> individuals = new ArrayList<>(Arrays.asList(husband, wife, child1, child2));
         List<Family> families = new ArrayList<>(Arrays.asList(family1));
-        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+        GEDFile gedFile = GEDFile.builder().individuals(individuals).families(families).build();
 
         assertTrue(uniqueNames.isValid(gedFile));
     }
@@ -51,16 +48,16 @@ public class TestUniqueNames {
         String childName1 = "Terry";
         String childName2 = "Terry";
 
-        Individual husband = new IndividualBuilder().build();
-        Individual wife = new IndividualBuilder().build();
-        Individual child1 = new IndividualBuilder().withName(childName1).withBirth(childBirthday1).build();
-        Individual child2 = new IndividualBuilder().withName(childName2).withBirth(childBirthday2).build();
+        Individual husband = Individual.builder().build();
+        Individual wife = Individual.builder().build();
+        Individual child1 = Individual.builder().name(childName1).birth(childBirthday1).build();
+        Individual child2 = Individual.builder().name(childName2).birth(childBirthday2).build();
 
-        Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChild(child1).withChild(child2).build();
+        Family family1 = Family.builder().husband(husband).wife(wife).child(child1).child(child2).build();
 
         List<Individual> individuals = new ArrayList<>(Arrays.asList(husband, wife, child1, child2));
         List<Family> families = new ArrayList<>(Arrays.asList(family1));
-        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+        GEDFile gedFile = GEDFile.builder().individuals(individuals).families(families).build();
 
         assertTrue(uniqueNames.isValid(gedFile));
     }
@@ -72,16 +69,16 @@ public class TestUniqueNames {
         String childName1 = "Terry";
         String childName2 = "Terry";
 
-        Individual husband = new IndividualBuilder().build();
-        Individual wife = new IndividualBuilder().build();
-        Individual child1 = new IndividualBuilder().withName(childName1).withBirth(childBirthday1).build();
-        Individual child2 = new IndividualBuilder().withName(childName2).withBirth(childBirthday2).build();
+        Individual husband = Individual.builder().build();
+        Individual wife = Individual.builder().build();
+        Individual child1 = Individual.builder().name(childName1).birth(childBirthday1).build();
+        Individual child2 = Individual.builder().name(childName2).birth(childBirthday2).build();
 
-        Family family1 = new FamilyBuilder().withHusband(husband).withWife(wife).withChild(child1).withChild(child2).build();
+        Family family1 = Family.builder().husband(husband).wife(wife).child(child1).child(child2).build();
 
         List<Individual> individuals = new ArrayList<>(Arrays.asList(husband, wife, child1, child2));
         List<Family> families = new ArrayList<>(Arrays.asList(family1));
-        GEDFile gedFile = new GEDFileBuilder().withIndividuals(individuals).withFamilies(families).build();
+        GEDFile gedFile = GEDFile.builder().individuals(individuals).families(families).build();
 
         assertFalse(uniqueNames.isValid(gedFile));
     }
