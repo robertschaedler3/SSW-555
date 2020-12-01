@@ -7,13 +7,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import gedcom.builders.GEDCOMBuilder;
-
 public class TestGEDFile {
 
     @Test
     public void testConstructorScanner() {
-        GEDCOMBuilder gedcomBuilder = new GEDCOMBuilder();
+        GEDFile.Writer gedfileWriter = new GEDFile.Writer();
         Family.Builder familyBuilder = Family.builder();
         Individual.Builder individualBuilder = Individual.builder();
 
@@ -25,12 +23,12 @@ public class TestGEDFile {
         List<Individual> individuals = individualBuilder.getIndividuals();
         List<Family> families = familyBuilder.getFamilies();
 
-        gedcomBuilder.individuals(individuals);
-        gedcomBuilder.families(families);
+        gedfileWriter.individuals(individuals);
+        gedfileWriter.families(families);
 
-        String GEDCOM = gedcomBuilder.build();
+        String GEDCOM = gedfileWriter.build();
         try {
-            GEDFile gedFile = new GEDFile(GEDCOMBuilder.getTempFile(GEDCOM));
+            GEDFile gedFile = new GEDFile(GEDFile.Writer.getTempFile(GEDCOM));
             assertEquals(families.size(), gedFile.getFamilies().size());
             assertEquals(individuals.size(), gedFile.getIndividuals().size());            
         } catch (FileNotFoundException e) {
