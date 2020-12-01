@@ -25,7 +25,7 @@ public class ListCommand implements Runnable {
     @CommandLine.Parameters(index = "1",  description = "The ancestor who's descendants to view")
     protected String ancestor = "@I1@";
 
-    @ArgGroup(exclusive = true, multiplicity = "1")
+    @ArgGroup(exclusive = false)
     private ListOptions listOptions = new ListOptions();
 
     protected GEDFile getFile() {
