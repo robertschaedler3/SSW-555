@@ -22,6 +22,9 @@ public class ListOptions {
     @Option(names = { "-A", "--all" }, description = "List all feature groups")
     protected boolean all;
 
+    @Option(names = {"-am", "--anniversary-month"}, description = "List Anniversaries this month")
+    protected boolean listAnniversariesThisMonth;
+
     @Option(names = {"-bm", "--birth-month"}, description = "List all births this month")
     protected boolean listBirthsThisMonth;
 
@@ -499,6 +502,20 @@ public class ListOptions {
         System.out.println(table);
     }
 
+    private static void listAnniversariesThisMonth(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "HUSBAND", "WIFE", "MARRIAGE"));
+        List<Function<? super Family, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Family::getID, Family::getHusband, Family::getWife, Family::getMarriage));
+
+        Table<Family> table = new Table<>("Upcoming Anniversaries", columns, expanders);
+
+        for (Family family : gedFile.getFamilies()) {
+            Date now = new Date();
+            Date marriage = family.getMarriage();
+            if (marriage == null) continue;
+
+            if (now.getMonth() == marriage.getMonth()) {
+                table.add(family);
+
     private static void listBirthsThisMonth(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH"));
         List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getBirthday));
@@ -512,6 +529,7 @@ public class ListOptions {
 
             if (now.getMonth() == birth.getMonth()) {
                 table.add(indi);
+
             }
         }
 
@@ -592,6 +610,10 @@ public class ListOptions {
             listUpcomingAnniversaries(gedFile);
         }
 
+        if (listSelected(listAnniversariesThisMonth)) {
+            listAnniversariesThisMonth(gedFile);
+        }
+      
         if (listSelected(listBirthsThisMonth)) {
             listBirthsThisMonth(gedFile);
         }
