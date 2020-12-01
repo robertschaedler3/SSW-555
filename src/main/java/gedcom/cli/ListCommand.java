@@ -4,7 +4,6 @@ import gedcom.models.GEDFile;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Mixin;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,20 +28,26 @@ public class ListCommand implements Runnable {
     @ArgGroup(exclusive = true, multiplicity = "1")
     private ListOptions listOptions = new ListOptions();
 
-    public void run() {
-        File file = new File(filePath);
-        GEDFile gedFile = null;
+    protected GEDFile getFile() {
         try {
-            gedFile = new GEDFile(file);
+            File file = new File(filePath);
+            return new GEDFile(file);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return null;
         }
-        if (gedFile == null) {
+    }
+
+    public void run() {
+
+        GEDFile gedFile = null;
+
+        if ((gedFile = this.getFile()) == null) {
             System.out.println("File not found!");
             return;
         }
 
         listOptions.list(gedFile, ancestor);
+
     }
 
 }
