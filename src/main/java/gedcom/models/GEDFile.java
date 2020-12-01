@@ -2,6 +2,10 @@ package gedcom.models;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -338,4 +342,156 @@ public class GEDFile {
 
     }
 
+    public static Writer writer() {
+        return new Writer();
+    }
+
+    public static final class Writer {
+
+        private StringBuilder sb;
+        private static String LINE_FORMAT = "%d %s %s\n";
+
+        public Writer() {
+            this.sb = new StringBuilder();
+            sb.append(this.getHead());
+        }
+
+        private String getHead() {
+            StringBuilder head = new StringBuilder();
+            head.append(line(0, Tag.NOTE, "GEDCOM BUILDER"));
+            head.append(line(0, Tag.HEAD));
+            return head.toString();
+        }
+
+        private String getTail() {
+            return line(0, Tag.TRLR);
+        }
+
+        private static String line(int level, Tag tag) {
+            return String.format(LINE_FORMAT, level, tag, " ");
+        }
+
+        private static String line(int level, Tag tag, String args) {
+            return String.format(LINE_FORMAT, level, tag, args);
+        }
+
+        private static String line(int level, String ID, Tag tag) {
+            return String.format(LINE_FORMAT, level, ID, tag);
+        }
+
+        private void addDateLine(Date date) {
+            SimpleDateFormat dateFmt = new SimpleDateFormat(GEDFile.FULL_DATE_FORMAT);
+            sb.append(line(2, Tag.DATE, dateFmt.format(date)));
+        }
+
+        public void addIndividual(Individual individual) {
+            sb.append(line(0, individual.getID(), Tag.INDI));
+
+            if (individual.getName() != null) {
+                sb.append(line(1, Tag.NAME, individual.getName()));
+            }
+
+            if (individual.getGender() != Gender.NOT_SPECIFIED) {
+                sb.append(line(1, Tag.SEX, individual.getGender().toString()));
+            }
+
+            if (individual.getBirthday() != null) {
+                sb.append(line(1, Tag.BIRT));
+                addDateLine(individual.getBirthday());
+            }
+
+            if (individual.getDeath() != null) {
+                sb.append(line(1, Tag.DEAT));
+                addDateLine(individual.getDeath());
+            }
+
+            for (Family famc : individual.getChildFamilies()) {
+                sb.append(line(1, Tag.FAMC, famc.getID()));
+            }
+
+            for (Family fams : individual.getSpouseFamilies()) {
+                sb.append(line(1, Tag.FAMS, fams.getID()));
+            }
+        }
+
+        public Writer individual(Individual individual) {
+            addIndividual(individual);
+            return this;
+        }
+
+        public Writer individuals(Individual... individuals) {
+            for (Individual individual : individuals) {
+                addIndividual(individual);
+            }
+            return this;
+        }
+
+        public Writer individuals(Iterable<Individual> individuals) {
+            for (Individual individual : individuals) {
+                addIndividual(individual);
+            }
+            return this;
+        }
+
+        public void addFamily(Family family) {
+            sb.append(line(0, family.getID(), Tag.FAM));
+
+            if (family.getHusband() != null) {
+                sb.append(line(1, Tag.HUSB, family.getHusband().getID()));
+            }
+
+            if (family.getWife() != null) {
+                sb.append(line(1, Tag.WIFE, family.getWife().getID()));
+            }
+
+            if (family.getMarriage() != null) {
+                sb.append(line(1, Tag.MARR));
+                addDateLine(family.getMarriage());
+            }
+
+            if (family.getDivorce() != null) {
+                sb.append(line(1, Tag.DIV));
+                addDateLine(family.getDivorce());
+            }
+
+            for (Individual child : family.getChildren()) {
+                sb.append(line(1, Tag.CHIL, child.getID()));
+            }
+        }
+
+        public Writer family(Family family) {
+            addFamily(family);
+            return this;
+        }
+
+        public Writer families(Family... families) {
+            for (Family family : families) {
+                addFamily(family);
+            }
+            return this;
+        }
+
+        public Writer families(Iterable<Family> families) {
+            for (Family family : families) {
+                addFamily(family);
+            }
+            return this;
+        }
+
+        public String build() {
+            sb.append(this.getTail());
+            return sb.toString();
+        }
+
+        public static File getTempFile(String GEDCOM) {
+            try {
+                Path tempFile = Files.createTempFile(null, null);
+                Files.write(tempFile, GEDCOM.getBytes(StandardCharsets.UTF_8));
+                return tempFile.toFile();
+            } catch (IOException e) {
+                return null;
+            }
+        }
+
+    }
 }

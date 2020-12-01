@@ -25,6 +25,9 @@ public class ListOptions {
     @Option(names = {"-am", "--anniversary-month"}, description = "List Anniversaries this month")
     protected boolean listAnniversariesThisMonth;
 
+    @Option(names = {"-bm", "--birth-month"}, description = "List all births this month")
+    protected boolean listBirthsThisMonth;
+
     @Option(names = {"-dd", "--deceased"}, description = "List all deceased individuals")
     protected boolean listDeceased;
 
@@ -238,6 +241,24 @@ public class ListOptions {
 
         System.out.println(table);
     }
+    /**
+     * list users with n siblings
+     * @param gedFile
+     */
+    private static void listnsiblings(GEDFile gedFile, int n) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
+
+        Table<Individual> table = new Table<>("Users with N Siblings", columns, expanders);
+        for (Individual ind : gedFile.getIndividuals()) {
+            if (ind.getSiblings().size() == n) {
+                table.add(ind);
+            }
+        }
+        System.out.println(table);
+    }
+
+
 
     private static void listOrphans(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
@@ -494,6 +515,21 @@ public class ListOptions {
 
             if (now.getMonth() == marriage.getMonth()) {
                 table.add(family);
+
+    private static void listBirthsThisMonth(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getBirthday));
+
+        Table<Individual> table = new Table<>("Birthdays this month", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date birth = indi.getBirthday();
+            if (birth == null) continue;
+
+            if (now.getMonth() == birth.getMonth()) {
+                table.add(indi);
+
             }
         }
 
@@ -576,6 +612,10 @@ public class ListOptions {
 
         if (listSelected(listAnniversariesThisMonth)) {
             listAnniversariesThisMonth(gedFile);
+        }
+      
+        if (listSelected(listBirthsThisMonth)) {
+            listBirthsThisMonth(gedFile);
         }
         
     }
