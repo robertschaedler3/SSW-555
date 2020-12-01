@@ -274,15 +274,10 @@ public class TestIndividual {
 
     @Test
     public void testGetParents() {
-        Individual father = new IndividualBuilder().male().build();
-        Individual mother = new IndividualBuilder().female().build();
-        Individual child = new IndividualBuilder().build();
-        
-        Family family = new FamilyBuilder().withHusband(father).withWife(mother).withChild(child).build();
         Individual father = Individual.builder().male().build();
         Individual mother = Individual.builder().female().build();
         Individual child = Individual.builder().build();
-
+        
         Family family = Family.builder().husband(father).wife(mother).child(child).build();
 
         assertTrue(orderAgnosticEquality(Arrays.asList(father, mother),child.getParents()));
@@ -419,20 +414,18 @@ public class TestIndividual {
     
 	@Test
 	public void testGetGeneration() {
-		IndividualBuilder individualBuilder = new IndividualBuilder();
+        Individual.Builder individualBuilder = Individual.builder();
 		Individual individual = individualBuilder.build();
 
 		Individual parent = individualBuilder.build();
 		Individual grandparent = individualBuilder.build();
 		Individual greatgrandparent = individualBuilder.build();
 
-		FamilyBuilder familyBuilder = new FamilyBuilder();
-		familyBuilder.withHusband(greatgrandparent).withChild(grandparent).build();
-		familyBuilder.withHusband(grandparent).withChild(parent).build();
-		familyBuilder.withHusband(parent).withChild(individual).build();
-		familyBuilder.withHusband(greatgrandparent).withWife(individual).build();
-
-		GEDFile gedFile = new GEDFile(individualBuilder.getIndividuals(), familyBuilder.getFamilies());
+        Family.Builder familyBuilder = Family.builder();
+        familyBuilder.husband(greatgrandparent).child(grandparent).build();
+        familyBuilder.husband(grandparent).child(parent).build();
+        familyBuilder.husband(parent).child(individual).build();
+        familyBuilder.husband(greatgrandparent).wife(individual).build();
 
 		assertTrue(individual.getGeneration() == 4);
 	}

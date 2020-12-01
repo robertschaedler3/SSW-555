@@ -31,6 +31,7 @@ public class ValidateCommand implements Runnable {
     public void run() {
 
         GEDFile gedFile = fileParam.getFile();
+
         if (gedFile == null) {
             System.out.println("File not found!");
             return;
