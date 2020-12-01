@@ -22,7 +22,10 @@ public class ListOptions {
     @Option(names = { "-A", "--all" }, description = "List all feature groups")
     protected boolean all;
 
-    @Option(names = { "-dd", "--deceased" }, description = "List all deceased individuals")
+    @Option(names = {"-bm", "--birth-month"}, description = "List all births this month")
+    protected boolean listBirthsThisMonth;
+
+    @Option(names = {"-dd", "--deceased"}, description = "List all deceased individuals")
     protected boolean listDeceased;
 
     @Option(names = { "-lm", "--living-married" }, description = "List living married individuals")
@@ -496,6 +499,25 @@ public class ListOptions {
         System.out.println(table);
     }
 
+    private static void listBirthsThisMonth(GEDFile gedFile) {
+        List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH"));
+        List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getBirthday));
+
+        Table<Individual> table = new Table<>("Birthdays this month", columns, expanders);
+
+        for (Individual indi : gedFile.getIndividuals()) {
+            Date now = new Date();
+            Date birth = indi.getBirthday();
+            if (birth == null) continue;
+
+            if (now.getMonth() == birth.getMonth()) {
+                table.add(indi);
+            }
+        }
+
+        System.out.println(table);
+    }
+
     private boolean listSelected(boolean list) {
         return all || list;
     }
@@ -570,7 +592,10 @@ public class ListOptions {
             listUpcomingAnniversaries(gedFile);
         }
 
-
+        if (listSelected(listBirthsThisMonth)) {
+            listBirthsThisMonth(gedFile);
+        }
+        
     }
 
 }
