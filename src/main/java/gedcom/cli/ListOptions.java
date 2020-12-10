@@ -37,7 +37,7 @@ public class ListOptions {
     @Option(names = { "-ma", "--marriages" }, description = "List living married individuals")
     protected boolean listMarriages;
 
-    @Option(names = { "-ma", "--marriages" }, description = "List living married individuals")
+    @Option(names = { "-dv", "--divorces" }, description = "List living married individuals")
     protected boolean listDivorces;
 
     @Option(names = { "-ls", "--living-single" }, description = "List living single individuals")
@@ -67,6 +67,9 @@ public class ListOptions {
     @Option(names = { "-gn", "--generation-number" }, description = "List individuals in given generation number e.g. -gn=2")
     protected int listGenerationNumber = -1;
 
+    @Option(names = { "-sn", "--siblings-number" }, description = "List individuals in given generation number e.g. -gn=2")
+    protected int listnsiblings = -1;
+    
     @Option(names = { "-rs", "--recent-survivors" }, description = "List living descendants/spouses of individuals who died in the last 30 days")
     protected boolean listRecentSurvivors;
 
@@ -249,7 +252,7 @@ public class ListOptions {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "NAME"));
         List<Function<? super Individual, ? extends Object>> expanders = new ArrayList<>(Arrays.asList(Individual::getID, Individual::getName));
 
-        Table<Individual> table = new Table<>("Users with N Siblings", columns, expanders);
+        Table<Individual> table = new Table<>("Users with " + n + " Sibling(s)", columns, expanders);
         for (Individual ind : gedFile.getIndividuals()) {
             if (ind.getSiblings().size() == n) {
                 table.add(ind);
@@ -512,9 +515,14 @@ public class ListOptions {
             Date now = new Date();
             Date marriage = family.getMarriage();
             if (marriage == null) continue;
-
+            
             if (now.getMonth() == marriage.getMonth()) {
                 table.add(family);
+            }
+        }
+        
+        System.out.println(table);
+    }
 
     private static void listBirthsThisMonth(GEDFile gedFile) {
         List<String> columns = new ArrayList<>(Arrays.asList("ID", "BIRTH"));
@@ -592,6 +600,10 @@ public class ListOptions {
 
         if (listGenerationNumber != -1) {
             listGeneration(gedFile, listGenerationNumber);
+        }
+        
+        if (listnsiblings != -1) {
+            listnsiblings(gedFile, listnsiblings);
         }
 
         if (listSelected(listRecentSurvivors)) {
